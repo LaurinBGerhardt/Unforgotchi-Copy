@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
     <item
@@ -8,19 +9,19 @@
         android:title="@string/home"/>
 
     <item
-        android:id="@+id/nav_message"
+        android:id="@+id/nav_lists"
         android:icon="@drawable/ic_baseline_message_24"
-        android:title="@string/message"/>
+        android:title="@string/lists"/>
 
     <item
-        android:id="@+id/nav_sync"
-        android:icon="@drawable/ic_baseline_sync_24"
-        android:title="@string/sync"/>
+        android:id="@+id/nav_locations"
+        android:icon="@drawable/ic_baseline_location_city_24"
+        android:title="@string/locations"/>
 
     <item
         android:id="@+id/nav_trash"
         android:icon="@drawable/ic_baseline_message_24"
-        android:title="@string/trash"/>
+        android:title="placeholder"/>
 
     <item
         android:id="@+id/nav_settings"
@@ -28,32 +29,32 @@
         android:title="@string/settings"/>
 
     <item
-        android:title="@string/profile">
+        android:title="placeholder">
 
         <menu>
 
             <item
                 android:id="@+id/nav_login"
                 android:icon="@drawable/ic_baseline_message_24"
-                android:title="@string/login"/>
+                android:title="placeholder"/>
 
         </menu>
 
     </item>
 
-    <item android:title="@string/communicate">
+    <item android:title="placeholder">
 
         <menu>
 
             <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_baseline_message_24"
-                android:title="@string/share"/>
+                android:title="placeholder"/>
 
             <item
                 android:id="@+id/nav_rate_us"
                 android:icon="@drawable/ic_baseline_message_24"
-                android:title="@string/rate_us"/>
+                android:title="placeholder"/>
 
         </menu>
 
