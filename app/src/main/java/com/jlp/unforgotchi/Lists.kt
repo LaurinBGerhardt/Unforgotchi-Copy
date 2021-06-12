@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import com.jlp.unforgotchi.locations.Locations
+import com.jlp.unforgotchi.settings.Settings
 
 class Lists : AppCompatActivity() {
 

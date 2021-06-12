@@ -1,4 +1,4 @@
-package com.jlp.unforgotchi
+package com.jlp.unforgotchi.settings
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,6 +8,9 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
+import com.jlp.unforgotchi.Lists
+import com.jlp.unforgotchi.MainActivity
+import com.jlp.unforgotchi.R
 import com.jlp.unforgotchi.locations.Locations
 
 class Settings : AppCompatActivity() {

@@ -14,7 +14,7 @@ import com.google.android.material.navigation.NavigationView
 import com.jlp.unforgotchi.Lists
 import com.jlp.unforgotchi.MainActivity
 import com.jlp.unforgotchi.R
-import com.jlp.unforgotchi.Settings
+import com.jlp.unforgotchi.settings.Settings
 
 class Locations : AppCompatActivity() {
 

@@ -16,7 +16,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Settings"></activity>
+        <activity android:name=".settings.Settings"></activity>
         <activity android:name=".Lists"></activity>
         <activity android:name=".locations.Locations"></activity>
 
