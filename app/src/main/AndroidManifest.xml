@@ -18,7 +18,7 @@
         </activity>
         <activity android:name=".Settings"></activity>
         <activity android:name=".Lists"></activity>
-        <activity android:name=".Locations"></activity>
+        <activity android:name=".locations.Locations"></activity>
 
     </application>
 

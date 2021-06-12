@@ -7,4 +7,9 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="unforgotchi_dark_purple">#680128</color>
+    <color name="unforgotchi_purple">#820333</color>
+    <color name="colorPrimary">@color/unforgotchi_purple</color>
+    <color name="colorPrimaryDark">@color/unforgotchi_dark_purple</color>
+    <color name="colorAccent">@color/unforgotchi_purple</color>
 </resources>
