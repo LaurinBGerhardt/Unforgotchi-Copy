@@ -2,23 +2,26 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
-    app:cardElevation="6dp">
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+    app:cardElevation="6dp"
+    android:layout_centerHorizontal="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/location_image"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_margin="8dp"
-            app:layout_constraintDimensionRatio="16:9"
             android:contentDescription="Location Name"
+            android:minWidth="24dp"
+            android:minHeight="24dp"
+            app:layout_constraintDimensionRatio="16:9"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
