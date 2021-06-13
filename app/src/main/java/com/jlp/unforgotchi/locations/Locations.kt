@@ -3,8 +3,10 @@ package com.jlp.unforgotchi.locations
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import android.widget.GridLayout
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
@@ -45,7 +47,17 @@ class Locations : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        //set intents
+        //when clicking the add-button:
+        val addLocationButton: View = findViewById(R.id.add_location_button)
+        addLocationButton.setOnClickListener {
+            val addLocationIntent = Intent(this@Locations, AddLocationActivity::class.java)
+            startActivity(addLocationIntent)
+            //registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+
+            //}
+        }
+
+        //set intents to navigate to the other parts of the app:
         val homePage = Intent(this@Locations, MainActivity::class.java)
         val settingPage = Intent(this@Locations, Settings::class.java)
         val listsPage = Intent(this@Locations, Lists::class.java)

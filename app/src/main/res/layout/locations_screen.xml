@@ -23,7 +23,7 @@
             tools:listitem="@layout/location_item"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/add_location"
+            android:id="@+id/add_location_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
@@ -31,8 +31,7 @@
             android:backgroundTint="@color/unforgotchi_purple"
             android:src="@drawable/ic_add_white_24"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:contentDescription="TODO" />
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
