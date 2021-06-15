@@ -1,11 +1,8 @@
 package com.jlp.unforgotchi
 
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.text.InputType
-import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
@@ -16,31 +13,31 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
-import com.jlp.unforgotchi.locations.AddLocationActivity
 import com.jlp.unforgotchi.locations.Locations
-import com.jlp.unforgotchi.locations.LocationsAdapter
-import com.jlp.unforgotchi.locations.getInitialLocations
 import com.jlp.unforgotchi.settings.Settings
+import kotlin.random.Random
 
-class Lists : AppCompatActivity() {
+class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
 
     lateinit var toggle : ActionBarDrawerToggle
+    private val arrayList = generateList(500) //Creating an empty array-list
+    private val adapter = ListsAdapter(arrayList, this)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.lists)
+
         val drawerLayout : DrawerLayout = findViewById(R.id.drawerLayout)
         val navView : NavigationView = findViewById(R.id.nav_view)
+
         // getting the recyclerview by its id
         val recyclerview = findViewById<RecyclerView>(R.id.lists_recycler_view)
         // this grid layout holds all the cards with the saved locations:
-        recyclerview.layoutManager = GridLayoutManager(this,2)
-        //Add locations list:
-        val listsAdapter = ListsAdapter(
-            getInitialLists()
-        )
+        recyclerview.layoutManager = GridLayoutManager(this, 2)
         // Setting the Adapter with the recyclerview
-        recyclerview.adapter = listsAdapter
+        recyclerview.adapter = adapter
+        recyclerview.setHasFixedSize(true)
 
         //when clicking the add-button:
         val addListsButton: View = findViewById(R.id.add_lists_button)
@@ -52,8 +49,29 @@ class Lists : AppCompatActivity() {
 
             with(builder) {
                 setTitle("New List")
-                setPositiveButton("OK"){dialog, which ->
-                    Toast.makeText(applicationContext, editText.text.toString(), Toast.LENGTH_SHORT).show()
+                setPositiveButton("OK"){ dialog, which ->
+                        insertList(editText.text.toString())
+                }
+                setNegativeButton("Cancel"){ dialog, which ->
+                    Toast.makeText(applicationContext, "Cancel button clicked", Toast.LENGTH_SHORT).show()
+                }
+                setView(dialogLayout)
+                show()
+            }
+        }
+
+        //when clicking the delete-button:
+        val deleteListsButton: View = findViewById(R.id.delete_lists_button)
+        deleteListsButton.setOnClickListener {
+            val builder = AlertDialog.Builder(this)
+            val inflater = layoutInflater
+            val dialogLayout = inflater.inflate(R.layout.delete_listname_layout, null)
+            val editText = dialogLayout.findViewById<EditText>(R.id.newListName)
+
+            with(builder) {
+                setTitle("Delete List")
+                setPositiveButton("OK"){ dialog, which ->
+                    deleteList(editText.text.toString().toInt())
                 }
                 setNegativeButton("Cancel"){ dialog, which ->
                     Toast.makeText(applicationContext, "Cancel button clicked", Toast.LENGTH_SHORT).show()
@@ -88,11 +106,27 @@ class Lists : AppCompatActivity() {
                 R.id.nav_home -> startActivity(homePage)
                 R.id.nav_lists -> startActivity(listsPage)
                 R.id.nav_locations -> startActivity(locationsPage)
-                R.id.nav_trash -> Toast.makeText(applicationContext, "Clicked placeholder", Toast.LENGTH_SHORT).show()
+                R.id.nav_trash -> Toast.makeText(
+                    applicationContext,
+                    "Clicked placeholder",
+                    Toast.LENGTH_SHORT
+                ).show()
                 R.id.nav_settings -> startActivity(settingPage)
-                R.id.nav_login -> Toast.makeText(applicationContext, "Clicked placeholder", Toast.LENGTH_SHORT).show()
-                R.id.nav_share -> Toast.makeText(applicationContext, "Clicked placeholder", Toast.LENGTH_SHORT).show()
-                R.id.nav_rate_us -> Toast.makeText(applicationContext, "Clicked placeholder", Toast.LENGTH_SHORT).show()
+                R.id.nav_login -> Toast.makeText(
+                    applicationContext,
+                    "Clicked placeholder",
+                    Toast.LENGTH_SHORT
+                ).show()
+                R.id.nav_share -> Toast.makeText(
+                    applicationContext,
+                    "Clicked placeholder",
+                    Toast.LENGTH_SHORT
+                ).show()
+                R.id.nav_rate_us -> Toast.makeText(
+                    applicationContext,
+                    "Clicked placeholder",
+                    Toast.LENGTH_SHORT
+                ).show()
 
             }
 
@@ -108,5 +142,44 @@ class Lists : AppCompatActivity() {
             return true
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun generateList(size: Int): ArrayList<ListsItemsVM> {
+
+        val list: ArrayList<ListsItemsVM> = ArrayList()
+
+        val element1 = ListsItemsVM(
+            R.drawable.ic_baseline_list_alt_24,
+            "Basic"
+        )
+
+        val element2 = ListsItemsVM(
+            R.drawable.ic_baseline_list_alt_24,
+            "Sport"
+        )
+        list += element1
+        list += element2
+        return list
+    }
+
+    private fun insertList(listName: String){
+        val newList = ListsItemsVM(
+            R.drawable.ic_baseline_list_alt_24,
+            listName
+        )
+        arrayList.add(newList)
+        adapter.notifyDataSetChanged()
+    }
+
+    private fun deleteList(position: Int){
+        arrayList.removeAt(position)
+        adapter.notifyDataSetChanged()
+    }
+
+    override fun onItemClick(position: Int) {
+        //Toast.makeText(this, "Item $position clicked", Toast.LENGTH_SHORT).show()
+        val i = Intent(this@Lists, DetailList::class.java)
+        i.putExtra("position", position)
+        startActivity(i)
     }
 }

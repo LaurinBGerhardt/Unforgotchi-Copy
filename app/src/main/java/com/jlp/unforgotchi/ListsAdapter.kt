@@ -3,13 +3,17 @@ package com.jlp.unforgotchi
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class ListsAdapter (private val thisList: List<ListsItemsVM>) : RecyclerView.Adapter<ListsAdapter.ViewHolder>() {
+class ListsAdapter (
+    private val thisList: List<ListsItemsVM>,
+    private val listener: OnItemClickListener
+)
+    : RecyclerView.Adapter<ListsAdapter.ViewHolder>() {
 
-    // create new views
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // inflates the card_view_design view
         // that is used to hold list item
@@ -38,8 +42,22 @@ class ListsAdapter (private val thisList: List<ListsItemsVM>) : RecyclerView.Ada
     }
 
     // Holds the views for adding it to image and text
-    class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {
+    inner class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView),
+        View.OnClickListener {
         val imageView: ImageView = itemView.findViewById(R.id.lists_image)
         val textView: TextView = itemView.findViewById(R.id.lists_name)
+
+        init {
+            itemView.setOnClickListener(this)
+        }
+        override fun onClick(v: View?) {
+            val position = adapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                listener.onItemClick(position)
+            }
+        }
+    }
+    interface OnItemClickListener{
+        fun onItemClick(position: Int)
     }
 }
