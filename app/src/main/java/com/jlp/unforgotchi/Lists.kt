@@ -172,8 +172,13 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
     }
 
     private fun deleteList(position: Int){
-        arrayList.removeAt(position)
-        adapter.notifyDataSetChanged()
+        if (position < arrayList.size) {
+            arrayList.removeAt(position)
+            adapter.notifyDataSetChanged()
+        }
+        else{
+            Toast.makeText(applicationContext, "List not that long", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onItemClick(position: Int) {
