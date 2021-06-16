@@ -22,6 +22,8 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
     lateinit var toggle : ActionBarDrawerToggle
     private val arrayList = generateList(500) //Creating an empty array-list
     private val adapter = ListsAdapter(arrayList, this)
+    private var edit = false
+    private var delete = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,21 +65,34 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
         //when clicking the delete-button:
         val deleteListsButton: View = findViewById(R.id.delete_lists_button)
         deleteListsButton.setOnClickListener {
-            val builder = AlertDialog.Builder(this)
-            val inflater = layoutInflater
-            val dialogLayout = inflater.inflate(R.layout.delete_listname_layout, null)
-            val editText = dialogLayout.findViewById<EditText>(R.id.newListName)
+            if (edit){
+                Toast.makeText(applicationContext, "Deactivate edit button first", Toast.LENGTH_SHORT).show()
+            }
+            else {
+                if (delete) {
+                    delete = false
+                    deleteListsButton.setBackgroundColor(0xFF820333.toInt())
+                } else {
+                    delete = true
+                    deleteListsButton.setBackgroundColor(0xFF000000.toInt())
+                }
+            }
+        }
 
-            with(builder) {
-                setTitle("Delete List")
-                setPositiveButton("OK"){ dialog, which ->
-                    deleteList(editText.text.toString().toInt())
+        //when clicking the edit button:
+        val editListsButton: View = findViewById(R.id.edit_lists_button)
+        editListsButton.setOnClickListener {
+            if (delete){
+                Toast.makeText(applicationContext, "Deactivate delete button first", Toast.LENGTH_SHORT).show()
+            }
+            else {
+                if (edit) {
+                    edit = false
+                    editListsButton.setBackgroundColor(0xFF820333.toInt())
+                } else {
+                    edit = true
+                    editListsButton.setBackgroundColor(0xFF000000.toInt())
                 }
-                setNegativeButton("Cancel"){ dialog, which ->
-                    Toast.makeText(applicationContext, "Cancel button clicked", Toast.LENGTH_SHORT).show()
-                }
-                setView(dialogLayout)
-                show()
             }
         }
 
@@ -182,9 +197,38 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
     }
 
     override fun onItemClick(position: Int) {
-        //Toast.makeText(this, "Item $position clicked", Toast.LENGTH_SHORT).show()
-        val i = Intent(this@Lists, DetailList::class.java)
-        i.putExtra("position", position)
-        startActivity(i)
+        Toast.makeText(this, "Item $position clicked", Toast.LENGTH_SHORT).show()
+        if (edit){
+            val clickedItem = arrayList[position]
+
+            //open textDialog to adapt name
+            val builder = AlertDialog.Builder(this)
+            val inflater = layoutInflater
+            val dialogLayout = inflater.inflate(R.layout.add_listname_layout, null)
+            val editText = dialogLayout.findViewById<EditText>(R.id.newListName)
+
+            with(builder) {
+                setTitle("Change Lists Name")
+                setPositiveButton("OK"){ dialog, which ->
+                    clickedItem.text = editText.text.toString()
+                    adapter.notifyDataSetChanged()
+                }
+                setNegativeButton("Cancel"){ dialog, which ->
+                    Toast.makeText(applicationContext, "Cancel button clicked", Toast.LENGTH_SHORT).show()
+                }
+                setView(dialogLayout)
+                show()
+            }
+        }
+
+        else if (delete) {
+            deleteList(position)
+        }
+
+        else {
+            val i = Intent(this@Lists, DetailList::class.java)
+            i.putExtra("position", position)
+            startActivity(i)
+        }
     }
 }
