@@ -15,7 +15,7 @@ abstract class SwipeToDelete(context: Context, dragDir: Int, swipeDir: Int): Ite
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        TODO("Not yet implemented")
+        //implemented in DetailList.kt
     }
 
 }

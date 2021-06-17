@@ -22,19 +22,20 @@ import com.jlp.unforgotchi.settings.Settings
 
 class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
 
-    lateinit var toggle : ActionBarDrawerToggle
-    private val arrayList = generateList(500) //Creating an empty array-list
+    //lateinit var toggle : ActionBarDrawerToggle
+    private val arrayList = generateList(500)
     private val adapter = DetailListsAdapter(arrayList, this)
+    private var position = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.detail_list_view)
 
-        val bundle: Bundle? = intent.extras
-        val position = intent.getIntExtra("position", 0)
+        //val drawerLayout : DrawerLayout = findViewById(R.id.drawerLayout)
+        //val navView : NavigationView = findViewById(R.id.nav_view)
 
-        val drawerLayout : DrawerLayout = findViewById(R.id.drawerLayout)
-        val navView : NavigationView = findViewById(R.id.nav_view)
+        val bundle: Bundle? = intent.extras
+        position = intent.getIntExtra("position", 0)
 
         // getting the recyclerview by its id
         val recyclerview = findViewById<RecyclerView>(R.id.lists_recycler_view)
@@ -66,7 +67,7 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         }
 
         //all down here for the navigation menu
-
+        /*
         toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
 
         drawerLayout.addDrawerListener(toggle)
@@ -90,17 +91,34 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
                 R.id.nav_home -> startActivity(homePage)
                 R.id.nav_lists -> startActivity(listsPage)
                 R.id.nav_locations -> startActivity(locationsPage)
-                R.id.nav_trash -> Toast.makeText(applicationContext, "Clicked placeholder", Toast.LENGTH_SHORT).show()
+                R.id.nav_trash -> Toast.makeText(
+                    applicationContext,
+                    "Clicked placeholder",
+                    Toast.LENGTH_SHORT
+                ).show()
                 R.id.nav_settings -> startActivity(settingPage)
-                R.id.nav_login -> Toast.makeText(applicationContext, "Clicked placeholder", Toast.LENGTH_SHORT).show()
-                R.id.nav_share -> Toast.makeText(applicationContext, "Clicked placeholder", Toast.LENGTH_SHORT).show()
-                R.id.nav_rate_us -> Toast.makeText(applicationContext, "Clicked placeholder", Toast.LENGTH_SHORT).show()
+                R.id.nav_login -> Toast.makeText(
+                    applicationContext,
+                    "Clicked placeholder",
+                    Toast.LENGTH_SHORT
+                ).show()
+                R.id.nav_share -> Toast.makeText(
+                    applicationContext,
+                    "Clicked placeholder",
+                    Toast.LENGTH_SHORT
+                ).show()
+                R.id.nav_rate_us -> Toast.makeText(
+                    applicationContext,
+                    "Clicked placeholder",
+                    Toast.LENGTH_SHORT
+                ).show()
 
             }
 
             true
 
         }
+        */
 
         val item = object : SwipeToDelete(this, 0, ItemTouchHelper.LEFT) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -112,23 +130,51 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         itemTouchHelper.attachToRecyclerView(recyclerview)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    /*override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         if (toggle.onOptionsItemSelected(item)){
             return true
         }
         return super.onOptionsItemSelected(item)
-    }
+    }*/
 
     private fun generateList(size: Int): ArrayList<DetailListsItemsVM> {
 
-        val list: ArrayList<DetailListsItemsVM> = ArrayList()
+        val list = arrayListOf<DetailListsItemsVM>()
 
-        val element1 = DetailListsItemsVM("Key")
+        when (position) {
+            0 -> {
+                val element1 = DetailListsItemsVM("1 1")
+                val element2 = DetailListsItemsVM("1 2")
+                list += element1
+                list += element2
+            }
+            1 -> {
+                val element1 = DetailListsItemsVM("2 1")
 
-        val element2 = DetailListsItemsVM("Mobile Phone")
-        list += element1
-        list += element2
+                val element2 = DetailListsItemsVM("2 2")
+                list += element1
+                list += element2
+            }
+            2 -> {
+                val element1 = DetailListsItemsVM("3 1")
+
+                val element2 = DetailListsItemsVM("3 2")
+                list += element1
+                list += element2
+            }
+            3 -> {
+                val element1 = DetailListsItemsVM("4 1")
+
+                val element2 = DetailListsItemsVM("4 2")
+                list += element1
+                list += element2
+            }
+            else -> {
+                Toast.makeText(applicationContext, "Empty because not yet implemented", Toast.LENGTH_SHORT).show()
+            }
+        }
+
         return list
     }
 
