@@ -8,105 +8,70 @@
     android:layout_height="match_parent"
     tools:context=".settings.Settings">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginBottom="30dp"
+        android:layout_marginEnd="30dp"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/wifi"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="117dp"
-            android:layout_marginBottom="14dp"
-            android:icon="@drawable/ic_baseline_message_24"
-            android:text="@string/wifi"
-            android:textSize="26sp"
-            app:layout_constraintBottom_toTopOf="@+id/checkBoxWifi"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.163"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.168" />
+    <TextView
+        android:id="@+id/wifi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/wifi"
+        android:textSize="26sp"/>
 
-        <CheckBox
-            android:id="@+id/checkBoxWifi"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginBottom="112dp"
-            android:buttonTint="@color/unforgotchi_dark_purple"
-            android:text="@string/wifiPermission"
-            app:layout_constraintBottom_toTopOf="@+id/checkBoxGps"
-            app:layout_constraintEnd_toEndOf="@+id/checkBoxGps"
-            app:layout_constraintStart_toStartOf="@+id/wifi"
-            app:layout_constraintTop_toBottomOf="@+id/wifi" />
+    <CheckBox
+        android:id="@+id/checkBoxWifi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        android:buttonTint="@color/unforgotchi_dark_purple"
+        android:text="@string/wifiPermission"/>
 
-        <TextView
-            android:id="@+id/gps"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:icon="@drawable/ic_baseline_message_24"
-            android:text="@string/gps"
-            android:textSize="26sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.163"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.386" />
+    <TextView
+        android:id="@+id/gps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/ic_baseline_message_24"
+        android:text="@string/gps"
+        android:textSize="26sp"/>
 
-        <CheckBox
-            android:id="@+id/checkBoxGps"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginBottom="116dp"
-            android:buttonTint="@color/unforgotchi_dark_purple"
-            android:text="@string/locationsPermission"
-            app:layout_constraintBottom_toTopOf="@+id/checkBoxNotificationsDesc"
-            app:layout_constraintEnd_toEndOf="@+id/checkBoxNotificationsDesc"
-            app:layout_constraintStart_toStartOf="@+id/gps"
-            app:layout_constraintTop_toBottomOf="@+id/checkBoxWifi" />
+    <CheckBox
+        android:id="@+id/checkBoxGps"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        android:buttonTint="@color/unforgotchi_dark_purple"
+        android:text="@string/locationsPermission"/>
 
-        <TextView
-            android:id="@+id/notifications"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:icon="@drawable/ic_baseline_message_24"
-            android:text="@string/notifications"
-            android:textSize="26sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.224"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.604" />
+    <TextView
+        android:id="@+id/notifications"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/ic_baseline_message_24"
+        android:text="@string/notifications"
+        android:textSize="26sp"/>
 
-        <CheckBox
-            android:id="@+id/checkBoxNotificationsDesc"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginBottom="18dp"
-            android:buttonTint="@color/unforgotchi_dark_purple"
-            android:text="@string/notificationDesc"
-            app:layout_constraintBottom_toTopOf="@+id/checkBoxNotificationsSel"
-            app:layout_constraintEnd_toEndOf="@+id/checkBoxNotificationsSel"
-            app:layout_constraintStart_toStartOf="@+id/checkBoxNotificationsSel"
-            app:layout_constraintTop_toBottomOf="@+id/checkBoxGps" />
+    <CheckBox
+        android:id="@+id/checkBoxNotificationsDesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:buttonTint="@color/unforgotchi_dark_purple"
+        android:text="@string/notificationDesc"/>
 
-        <CheckBox
-            android:id="@+id/checkBoxNotificationsSel"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="59dp"
-            android:layout_marginEnd="59dp"
-            android:layout_marginBottom="147dp"
-            android:buttonTint="@color/unforgotchi_dark_purple"
-            android:text="@string/notificationSel"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/checkBoxNotificationsDesc" />
+    <CheckBox
+        android:id="@+id/checkBoxNotificationsSel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:buttonTint="@color/unforgotchi_dark_purple"
+        android:text="@string/notificationSel"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
