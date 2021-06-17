@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
@@ -101,6 +102,14 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
 
         }
 
+        val item = object : SwipeToDelete(this, 0, ItemTouchHelper.LEFT) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                deleteList(viewHolder.adapterPosition)
+            }
+        }
+
+        val itemTouchHelper=ItemTouchHelper(item)
+        itemTouchHelper.attachToRecyclerView(recyclerview)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
