@@ -1,4 +1,4 @@
-package com.jlp.unforgotchi
+package com.jlp.unforgotchi.list
 
 import android.app.AlertDialog
 import android.content.Intent
@@ -13,9 +13,10 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
+import com.jlp.unforgotchi.*
+import com.jlp.unforgotchi.detaillist.DetailList
 import com.jlp.unforgotchi.locations.Locations
 import com.jlp.unforgotchi.settings.Settings
-import kotlin.random.Random
 
 class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
 
@@ -24,7 +25,6 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
     private val adapter = ListsAdapter(arrayList, this)
     private var edit = false
     private var delete = false
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

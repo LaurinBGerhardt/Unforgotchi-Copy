@@ -1,4 +1,4 @@
-package com.jlp.unforgotchi
+package com.jlp.unforgotchi.detaillist
 
 import android.app.AlertDialog
 import android.content.Intent
@@ -10,15 +10,20 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
+import com.jlp.unforgotchi.MainActivity
+import com.jlp.unforgotchi.R
+import com.jlp.unforgotchi.list.Lists
 import com.jlp.unforgotchi.locations.Locations
 import com.jlp.unforgotchi.settings.Settings
 
-class DetailList : AppCompatActivity() {
+class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
 
     lateinit var toggle : ActionBarDrawerToggle
+    private val arrayList = generateList(500) //Creating an empty array-list
+    private val adapter = DetailListsAdapter(arrayList, this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,29 +34,27 @@ class DetailList : AppCompatActivity() {
 
         val drawerLayout : DrawerLayout = findViewById(R.id.drawerLayout)
         val navView : NavigationView = findViewById(R.id.nav_view)
+
         // getting the recyclerview by its id
-        /*val recyclerview = findViewById<RecyclerView>(R.id.lists_recycler_view)
+        val recyclerview = findViewById<RecyclerView>(R.id.lists_recycler_view)
         // this grid layout holds all the cards with the saved locations:
-        recyclerview.layoutManager = GridLayoutManager(this,2)
-        //Add locations list:
-        val listsAdapter = ListsAdapter(
-            getInitialLists()
-        )
+        recyclerview.layoutManager = LinearLayoutManager(this)
         // Setting the Adapter with the recyclerview
-        recyclerview.adapter = listsAdapter
+        recyclerview.adapter = adapter
+        recyclerview.setHasFixedSize(true)
 
         //when clicking the add-button:
-        val addListsButton: View = findViewById(R.id.add_lists_button)
-        addListsButton.setOnClickListener {
+        val addItemButton: View = findViewById(R.id.add_item_button)
+        addItemButton.setOnClickListener {
             val builder = AlertDialog.Builder(this)
             val inflater = layoutInflater
-            val dialogLayout = inflater.inflate(R.layout.add_item_to_list, null)
+            val dialogLayout = inflater.inflate(R.layout.add_listname_layout, null)
             val editText = dialogLayout.findViewById<EditText>(R.id.newListName)
 
             with(builder) {
                 setTitle("New List")
-                setPositiveButton("OK"){dialog, which ->
-                    Toast.makeText(applicationContext, editText.text.toString(), Toast.LENGTH_SHORT).show()
+                setPositiveButton("OK"){ dialog, which ->
+                    insertList(editText.text.toString())
                 }
                 setNegativeButton("Cancel"){ dialog, which ->
                     Toast.makeText(applicationContext, "Cancel button clicked", Toast.LENGTH_SHORT).show()
@@ -59,7 +62,7 @@ class DetailList : AppCompatActivity() {
                 setView(dialogLayout)
                 show()
             }
-        }*/
+        }
 
         //all down here for the navigation menu
 
@@ -108,11 +111,57 @@ class DetailList : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun getInitialLists(): MutableList<ListsItemsVM> {
-        return arrayListOf(
-            ListsItemsVM(R.drawable.ic_baseline_list_alt_24,"Basics"),
-            ListsItemsVM(R.drawable.ic_baseline_list_alt_24,"Sports"),
-            ListsItemsVM(R.drawable.ic_baseline_list_alt_24,"Work")
+    private fun generateList(size: Int): ArrayList<DetailListsItemsVM> {
+
+        val list: ArrayList<DetailListsItemsVM> = ArrayList()
+
+        val element1 = DetailListsItemsVM("Key")
+
+        val element2 = DetailListsItemsVM("Mobile Phone")
+        list += element1
+        list += element2
+        return list
+    }
+
+    private fun insertList(listName: String){
+        val newList = DetailListsItemsVM(
+            listName
         )
+        arrayList.add(newList)
+        adapter.notifyDataSetChanged()
+    }
+
+    private fun deleteList(position: Int){
+        if (position < arrayList.size) {
+            arrayList.removeAt(position)
+            adapter.notifyDataSetChanged()
+        }
+        else{
+            Toast.makeText(applicationContext, "List not that long", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onItemClick(position: Int) {
+        Toast.makeText(this, "Item $position clicked", Toast.LENGTH_SHORT).show()
+        val clickedItem = arrayList[position]
+
+        //open textDialog to adapt name
+        val builder = AlertDialog.Builder(this)
+        val inflater = layoutInflater
+        val dialogLayout = inflater.inflate(R.layout.add_listname_layout, null)
+        val editText = dialogLayout.findViewById<EditText>(R.id.newListName)
+
+        with(builder) {
+            setTitle("Change Items Name")
+            setPositiveButton("OK"){ dialog, which ->
+                clickedItem.text = editText.text.toString()
+                adapter.notifyDataSetChanged()
+            }
+            setNegativeButton("Cancel"){ dialog, which ->
+                Toast.makeText(applicationContext, "Cancel button clicked", Toast.LENGTH_SHORT).show()
+            }
+            setView(dialogLayout)
+            show()
+        }
     }
 }
