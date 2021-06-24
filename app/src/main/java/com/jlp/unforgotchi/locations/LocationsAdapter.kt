@@ -8,7 +8,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.jlp.unforgotchi.R
 
-class LocationsAdapter(private val mList: List<LocationItemsVM>) : RecyclerView.Adapter<LocationsAdapter.ViewHolder>() {
+class LocationsAdapter(
+    val mList: MutableList<LocationItemsVM>,
+    val itemClickListener: OnItemClickListener
+    ) : RecyclerView.Adapter<LocationsAdapter.ViewHolder>() {
 
     // create new views
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -39,8 +42,21 @@ class LocationsAdapter(private val mList: List<LocationItemsVM>) : RecyclerView.
     }
 
     // Holds the views for adding it to image and text
-    class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {
-        val imageView: ImageView = itemView.findViewById(R.id.location_image)
-        val textView: TextView = itemView.findViewById(R.id.location_name)
+    inner class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) ,
+        View.OnClickListener {
+            val imageView: ImageView = itemView.findViewById(R.id.location_image)
+            val textView: TextView = itemView.findViewById(R.id.location_name)
+        init {
+            itemView.setOnClickListener(this)
+        }
+        override fun onClick(v: View?) {
+            val position = adapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                itemClickListener.onItemClick(position)
+            }
+        }
+    }
+    interface OnItemClickListener{
+        fun onItemClick(position: Int)
     }
 }

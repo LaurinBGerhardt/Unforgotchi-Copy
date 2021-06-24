@@ -41,7 +41,7 @@ class AddLocationActivity : AppCompatActivity() {
             setResult(Activity.RESULT_CANCELED, intent)
         } else {
             val name = addLocNameView.text.toString()
-            intent.putExtra("name", name)
+            intent.putExtra("result", name)
             setResult(Activity.RESULT_OK, intent)
         }
         finish()
