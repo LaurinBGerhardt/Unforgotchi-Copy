@@ -1,4 +1,4 @@
-package com.jlp.unforgotchi.lists
+package com.jlp.unforgotchi
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.jlp.unforgotchi.R
 
 class ListsAdapter (
     private val thisList: List<ListsItemsVM>,
