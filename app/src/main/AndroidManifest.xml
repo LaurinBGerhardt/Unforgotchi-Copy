@@ -17,10 +17,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".settings.Settings"></activity>
-        <activity android:name=".Lists"></activity>
+        <activity android:name=".lists.Lists"></activity>
         <activity android:name=".locations.Locations"></activity>
         <activity android:name=".locations.AddLocationActivity"></activity>
-        <activity android:name=".DetailList"></activity>
+        <activity android:name=".lists.DetailList"></activity>
 
         <provider
             android:name="androidx.core.content.FileProvider"
