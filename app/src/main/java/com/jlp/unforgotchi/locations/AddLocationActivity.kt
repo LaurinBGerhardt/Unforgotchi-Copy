@@ -6,7 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
+import android.util.DisplayMetrics
 import android.widget.ImageButton
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -22,18 +22,22 @@ class AddLocationActivity : AppCompatActivity() {
     private lateinit var addLocNameView: TextInputEditText
 
     private val previewImage by lazy { findViewById<ImageButton>(R.id.selected_location_image_button) }
+    private var previewImageChanged : Boolean = false   //this is horrible coding dont copy this
+
     private val selectImageFromGalleryResult  = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         //uri?.let { previewImage.setImageURI(uri) }
-        uri?.let { previewImage.setImageBitmap(uriToBitmap(uri)) }
+        uri?.let {
+            previewImage.setImageBitmap(uriToBitmap(uri))
+            previewImageChanged = true
+        }
     }
     private fun selectImageFromGallery()  = selectImageFromGalleryResult.launch("image/*")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.add_location_layout)
-        previewImage.setImageResource(R.drawable.ic_baseline_image_search_24)
-
         addLocNameView = findViewById(R.id.add_name_of_location)
+        previewImage.setImageResource(R.drawable.ic_baseline_image_search_24)
         previewImage.setOnClickListener {
             selectImageFromGallery()
         }
@@ -48,8 +52,7 @@ class AddLocationActivity : AppCompatActivity() {
 
         if (addLocNameView.text.isNullOrEmpty()) {
             setResult(Activity.RESULT_CANCELED, intent)
-        } else if (previewImage.drawable.equals(R.drawable.ic_baseline_image_search_24)
-                    || previewImage.drawable == null) {
+        } else if ( !(previewImageChanged) || previewImage.drawable == null) {
             previewImage.setImageResource(R.drawable.ic_baseline_location_city_24)
             val name = addLocNameView.text.toString()
             intent.putExtra("name", name)
@@ -63,16 +66,35 @@ class AddLocationActivity : AppCompatActivity() {
         }
         finish()
     }
-    private fun uriToBitmap(selectedFileUri: Uri): Bitmap? {
+
+    private fun uriToBitmap(uri: Uri): Bitmap? {
+
+        val scaledscreenwidth :Double
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            val outMetrics = resources.displayMetrics
+            scaledscreenwidth = outMetrics.widthPixels / 2.0
+        } else {
+            @Suppress("DEPRECATION")
+            val displayMetrics = DisplayMetrics()
+            @Suppress("DEPRECATION")
+            windowManager.defaultDisplay.getMetrics(displayMetrics)
+            scaledscreenwidth = displayMetrics.widthPixels / 2.0
+        }
+
         try {
-            val parcelFileDescriptor = contentResolver.openFileDescriptor(selectedFileUri, "r")
+            val parcelFileDescriptor = contentResolver.openFileDescriptor(uri, "r")
             val fileDescriptor: FileDescriptor = parcelFileDescriptor!!.fileDescriptor
-            val image = Bitmap.createScaledBitmap(
+            val image = Bitmap.createBitmap(BitmapFactory.decodeFileDescriptor(fileDescriptor))
+            val imageheight = image.height.toFloat()
+            val imagewidth = image.width.toFloat()
+            val image2 = Bitmap.createScaledBitmap(
                 BitmapFactory.decodeFileDescriptor(fileDescriptor),
-                100, 100,true
+                scaledscreenwidth.toInt(),
+                (scaledscreenwidth * (imageheight / imagewidth)).toInt(),
+                true
             )
             parcelFileDescriptor.close()
-            return image
+            return image2
         } catch (e: IOException) {
             e.printStackTrace()
         }

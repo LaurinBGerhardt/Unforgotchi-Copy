@@ -26,15 +26,19 @@ class LocationsAdapter(
     // binds the list items to a view
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        val ItemsViewModel = mList[position]
+        val itemsViewModel = mList[position]
 
         // sets the image to the imageview from our itemHolder class
         //holder.imageView.setImageResource(ItemsViewModel.image)
         //holder.imageView.setImageDrawable(ItemsViewModel.image)
-        holder.imageView.setImageBitmap(ItemsViewModel.image)
+        if(itemsViewModel.image != null) {
+            holder.imageView.setImageBitmap(itemsViewModel.image)
+        } else {
+            holder.imageView.setImageResource(R.drawable.ic_baseline_location_city_24)
+        }
 
         // sets the text to the textview from our itemHolder class
-        holder.textView.text = ItemsViewModel.text
+        holder.textView.text = itemsViewModel.text
 
     }
 
