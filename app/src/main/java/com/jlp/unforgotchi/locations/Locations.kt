@@ -3,6 +3,9 @@ package com.jlp.unforgotchi.locations
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
@@ -12,6 +15,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.toDrawable
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -36,18 +40,15 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
         recyclerview.layoutManager = GridLayoutManager(this, 2)
         //Add locations list:
         val locationsAdapter = LocationsAdapter(
-            getInitialLocations(), this
+            mutableListOf<LocationItemsVM>(), this
         )
         // Setting the Adapter with the recyclerview
         recyclerview.adapter = locationsAdapter
 
-
+        //This stuff is for the Drawer Layout:
         toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
-
         drawerLayout.addDrawerListener(toggle)
-
         toggle.syncState()
-
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // When the add-button is clicked, this Launcher will launch the Add-Activity.
@@ -59,10 +60,11 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
             if (result.resultCode == Activity.RESULT_OK) {
                 // This happens when the AddLocationActivity ends:
                 val data: Intent? = result.data
-                val newLocName: String? = data!!.getStringExtra("result")
+                val newLocName: String? = data!!.getStringExtra("name")
+                val newImg : Bitmap? = data!!.getParcelableExtra<Bitmap>("image")
                 locationsAdapter.mList.add(
                     LocationItemsVM(
-                        R.drawable.ic_baseline_location_city_24,
+                        newImg,
                         newLocName!!
                     )
                 )
@@ -85,11 +87,9 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
         val listsPage = Intent(this@Locations, Lists::class.java)
         val locationsPage = Intent(this@Locations, Locations::class.java)
 
-
+        //This stuff is for the Drawer Layout so one can navigate the entire app:
         navView.setNavigationItemSelectedListener {
-
             when (it.itemId) {
-
                 R.id.nav_home -> startActivity(homePage)
                 R.id.nav_lists -> startActivity(listsPage)
                 R.id.nav_locations -> startActivity(locationsPage)
@@ -114,24 +114,19 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
                     "Clicked placeholder",
                     Toast.LENGTH_SHORT
                 ).show()
-
             }
-
             true
-
         }
+    }//END onCreate
 
+    override fun onItemClick(position: Int) {
+        Toast.makeText(this, "Item $position clicked", Toast.LENGTH_SHORT).show()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
         if (toggle.onOptionsItemSelected(item)) {
             return true
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    override fun onItemClick(position: Int) {
-        Toast.makeText(this, "Item $position clicked", Toast.LENGTH_SHORT).show()
     }
 }

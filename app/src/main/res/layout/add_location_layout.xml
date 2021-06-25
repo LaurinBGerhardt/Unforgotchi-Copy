@@ -19,15 +19,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageButton
+    <ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/selected_location_image_button"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="8dp"
-        android:adjustViewBounds="true"
-
-        android:backgroundTint="#CC680128"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxHeight="300dp"
         android:scaleType="fitCenter"
+        android:layout_margin="0dp"
+        android:adjustViewBounds="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:backgroundTint="#CC680128"
         app:layout_constraintDimensionRatio="16:9"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -56,16 +58,14 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/add_name_of_location"
-            android:layout_margin="3dp"
-            android:layout_width="match_parent"
+            android:layout_width="397dp"
             android:layout_height="wrap_content"
             android:background="#CB680128"
-            android:padding="16dp"
+            android:shadowColor="@color/white"
             android:textColor="#FFFFFF"
-            android:textColorHint="@color/white"
+            android:textColorHint="#FFFFFF"
             tools:layout_editor_absoluteX="22dp"
-            tools:layout_editor_absoluteY="235dp"
-            android:shadowColor="@color/white"/>
+            tools:layout_editor_absoluteY="235dp" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

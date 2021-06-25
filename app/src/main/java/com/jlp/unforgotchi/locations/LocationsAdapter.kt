@@ -29,7 +29,9 @@ class LocationsAdapter(
         val ItemsViewModel = mList[position]
 
         // sets the image to the imageview from our itemHolder class
-        holder.imageView.setImageResource(ItemsViewModel.image)
+        //holder.imageView.setImageResource(ItemsViewModel.image)
+        //holder.imageView.setImageDrawable(ItemsViewModel.image)
+        holder.imageView.setImageBitmap(ItemsViewModel.image)
 
         // sets the text to the textview from our itemHolder class
         holder.textView.text = ItemsViewModel.text
@@ -46,8 +48,8 @@ class LocationsAdapter(
         View.OnClickListener {
             val imageView: ImageView = itemView.findViewById(R.id.location_image)
             val textView: TextView = itemView.findViewById(R.id.location_name)
-        init {
-            itemView.setOnClickListener(this)
+            init {
+                itemView.setOnClickListener(this)
         }
         override fun onClick(v: View?) {
             val position = adapterPosition
