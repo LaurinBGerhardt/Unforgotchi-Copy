@@ -193,7 +193,11 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
             val reminderList = ReminderList(0, listName)
             // Add Data to Database
             mUserViewModel.addReminderList(reminderList)
-            Toast.makeText(applicationContext, "Successfully added!", Toast.LENGTH_LONG).show()
+            //Toast.makeText(applicationContext, "Successfully added!", Toast.LENGTH_LONG).show()
+            var reminderListsList = mUserViewModel.readAllData
+            var myTest = reminderListsList.toString()
+            Toast.makeText(applicationContext, myTest, Toast.LENGTH_LONG).show()
+
 
             val newList = ListsItemsVM(
                 R.drawable.ic_baseline_list_alt_24,
