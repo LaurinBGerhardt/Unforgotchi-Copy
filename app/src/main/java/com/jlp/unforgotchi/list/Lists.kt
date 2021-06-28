@@ -3,6 +3,7 @@ package com.jlp.unforgotchi.list
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
@@ -10,16 +11,20 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.jlp.unforgotchi.*
+import com.jlp.unforgotchi.db.ReminderList
+import com.jlp.unforgotchi.db.ReminderListViewModel
 import com.jlp.unforgotchi.detaillist.DetailList
 import com.jlp.unforgotchi.locations.Locations
 import com.jlp.unforgotchi.settings.Settings
 
 class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
 
+    private lateinit var mUserViewModel: ReminderListViewModel
     lateinit var toggle : ActionBarDrawerToggle
     private val arrayList = generateList(500) //Creating an empty array-list
     private val adapter = ListsAdapter(arrayList, this)
@@ -40,6 +45,8 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
         // Setting the Adapter with the recyclerview
         recyclerview.adapter = adapter
         recyclerview.setHasFixedSize(true)
+
+        mUserViewModel = ViewModelProvider(this).get(ReminderListViewModel::class.java)
 
         //when clicking the add-button:
         val addListsButton: View = findViewById(R.id.add_lists_button)
@@ -178,12 +185,27 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
     }
 
     private fun insertList(listName: String){
-        val newList = ListsItemsVM(
-            R.drawable.ic_baseline_list_alt_24,
-            listName
-        )
-        arrayList.add(newList)
-        adapter.notifyDataSetChanged()
+        if (!inputCheck(listName)){
+            Toast.makeText(applicationContext, "Please give input to create a list", Toast.LENGTH_SHORT).show()
+        }
+        else {
+            // Create User Object
+            val reminderList = ReminderList(0, listName)
+            // Add Data to Database
+            mUserViewModel.addReminderList(reminderList)
+            Toast.makeText(applicationContext, "Successfully added!", Toast.LENGTH_LONG).show()
+
+            val newList = ListsItemsVM(
+                R.drawable.ic_baseline_list_alt_24,
+                listName
+            )
+            arrayList.add(newList)
+            adapter.notifyDataSetChanged()
+        }
+    }
+
+    private fun inputCheck(listName: String): Boolean{
+        return !(TextUtils.isEmpty(listName))
     }
 
     private fun deleteList(position: Int){
