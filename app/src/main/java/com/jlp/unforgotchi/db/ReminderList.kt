@@ -8,5 +8,8 @@ import androidx.room.PrimaryKey
 data class ReminderList(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
-    val listName: String
-)
+    val listName: String,
+    val image: Int
+){
+    constructor() : this(0, "", 0)
+}

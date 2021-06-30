@@ -9,4 +9,12 @@ class ReminderListRepository(private val reminderListDao: ReminderListDao) {
         reminderListDao.addReminderList(reminderList)
     }
 
+    suspend fun updateReminderList(reminderList: ReminderList){
+        reminderListDao.updateReminderList(reminderList)
+    }
+
+    suspend fun deleteReminderList(reminderList: ReminderList){
+        reminderListDao.deleteReminderList(reminderList)
+    }
+
 }
