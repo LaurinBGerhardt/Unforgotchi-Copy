@@ -22,3 +22,12 @@ data class ReminderListElement(
 ){
     constructor() : this(0, "")
 }
+
+@Entity(tableName = "locations_table")
+data class Location(
+    @PrimaryKey(autoGenerate = true)
+    var id: Int,
+    var listElementName: String
+){
+    constructor() : this(0, "")
+}
