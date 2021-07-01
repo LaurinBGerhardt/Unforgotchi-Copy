@@ -10,10 +10,12 @@ import com.jlp.unforgotchi.R
 import com.jlp.unforgotchi.db.ReminderList
 
 class ListsAdapter (
-    private var reminderListsList: List<ReminderList>,
+    /*private var reminderListsList: List<ReminderList>,*/
     private val listener: OnItemClickListener
 )
     : RecyclerView.Adapter<ListsAdapter.ViewHolder>() {
+
+    private var reminderListsList: List<ReminderList> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // inflates the card_view_design view
