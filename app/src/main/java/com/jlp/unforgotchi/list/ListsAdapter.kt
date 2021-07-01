@@ -7,12 +7,15 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.jlp.unforgotchi.R
+import com.jlp.unforgotchi.db.ReminderList
 
 class ListsAdapter (
-    private val thisList: List<ListsItemsVM>,
+    /*private var reminderListsList: List<ReminderList>,*/
     private val listener: OnItemClickListener
 )
     : RecyclerView.Adapter<ListsAdapter.ViewHolder>() {
+
+    private var reminderListsList: List<ReminderList> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // inflates the card_view_design view
@@ -26,24 +29,28 @@ class ListsAdapter (
     // binds the list items to a view
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        val ItemsViewModel = thisList[position]
+        val currentItem = reminderListsList[position]
 
-        // sets the image to the imageview from our itemHolder class
-        holder.imageView.setImageResource(ItemsViewModel.image)
+        // sets the Id to the textView from our itemHolder class
+        holder.indexView.text = currentItem.id.toString()
 
-        // sets the text to the textview from our itemHolder class
-        holder.textView.text = ItemsViewModel.text
+        // sets the image to the imageView from our itemHolder class
+        holder.imageView.setImageResource(currentItem.image)
+
+        // sets the text to the textView from our itemHolder class
+        holder.textView.text = currentItem.listName
 
     }
 
     // return the number of the items in the list
     override fun getItemCount(): Int {
-        return thisList.size
+        return reminderListsList.size
     }
 
     // Holds the views for adding it to image and text
     inner class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView),
         View.OnClickListener {
+        val indexView: TextView = itemView.findViewById(R.id.lists_number)
         val imageView: ImageView = itemView.findViewById(R.id.lists_image)
         val textView: TextView = itemView.findViewById(R.id.lists_name)
 
@@ -59,5 +66,10 @@ class ListsAdapter (
     }
     interface OnItemClickListener{
         fun onItemClick(position: Int)
+    }
+
+    fun setData(reminderList: List<ReminderList>){
+        reminderListsList = reminderList
+        notifyDataSetChanged()
     }
 }

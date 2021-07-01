@@ -3,6 +3,7 @@ package com.jlp.unforgotchi.list
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
@@ -10,21 +11,27 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.jlp.unforgotchi.*
+import com.jlp.unforgotchi.db.ReminderList
+import com.jlp.unforgotchi.db.ReminderListViewModel
 import com.jlp.unforgotchi.detaillist.DetailList
 import com.jlp.unforgotchi.locations.Locations
 import com.jlp.unforgotchi.settings.Settings
 
 class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
 
+    private lateinit var mUserViewModel: ReminderListViewModel
     lateinit var toggle : ActionBarDrawerToggle
-    private val arrayList = generateList(500) //Creating an empty array-list
-    private val adapter = ListsAdapter(arrayList, this)
-    private var edit = false
-    private var delete = false
+    //private val arrayList = emptyList<ReminderList>() //Creating an empty array-list
+    private val adapter = ListsAdapter(/*arrayList, */this)
+    //private var index: Int = 0
+    //private var edit = false
+    //private var delete = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +48,13 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
         recyclerview.adapter = adapter
         recyclerview.setHasFixedSize(true)
 
+        mUserViewModel = ViewModelProvider(this).get(ReminderListViewModel::class.java)
+        mUserViewModel.readAllData.observe(this, Observer { reminderList ->
+            adapter.setData(reminderList)
+        })
+
+        //mUserViewModel.getCount.observe(this, Observer<Int> { integer -> index = integer })
+
         //when clicking the add-button:
         val addListsButton: View = findViewById(R.id.add_lists_button)
         addListsButton.setOnClickListener {
@@ -51,10 +65,10 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
 
             with(builder) {
                 setTitle("New List")
-                setPositiveButton("OK"){ dialog, which ->
+                setPositiveButton("OK"){ _, _ ->
                         insertList(editText.text.toString())
                 }
-                setNegativeButton("Cancel"){ dialog, which ->
+                setNegativeButton("Cancel"){ _, _ ->
                     Toast.makeText(applicationContext, "Cancel button clicked", Toast.LENGTH_SHORT).show()
                 }
                 setView(dialogLayout)
@@ -63,10 +77,14 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
         }
 
         //when clicking the delete-button:
-        val deleteListsButton: View = findViewById(R.id.delete_lists_button)
+        /*val deleteListsButton: View = findViewById(R.id.delete_lists_button)
         deleteListsButton.setOnClickListener {
             if (edit){
-                Toast.makeText(applicationContext, "Deactivate edit button first", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    applicationContext,
+                    "Deactivate edit button first",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
             else {
                 if (delete) {
@@ -83,7 +101,11 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
         val editListsButton: View = findViewById(R.id.edit_lists_button)
         editListsButton.setOnClickListener {
             if (delete){
-                Toast.makeText(applicationContext, "Deactivate delete button first", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    applicationContext,
+                    "Deactivate delete button first",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
             else {
                 if (edit) {
@@ -94,7 +116,7 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
                     editListsButton.setBackgroundColor(0xFF000000.toInt())
                 }
             }
-        }
+        }*/
 
         //all down here for the navigation menu
 
@@ -159,76 +181,113 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun generateList(size: Int): ArrayList<ListsItemsVM> {
-
-        val list: ArrayList<ListsItemsVM> = ArrayList()
-
-        val element1 = ListsItemsVM(
-            R.drawable.ic_baseline_list_alt_24,
-            "Basic"
-        )
-
-        val element2 = ListsItemsVM(
-            R.drawable.ic_baseline_list_alt_24,
-            "Sport"
-        )
-        list += element1
-        list += element2
-        return list
-    }
-
     private fun insertList(listName: String){
-        val newList = ListsItemsVM(
-            R.drawable.ic_baseline_list_alt_24,
-            listName
-        )
-        arrayList.add(newList)
-        adapter.notifyDataSetChanged()
+        if (!inputCheck(listName)){
+            Toast.makeText(
+                applicationContext,
+                "Please give input to create a list",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+        else {
+            // Create User Object
+            val reminderList = ReminderList(0, listName, R.drawable.ic_baseline_list_alt_24)
+            // Add Data to Database
+            mUserViewModel.addReminderList(reminderList)
+            //arrayList.add(reminderList)
+            //mUserViewModel.getCount.observe(this, Observer<Int> { integer -> index = integer })
+            Toast.makeText(applicationContext, "Successfully added!", Toast.LENGTH_LONG).show()
+        }
     }
 
-    private fun deleteList(position: Int){
-        if (position < arrayList.size) {
-            arrayList.removeAt(position)
-            adapter.notifyDataSetChanged()
-        }
-        else{
-            Toast.makeText(applicationContext, "List not that long", Toast.LENGTH_SHORT).show()
-        }
+    private fun inputCheck(listName: String): Boolean{
+        return !(TextUtils.isEmpty(listName))
     }
+
+    /*private fun deleteList(position: Int){
+        // Create User Object
+        val reminderList = ReminderList(
+            arrayList[position].id,
+            arrayList[position].listName,
+            arrayList[position].image
+        )
+        // Remove from Database
+        mUserViewModel.deleteReminderList(reminderList)
+        arrayList.removeAt(position)
+        //fix index
+        for (i in 0.. - 1){
+            if (arrayList[i].id > position) {
+                arrayList[i].id -= 1
+                mUserViewModel.updateReminderList(ReminderList(arrayList[i].id, arrayList[i].listName, arrayList[i].image))
+            }
+        }
+        mUserViewModel.getCount.observe(this, Observer<Int> { integer ->
+            index = integer })
+        adapter.notifyDataSetChanged()
+        Toast.makeText(applicationContext, "Successfully removed!", Toast.LENGTH_LONG).show()
+    }*/
 
     override fun onItemClick(position: Int) {
         Toast.makeText(this, "Item $position clicked", Toast.LENGTH_SHORT).show()
-        if (edit){
-            val clickedItem = arrayList[position]
+        /*when {
+            edit -> {
+                Toast.makeText(this, "Item $position clicked and edit set", Toast.LENGTH_SHORT).show()
+                var myListName : String
 
-            //open textDialog to adapt name
-            val builder = AlertDialog.Builder(this)
-            val inflater = layoutInflater
-            val dialogLayout = inflater.inflate(R.layout.add_listname_layout, null)
-            val editText = dialogLayout.findViewById<EditText>(R.id.newListName)
+                //open textDialog to adapt name
+                val builder = AlertDialog.Builder(this)
+                val inflater = layoutInflater
+                val dialogLayout = inflater.inflate(R.layout.add_listname_layout, null)
+                val editText = dialogLayout.findViewById<EditText>(R.id.newListName)
 
-            with(builder) {
-                setTitle("Change Lists Name")
-                setPositiveButton("OK"){ dialog, which ->
-                    clickedItem.text = editText.text.toString()
-                    adapter.notifyDataSetChanged()
+                with(builder) {
+                    setTitle("Change Lists Name")
+                    setPositiveButton("OK") { _, _ ->
+                        myListName = editText.text.toString()
+                        if (!inputCheck(myListName)) {
+                            Toast.makeText(
+                                applicationContext,
+                                "Please give input to change the name",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            // Create Reminder List Object
+                            val updatedReminderList = ReminderList(
+                                arrayList[position].id,
+                                myListName,
+                                R.drawable.ic_baseline_list_alt_24
+                            )
+                            // Update Current Object
+                            mUserViewModel.updateReminderList(updatedReminderList)
+                            arrayList[position].listName = myListName
+                            adapter.notifyDataSetChanged()
+                            Toast.makeText(
+                                applicationContext,
+                                "Successfully updated!",
+                                Toast.LENGTH_LONG
+                            ).show()
+
+                        }
+                        setNegativeButton("Cancel") { _, _ ->
+                            Toast.makeText(
+                                applicationContext,
+                                "Cancel button clicked",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        setView(dialogLayout)
+                        show()
+                    }
                 }
-                setNegativeButton("Cancel"){ dialog, which ->
-                    Toast.makeText(applicationContext, "Cancel button clicked", Toast.LENGTH_SHORT).show()
-                }
-                setView(dialogLayout)
-                show()
             }
-        }
-
-        else if (delete) {
-            deleteList(position)
-        }
-
-        else {
-            val i = Intent(this@Lists, DetailList::class.java)
-            i.putExtra("position", position)
-            startActivity(i)
-        }
+            delete -> {
+                deleteList(position)
+            }*/
+            //else -> {
+        val i = Intent(this@Lists, DetailList::class.java)
+        i.putExtra("position", position)
+        startActivity(i)
+            //}
+        //}
     }
 }

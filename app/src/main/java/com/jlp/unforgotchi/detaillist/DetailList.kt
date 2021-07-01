@@ -1,30 +1,26 @@
 package com.jlp.unforgotchi.detaillist
 
 import android.app.AlertDialog
-import android.content.Intent
 import android.os.Bundle
-import android.view.MenuItem
+import android.text.TextUtils
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.navigation.NavigationView
-import com.jlp.unforgotchi.MainActivity
 import com.jlp.unforgotchi.R
-import com.jlp.unforgotchi.list.Lists
-import com.jlp.unforgotchi.locations.Locations
-import com.jlp.unforgotchi.settings.Settings
+import com.jlp.unforgotchi.db.ReminderListElement
+import com.jlp.unforgotchi.db.ReminderListElementViewModel
 
 class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
 
     //lateinit var toggle : ActionBarDrawerToggle
-    private val arrayList = generateList(500)
-    private val adapter = DetailListsAdapter(arrayList, this)
+    private lateinit var mUserViewModel: ReminderListElementViewModel
+    //private val arrayList = generateList(500)
+    private val adapter = DetailListsAdapter(/*arrayList,*/ this)
     private var position = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,6 +41,12 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         recyclerview.adapter = adapter
         recyclerview.setHasFixedSize(true)
 
+
+        mUserViewModel = ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
+        mUserViewModel.readAllElement.observe(this, Observer { reminderListElement ->
+            adapter.setData(reminderListElement)
+        })
+
         //when clicking the add-button:
         val addItemButton: View = findViewById(R.id.add_item_button)
         addItemButton.setOnClickListener {
@@ -54,9 +56,9 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
             val editText = dialogLayout.findViewById<EditText>(R.id.newListName)
 
             with(builder) {
-                setTitle("New List")
+                setTitle("New List Item")
                 setPositiveButton("OK"){ dialog, which ->
-                    insertList(editText.text.toString())
+                    insertListItem(editText.text.toString())
                 }
                 setNegativeButton("Cancel"){ dialog, which ->
                     Toast.makeText(applicationContext, "Cancel button clicked", Toast.LENGTH_SHORT).show()
@@ -120,14 +122,14 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         }
         */
 
-        val item = object : SwipeToDelete(this, 0, ItemTouchHelper.LEFT) {
+        /*val item = object : SwipeToDelete(this, 0, ItemTouchHelper.LEFT) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 deleteList(viewHolder.adapterPosition)
             }
         }
 
         val itemTouchHelper=ItemTouchHelper(item)
-        itemTouchHelper.attachToRecyclerView(recyclerview)
+        itemTouchHelper.attachToRecyclerView(recyclerview)*/
     }
 
     /*override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -138,7 +140,7 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         return super.onOptionsItemSelected(item)
     }*/
 
-    private fun generateList(size: Int): ArrayList<DetailListsItemsVM> {
+    /*private fun generateList(size: Int): ArrayList<DetailListsItemsVM> {
 
         val list = arrayListOf<DetailListsItemsVM>()
 
@@ -176,17 +178,32 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         }
 
         return list
+    }*/
+
+    private fun insertListItem(listElementName: String){
+        if (!inputCheck(listElementName)){
+            Toast.makeText(
+                applicationContext,
+                "Please give input to create a list",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+        else {
+            // Create User Object
+            val reminderListElement = ReminderListElement(0, listElementName)
+            // Add Data to Database
+            mUserViewModel.addReminderListElement(reminderListElement)
+            //arrayList.add(reminderList)
+            //mUserViewModel.getCount.observe(this, Observer<Int> { integer -> index = integer })
+            Toast.makeText(applicationContext, "Successfully added!", Toast.LENGTH_LONG).show()
+        }
     }
 
-    private fun insertList(listName: String){
-        val newList = DetailListsItemsVM(
-            listName
-        )
-        arrayList.add(newList)
-        adapter.notifyDataSetChanged()
+    private fun inputCheck(listName: String): Boolean{
+        return !(TextUtils.isEmpty(listName))
     }
 
-    private fun deleteList(position: Int){
+    /*private fun deleteList(position: Int){
         if (position < arrayList.size) {
             arrayList.removeAt(position)
             adapter.notifyDataSetChanged()
@@ -194,11 +211,11 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         else{
             Toast.makeText(applicationContext, "List not that long", Toast.LENGTH_SHORT).show()
         }
-    }
+    }*/
 
     override fun onItemClick(position: Int) {
         Toast.makeText(this, "Item $position clicked", Toast.LENGTH_SHORT).show()
-        val clickedItem = arrayList[position]
+        /*val clickedItem = arrayList[position]
 
         //open textDialog to adapt name
         val builder = AlertDialog.Builder(this)
@@ -217,6 +234,6 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
             }
             setView(dialogLayout)
             show()
-        }
+        }*/
     }
 }
