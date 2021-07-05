@@ -1,5 +1,6 @@
 package com.jlp.unforgotchi.db
 
+import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -27,7 +28,8 @@ data class ReminderListElement(
 data class Location(
     @PrimaryKey(autoGenerate = true)
     var id: Int,
-    var listElementName: String
+    var text: String,
+    var image : String?
 ){
-    constructor() : this(0, "")
+    constructor() : this(0, "",null)
 }

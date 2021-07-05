@@ -17,17 +17,25 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toDrawable
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.jlp.unforgotchi.list.Lists
 import com.jlp.unforgotchi.MainActivity
 import com.jlp.unforgotchi.R
+import com.jlp.unforgotchi.db.Location
+import com.jlp.unforgotchi.db.LocationsViewModel
 import com.jlp.unforgotchi.settings.Settings
 
 class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
 
-    lateinit var toggle: ActionBarDrawerToggle
+    private lateinit var toggle: ActionBarDrawerToggle
+    private lateinit var locationsDBViewModel : LocationsViewModel
+    //Add locations list:
+    private val locationsAdapter = LocationsAdapter(
+        mutableListOf<Location>(), this
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,10 +46,6 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
         val recyclerview = findViewById<RecyclerView>(R.id.locations_recycler_view)
         // this grid layout holds all the cards with the saved locations:
         recyclerview.layoutManager = GridLayoutManager(this, 2)
-        //Add locations list:
-        val locationsAdapter = LocationsAdapter(
-            mutableListOf<LocationItemsVM>(), this
-        )
         // Setting the Adapter with the recyclerview
         recyclerview.adapter = locationsAdapter
 
@@ -50,6 +54,12 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        //The Elements of the Locations Recycler View are from the Room Database:
+        locationsDBViewModel = ViewModelProvider(this).get(LocationsViewModel::class.java)
+        locationsDBViewModel.readAllLocations.observe(this, {
+            locationsList -> locationsAdapter.setData(locationsList)
+        })
 
         // When the add-button is clicked, this Launcher will launch the Add-Activity.
         // The Add-Activity will then give back the result (i.e. the data of the new element)
@@ -60,13 +70,11 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
             if (result.resultCode == Activity.RESULT_OK) {
                 // This happens when the AddLocationActivity ends:
                 val data: Intent? = result.data
-                val newLocName: String? = data!!.getStringExtra("name")
-                val newImg : Bitmap? = data!!.getParcelableExtra<Bitmap>("image")
-                locationsAdapter.mList.add(
-                    LocationItemsVM(
-                        newImg,
-                        newLocName!!
-                    )
+                val newLocName: String = data!!.getStringExtra("name") ?: "New Location"
+                //val newImgString : Uri? = data!!.getParcelableExtra<Uri?>("image")
+                val newImgString : String? = data!!.getStringExtra("image")
+                locationsDBViewModel.addLocation(
+                    Location(0,newLocName,newImgString)
                 )
                 locationsAdapter.notifyDataSetChanged()
 

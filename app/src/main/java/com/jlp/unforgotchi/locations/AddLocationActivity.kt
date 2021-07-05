@@ -10,7 +10,6 @@ import android.util.DisplayMetrics
 import android.widget.ImageButton
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.graphics.drawable.toBitmap
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.jlp.unforgotchi.R
@@ -23,11 +22,13 @@ class AddLocationActivity : AppCompatActivity() {
 
     private val previewImage by lazy { findViewById<ImageButton>(R.id.selected_location_image_button) }
     private var previewImageChanged : Boolean = false   //this is horrible coding dont copy this
+    private var imageString : String? = null
 
     private val selectImageFromGalleryResult  = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        //uri?.let { previewImage.setImageURI(uri) }
         uri?.let {
-            previewImage.setImageBitmap(uriToBitmap(uri))
+            //previewImage.setImageBitmap(uriToBitmap(uri))
+            previewImage.setImageURI(uri)
+            imageString = uri.toString()
             previewImageChanged = true
         }
     }
@@ -60,8 +61,9 @@ class AddLocationActivity : AppCompatActivity() {
         } else {
             val name = addLocNameView.text.toString()
             intent.putExtra("name", name)
-            val img = previewImage.drawable.toBitmap()
-            intent.putExtra("image",img)
+            //val img = previewImage.drawable.toBitmap()
+            //intent.putExtra("image",img)
+            intent.putExtra("image",imageString)
             setResult(Activity.RESULT_OK, intent)
         }
         finish()

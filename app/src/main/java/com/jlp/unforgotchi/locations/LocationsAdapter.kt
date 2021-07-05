@@ -1,15 +1,18 @@
 package com.jlp.unforgotchi.locations
 
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.jlp.unforgotchi.R
+import com.jlp.unforgotchi.db.Location
 
 class LocationsAdapter(
-    val mList: MutableList<LocationItemsVM>,
+    var mList: List<Location>,
     val itemClickListener: OnItemClickListener
     ) : RecyclerView.Adapter<LocationsAdapter.ViewHolder>() {
 
@@ -32,14 +35,13 @@ class LocationsAdapter(
         //holder.imageView.setImageResource(ItemsViewModel.image)
         //holder.imageView.setImageDrawable(ItemsViewModel.image)
         if(itemsViewModel.image != null) {
-            holder.imageView.setImageBitmap(itemsViewModel.image)
+            //holder.imageView.setImageBitmap(itemsViewModel.image)
+            holder.imageView.setImageURI(Uri.parse(itemsViewModel.image!!))
         } else {
             holder.imageView.setImageResource(R.drawable.ic_baseline_location_city_24)
         }
-
         // sets the text to the textview from our itemHolder class
         holder.textView.text = itemsViewModel.text
-
     }
 
     // return the number of the items in the list
@@ -64,5 +66,9 @@ class LocationsAdapter(
     }
     interface OnItemClickListener{
         fun onItemClick(position: Int)
+    }
+    fun setData(locationsList: List<Location>){
+        mList = locationsList
+        notifyDataSetChanged()
     }
 }
