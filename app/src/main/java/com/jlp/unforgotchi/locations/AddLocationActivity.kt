@@ -22,17 +22,22 @@ class AddLocationActivity : AppCompatActivity() {
 
     private val previewImage by lazy { findViewById<ImageButton>(R.id.selected_location_image_button) }
     private var previewImageChanged : Boolean = false   //this is horrible coding dont copy this
-    private var imageString : String? = null
+    private var imageData : Uri? = null
 
-    private val selectImageFromGalleryResult  = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+    //private val selectImageFromGalleryResult  = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+    private val selectImageFromGalleryResult  = registerForActivityResult(RetreiveImageContract()) { uri: Uri? ->
+    this.applicationContext.grantUriPermission("com.jlp.unforgotchi",uri,
+            Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
         uri?.let {
             //previewImage.setImageBitmap(uriToBitmap(uri))
             previewImage.setImageURI(uri)
-            imageString = uri.toString()
+            imageData = uri//.path
             previewImageChanged = true
         }
     }
-    private fun selectImageFromGallery()  = selectImageFromGalleryResult.launch("image/*")
+    private fun selectImageFromGallery()  {
+        selectImageFromGalleryResult.launch("image/*")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,7 +68,13 @@ class AddLocationActivity : AppCompatActivity() {
             intent.putExtra("name", name)
             //val img = previewImage.drawable.toBitmap()
             //intent.putExtra("image",img)
-            intent.putExtra("image",imageString)
+            intent.putExtra("image",imageData)
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
+            intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            applicationContext.grantUriPermission("com.jlp.unforgotchi",imageData,
+                Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
             setResult(Activity.RESULT_OK, intent)
         }
         finish()

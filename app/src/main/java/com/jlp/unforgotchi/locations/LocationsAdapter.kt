@@ -8,8 +8,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.jlp.unforgotchi.R
 import com.jlp.unforgotchi.db.Location
+import java.io.File
 
 class LocationsAdapter(
     var mList: List<Location>,
@@ -36,7 +38,11 @@ class LocationsAdapter(
         //holder.imageView.setImageDrawable(ItemsViewModel.image)
         if(itemsViewModel.image != null) {
             //holder.imageView.setImageBitmap(itemsViewModel.image)
-            holder.imageView.setImageURI(Uri.parse(itemsViewModel.image!!))
+            //holder.imageView.setImageURI(Uri.parse(itemsViewModel.image!!))
+            Glide.with(holder.itemView.context)
+                //.load(File(itemsViewModel.image!!))
+                .load(Uri.parse(itemsViewModel.image!!))
+                .into(holder.imageView)
         } else {
             holder.imageView.setImageResource(R.drawable.ic_baseline_location_city_24)
         }

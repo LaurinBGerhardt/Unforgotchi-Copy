@@ -1,31 +1,25 @@
 package com.jlp.unforgotchi.locations
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.graphics.drawable.toDrawable
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
-import com.jlp.unforgotchi.list.Lists
 import com.jlp.unforgotchi.MainActivity
 import com.jlp.unforgotchi.R
 import com.jlp.unforgotchi.db.Location
 import com.jlp.unforgotchi.db.LocationsViewModel
+import com.jlp.unforgotchi.list.Lists
 import com.jlp.unforgotchi.settings.Settings
 
 class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
@@ -71,11 +65,26 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
                 // This happens when the AddLocationActivity ends:
                 val data: Intent? = result.data
                 val newLocName: String = data!!.getStringExtra("name") ?: "New Location"
-                //val newImgString : Uri? = data!!.getParcelableExtra<Uri?>("image")
-                val newImgString : String? = data!!.getStringExtra("image")
-                locationsDBViewModel.addLocation(
-                    Location(0,newLocName,newImgString)
-                )
+                val newImgData : Uri? = data!!.getParcelableExtra<Uri?>("image")
+
+                if(newImgData != null) {
+                    //val newImgData : String? = data!!.getStringExtra("image")
+                    val flags = data.flags /*or (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)*/
+
+                    contentResolver.takePersistableUriPermission(
+                        newImgData,
+                        flags and Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    )
+
+                    locationsDBViewModel.addLocation(
+                        Location(0, newLocName, newImgData.toString())
+                    )
+                } else {
+                    locationsDBViewModel.addLocation(
+                        Location(0, newLocName, null)
+                    )
+                }
                 locationsAdapter.notifyDataSetChanged()
 
             }
