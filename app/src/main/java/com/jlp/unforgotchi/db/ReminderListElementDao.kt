@@ -1,10 +1,7 @@
 package com.jlp.unforgotchi.db
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 
 @Dao
 interface ReminderListElementDao {
@@ -44,4 +41,9 @@ interface ReminderListElementDao {
     @Query("SELECT * FROM reminder_list_elements_table WHERE list=9 ORDER BY id ASC")
     fun readAllElementsFromList10(): LiveData<List<ReminderListElement>>
 
+    @Update
+    suspend fun updateReminderListElement(reminderListElement: ReminderListElement)
+
+    @Delete
+    suspend fun deleteReminderListElement(reminderListElement: ReminderListElement)
 }

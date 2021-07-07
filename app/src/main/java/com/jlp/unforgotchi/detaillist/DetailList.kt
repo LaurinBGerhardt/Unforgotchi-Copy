@@ -9,17 +9,21 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jlp.unforgotchi.R
+import com.jlp.unforgotchi.db.ReminderList
 import com.jlp.unforgotchi.db.ReminderListElement
 import com.jlp.unforgotchi.db.ReminderListElementViewModel
 
 class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
 
     //lateinit var toggle : ActionBarDrawerToggle
+    private var arrayListNames = emptyArray<String>()
+    private var arrayListNumber = emptyArray<Int>()
+
     private lateinit var mUserViewModel: ReminderListElementViewModel
-    //private val arrayList = generateList(500)
     private val adapter = DetailListsAdapter(/*arrayList,*/ this)
     private var position = 0
 
@@ -170,14 +174,14 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         }
         */
 
-        /*val item = object : SwipeToDelete(this, 0, ItemTouchHelper.LEFT) {
+        val item = object : SwipeToDelete(this, 0, ItemTouchHelper.LEFT) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 deleteList(viewHolder.adapterPosition)
             }
         }
 
         val itemTouchHelper=ItemTouchHelper(item)
-        itemTouchHelper.attachToRecyclerView(recyclerview)*/
+        itemTouchHelper.attachToRecyclerView(recyclerview)
     }
 
     /*override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -186,46 +190,6 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
             return true
         }
         return super.onOptionsItemSelected(item)
-    }*/
-
-    /*private fun generateList(size: Int): ArrayList<DetailListsItemsVM> {
-
-        val list = arrayListOf<DetailListsItemsVM>()
-
-        when (position) {
-            0 -> {
-                val element1 = DetailListsItemsVM("1 1")
-                val element2 = DetailListsItemsVM("1 2")
-                list += element1
-                list += element2
-            }
-            1 -> {
-                val element1 = DetailListsItemsVM("2 1")
-
-                val element2 = DetailListsItemsVM("2 2")
-                list += element1
-                list += element2
-            }
-            2 -> {
-                val element1 = DetailListsItemsVM("3 1")
-
-                val element2 = DetailListsItemsVM("3 2")
-                list += element1
-                list += element2
-            }
-            3 -> {
-                val element1 = DetailListsItemsVM("4 1")
-
-                val element2 = DetailListsItemsVM("4 2")
-                list += element1
-                list += element2
-            }
-            else -> {
-                Toast.makeText(applicationContext, "Empty because not yet implemented", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        return list
     }*/
 
     private fun insertListItem(listElementName: String){
@@ -241,6 +205,8 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
             val reminderListElement = ReminderListElement(0, listElementName, position)
             // Add Data to Database
             mUserViewModel.addReminderListElement(reminderListElement)
+            arrayListNames += listElementName
+            arrayListNumber += position
             //arrayList.add(reminderList)
             //mUserViewModel.getCount.observe(this, Observer<Int> { integer -> index = integer })
             Toast.makeText(applicationContext, "Successfully added!", Toast.LENGTH_LONG).show()
@@ -251,19 +217,47 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         return !(TextUtils.isEmpty(listName))
     }
 
-    /*private fun deleteList(position: Int){
-        if (position < arrayList.size) {
-            arrayList.removeAt(position)
-            adapter.notifyDataSetChanged()
+    private fun deleteList(positionItem: Int){
+        // Create User Object
+        val reminderListElement = ReminderListElement(
+            positionItem,
+            arrayListNames[positionItem],
+            arrayListNumber[positionItem]
+        )
+        // Remove from Database
+        mUserViewModel.deleteReminderListElement(reminderListElement)
+        arrayListNames.drop(positionItem)
+        arrayListNumber.drop(positionItem)
+        Toast.makeText(applicationContext, "Successfully removed!", Toast.LENGTH_LONG).show()
+    }
+
+    private fun editList(listElementName: String, position: Int) {
+        if (!inputCheck(listElementName)) {
+            Toast.makeText(
+                applicationContext,
+                "Please give input to change the name",
+                Toast.LENGTH_SHORT
+            ).show()
+        } else {
+            // Create Reminder List Element Object
+            val updatedReminderListElement = ReminderListElement(
+                position,
+                listElementName,
+                R.drawable.ic_baseline_list_alt_24
+            )
+            // Update Current Object
+            mUserViewModel.updateReminderListElement(updatedReminderListElement)
+            arrayListNames[position] = listElementName
+            Toast.makeText(
+                applicationContext,
+                "Successfully updated!",
+                Toast.LENGTH_LONG
+            ).show()
         }
-        else{
-            Toast.makeText(applicationContext, "List not that long", Toast.LENGTH_SHORT).show()
-        }
-    }*/
+    }
 
     override fun onItemClick(position: Int) {
         Toast.makeText(this, "Item $position clicked", Toast.LENGTH_SHORT).show()
-        /*val clickedItem = arrayList[position]
 
         //open textDialog to adapt name
         val builder = AlertDialog.Builder(this)
@@ -273,15 +267,14 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
 
         with(builder) {
             setTitle("Change Items Name")
-            setPositiveButton("OK"){ dialog, which ->
-                clickedItem.text = editText.text.toString()
-                adapter.notifyDataSetChanged()
+            setPositiveButton("OK") { _, _ ->
+                editList(editText.text.toString(), position)
             }
-            setNegativeButton("Cancel"){ dialog, which ->
+            setNegativeButton("Cancel"){ _, _ ->
                 Toast.makeText(applicationContext, "Cancel button clicked", Toast.LENGTH_SHORT).show()
             }
             setView(dialogLayout)
             show()
-        }*/
+        }
     }
 }

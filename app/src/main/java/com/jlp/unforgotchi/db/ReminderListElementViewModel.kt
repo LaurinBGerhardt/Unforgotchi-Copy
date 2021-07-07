@@ -50,4 +50,16 @@ class ReminderListElementViewModel(application: Application): AndroidViewModel(a
             repository.addReminderListElement(reminderListElement)
         }
     }
+
+    fun updateReminderListElement(reminderListElement: ReminderListElement){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.updateReminderListElement(reminderListElement)
+        }
+    }
+
+    fun deleteReminderListElement(reminderListElement: ReminderListElement){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteReminderListElement(reminderListElement)
+        }
+    }
 }
