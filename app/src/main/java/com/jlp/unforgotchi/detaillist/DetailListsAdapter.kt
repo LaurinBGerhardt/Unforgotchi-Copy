@@ -33,7 +33,6 @@ class DetailListsAdapter(
 
             // sets the text to the textView from our itemHolder class
             holder.textView.text = currentItem.listElementName
-            holder.index.text = currentItem.id.toString()
 
         }
 
@@ -46,7 +45,6 @@ class DetailListsAdapter(
         inner class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView),
         View.OnClickListener {
             val textView: TextView = itemView.findViewById(R.id.item_name)
-            val index: TextView = itemView.findViewById(R.id.item_index)
 
             init {
                 itemView.setOnClickListener(this)

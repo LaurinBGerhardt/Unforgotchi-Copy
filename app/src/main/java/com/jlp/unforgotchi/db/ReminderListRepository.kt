@@ -6,8 +6,6 @@ import com.jlp.unforgotchi.db.ReminderListDao
 
 class ReminderListRepository(private val reminderListDao: ReminderListDao) {
 
-    //ReminderList
-
     val readAllData: LiveData<List<ReminderList>> = reminderListDao.readAllData()
 
     //val getCount: LiveData<Int> = reminderListDao.getCount()
@@ -16,11 +14,11 @@ class ReminderListRepository(private val reminderListDao: ReminderListDao) {
         reminderListDao.addReminderList(reminderList)
     }
 
-    /*suspend fun updateReminderList(reminderList: ReminderList){
+    suspend fun updateReminderList(reminderList: ReminderList){
         reminderListDao.updateReminderList(reminderList)
-    }*/
+    }
 
-    /*suspend fun deleteReminderList(reminderList: ReminderList){
+    suspend fun deleteReminderList(reminderList: ReminderList){
         reminderListDao.deleteReminderList(reminderList)
-    }*/
+    }
 }
