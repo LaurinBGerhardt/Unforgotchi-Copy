@@ -43,9 +43,57 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
 
 
         mUserViewModel = ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
-        mUserViewModel.readAllElement.observe(this, Observer { reminderListElement ->
-            adapter.setData(reminderListElement)
-        })
+        if(position==0){
+            mUserViewModel.readAllElementsFromList1.observe(this, Observer { reminderListElement ->
+                adapter.setData(reminderListElement)
+            })
+        }
+        if(position==1){
+            mUserViewModel.readAllElementsFromList2.observe(this, Observer { reminderListElement ->
+                adapter.setData(reminderListElement)
+            })
+        }
+        if(position==2){
+            mUserViewModel.readAllElementsFromList3.observe(this, Observer { reminderListElement ->
+                adapter.setData(reminderListElement)
+            })
+        }
+        if(position==3){
+            mUserViewModel.readAllElementsFromList4.observe(this, Observer { reminderListElement ->
+                adapter.setData(reminderListElement)
+            })
+        }
+        if(position==4){
+            mUserViewModel.readAllElementsFromList5.observe(this, Observer { reminderListElement ->
+                adapter.setData(reminderListElement)
+            })
+        }
+        if(position==5){
+            mUserViewModel.readAllElementsFromList6.observe(this, Observer { reminderListElement ->
+                adapter.setData(reminderListElement)
+            })
+        }
+        if(position==6){
+            mUserViewModel.readAllElementsFromList7.observe(this, Observer { reminderListElement ->
+                adapter.setData(reminderListElement)
+            })
+        }
+        if(position==7){
+            mUserViewModel.readAllElementsFromList8.observe(this, Observer { reminderListElement ->
+                adapter.setData(reminderListElement)
+            })
+        }
+        if(position==8){
+            mUserViewModel.readAllElementsFromList9.observe(this, Observer { reminderListElement ->
+                adapter.setData(reminderListElement)
+            })
+        }
+        if(position==9){
+            mUserViewModel.readAllElementsFromList10.observe(this, Observer { reminderListElement ->
+                adapter.setData(reminderListElement)
+            })
+        }
+
 
         //when clicking the add-button:
         val addItemButton: View = findViewById(R.id.add_item_button)
@@ -190,7 +238,7 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         }
         else {
             // Create User Object
-            val reminderListElement = ReminderListElement(0, listElementName)
+            val reminderListElement = ReminderListElement(0, listElementName, position)
             // Add Data to Database
             mUserViewModel.addReminderListElement(reminderListElement)
             //arrayList.add(reminderList)

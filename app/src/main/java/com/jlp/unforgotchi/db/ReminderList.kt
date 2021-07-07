@@ -18,9 +18,10 @@ data class ReminderList(
 data class ReminderListElement(
     @PrimaryKey(autoGenerate = true)
     var id: Int,
-    var listElementName: String
+    var listElementName: String,
+    var list: Int
 ){
-    constructor() : this(0, "")
+    constructor() : this(0, "", 0)
 }
 
 @Entity(tableName = "locations_table")
