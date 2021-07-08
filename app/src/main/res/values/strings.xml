@@ -25,4 +25,5 @@
     <string name="locationsPermission">Allow Unforgotchi to access your current location</string>
     <string name="notificationDesc">Enable notifications</string>
     <string name="notificationSel">Select Ringtone</string>
+    <string name="scan_wifi">Scan WiFi</string>
 </resources>
