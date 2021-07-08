@@ -1,6 +1,7 @@
 package com.jlp.unforgotchi
 
 import android.Manifest
+import android.Manifest.permission.ACCESS_WIFI_STATE
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -28,7 +29,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.location.*
+//import com.google.android.gms.location.*
 import com.google.android.material.navigation.NavigationView
 import com.jlp.unforgotchi.db.ReminderListElementViewModel
 import com.jlp.unforgotchi.list.Lists
@@ -46,9 +47,9 @@ class MainActivity : AppCompatActivity() {
     lateinit var toggle : ActionBarDrawerToggle
 
     //for the location service, can be deleted if we don't use location:
-    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+//    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private val PERMISSION_ID = 1010
-    lateinit var locationRequest: LocationRequest
+//    lateinit var locationRequest: LocationRequest
     lateinit var lastLocation: Location
     lateinit var showLocation : TextView
 
@@ -94,22 +95,44 @@ class MainActivity : AppCompatActivity() {
         }
 
         //location Views, can be deleted if we don't use location
-        val getLocationButton = findViewById<Button>(R.id.getLocation)
-        getLocationButton.isVisible = false
-        showLocation = findViewById<TextView>(R.id.showLocation)
-        showLocation.isVisible = false
-        // for the location:
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        getLocationButton.setOnClickListener {
-            showLocation.isVisible = true
-            Log.d("Debug:",CheckPermission().toString())
-            Log.d("Debug:",isLocationEnabled().toString())
-            RequestPermission()
-            getLastLocation()
-            //mit lastLocation.longitude/ latitude kann jetzt Standort check gemacht werden und entsprechende Liste geladen werden
+//        val getLocationButton = findViewById<Button>(R.id.getLocation)
+//        getLocationButton.isVisible = false
+//        showLocation = findViewById<TextView>(R.id.showLocation)
+//        showLocation.isVisible = false
+//        // for the location:
+//        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+//        getLocationButton.setOnClickListener {
+//            showLocation.isVisible = true
+//            Log.d("Debug:",CheckPermission().toString())
+//            Log.d("Debug:",isLocationEnabled().toString())
+//            RequestPermission()
+//            getLastLocation()
+//            //mit lastLocation.longitude/ latitude kann jetzt Standort check gemacht werden und entsprechende Liste geladen werden
+//        }
+
+
+        recyclerViewSetup(listsPage)
+
+        if (!CheckPermission()) askPermission(ACCESS_WIFI_STATE)
+
+        // for the notification:
+        val notificationButton = findViewById<Button>(R.id.reminder_notification)
+        notificationButton.setOnClickListener {
+            var text = ""
+            var x = 0
+            while (x < elementsArray.size) {
+                text += elementsArray[x] + "\n"
+                x++
+            }
+            sendNotification(
+                "Don't forget to take:",
+                text
+            )
         }
 
+    }
 
+    private fun recyclerViewSetup(listsPage: Intent) {
         // for the recyclerview:
         val recyclerview = findViewById<RecyclerView>(R.id.lists_recycler_view)
         recyclerview.layoutManager = LinearLayoutManager(this)
@@ -257,22 +280,27 @@ class MainActivity : AppCompatActivity() {
                 }
             })
         }
+    }
 
-        // for the notification:
-        val notificationButton = findViewById<Button>(R.id.reminder_notification)
-        notificationButton.setOnClickListener {
-            var text = ""
-            var x = 0
-            while (x < elementsArray.size) {
-                text += elementsArray[x] + "\n"
-                x++
-            }
-            sendNotification(
-                "Don't forget to take:",
-                text
-            )
+    private fun askPermission(PERMISSION: String) {
+        if(ActivityCompat.checkSelfPermission(this, PERMISSION) == PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this,"Permission Granted",Toast.LENGTH_SHORT).show()
+        } else {
+            requestPermissions(arrayOf(PERMISSION), 1)
         }
+    }
 
+    @Override
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == 1) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this,"Permission Granted",Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this,"Permission Denied",Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -324,7 +352,8 @@ class MainActivity : AppCompatActivity() {
         //true: if we have permission
         //false if not
         if(ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-            ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+            ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_GRANTED){
             return true
         }
         return false
@@ -340,70 +369,70 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    fun isLocationEnabled():Boolean{
-        //this function will return to us the state of the location service
-        //if the gps or the network provider is enabled then it will return true otherwise it will return false
-        var locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-    }
+//    fun isLocationEnabled():Boolean{
+//        //this function will return to us the state of the location service
+//        //if the gps or the network provider is enabled then it will return true otherwise it will return false
+//        var locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+//        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+//    }
 
-    fun getLastLocation(){
-        if(CheckPermission()){
-            if(isLocationEnabled()){
-                if (ActivityCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    return
-                }
-                fusedLocationProviderClient.lastLocation.addOnCompleteListener { task->
-                    var location: Location? = task.result
-                    if(location == null){
-                        NewLocationData()
-                    }else{
-                        Log.d("Debug:" ,"Your Location:"+ location.longitude)
-                    }
-                }
-            }else{
-                Toast.makeText(this,"Please Turn on Your device Location",Toast.LENGTH_SHORT).show()
-            }
-        }else{
-            RequestPermission()
-        }
-    }
-
-
-    fun NewLocationData(){
-        var locationRequest =  LocationRequest()
-        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        locationRequest.interval = 0
-        locationRequest.fastestInterval = 0
-        locationRequest.numUpdates = 1
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {return
-        }
-        fusedLocationProviderClient!!.requestLocationUpdates(
-            locationRequest,locationCallback, Looper.myLooper()
-        )
-    }
+//    fun getLastLocation(){
+//        if(CheckPermission()){
+//            if(isLocationEnabled()){
+//                if (ActivityCompat.checkSelfPermission(
+//                        this,
+//                        Manifest.permission.ACCESS_FINE_LOCATION
+//                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+//                        this,
+//                        Manifest.permission.ACCESS_COARSE_LOCATION
+//                    ) != PackageManager.PERMISSION_GRANTED
+//                ) {
+//                    return
+//                }
+//                fusedLocationProviderClient.lastLocation.addOnCompleteListener { task->
+//                    var location: Location? = task.result
+//                    if(location == null){
+//                        NewLocationData()
+//                    }else{
+//                        Log.d("Debug:" ,"Your Location:"+ location.longitude)
+//                    }
+//                }
+//            }else{
+//                Toast.makeText(this,"Please Turn on Your device Location",Toast.LENGTH_SHORT).show()
+//            }
+//        }else{
+//            RequestPermission()
+//        }
+//    }
 
 
-    private val locationCallback = object : LocationCallback(){
-        override fun onLocationResult(locationResult: LocationResult) {
-            lastLocation = locationResult.lastLocation
-            Log.d("Debug:","your last last location: "+ lastLocation.longitude.toString())
-            showLocation.text = "You Last Location is : Long: "+ lastLocation.longitude + " , Lat: " + lastLocation.latitude + "\n"
-        }
-    }
+//    fun NewLocationData(){
+//        var locationRequest =  LocationRequest()
+//        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+//        locationRequest.interval = 0
+//        locationRequest.fastestInterval = 0
+//        locationRequest.numUpdates = 1
+//        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+//        if (ActivityCompat.checkSelfPermission(
+//                this,
+//                Manifest.permission.ACCESS_FINE_LOCATION
+//            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+//                this,
+//                Manifest.permission.ACCESS_COARSE_LOCATION
+//            ) != PackageManager.PERMISSION_GRANTED
+//        ) {return
+//        }
+//        fusedLocationProviderClient!!.requestLocationUpdates(
+//            locationRequest,locationCallback, Looper.myLooper()
+//        )
+//    }
+
+
+//    private val locationCallback = object : LocationCallback(){
+//        override fun onLocationResult(locationResult: LocationResult) {
+//            lastLocation = locationResult.lastLocation
+//            Log.d("Debug:","your last last location: "+ lastLocation.longitude.toString())
+//            showLocation.text = "You Last Location is : Long: "+ lastLocation.longitude + " , Lat: " + lastLocation.latitude + "\n"
+//        }
+//    }
 }
