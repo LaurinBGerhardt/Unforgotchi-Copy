@@ -1,85 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawerLayout"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="10dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".settings.Settings">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <ListView
+        android:id="@+id/wifiList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="50dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginBottom="30dp"
-        android:layout_marginEnd="30dp"
-        android:orientation="vertical">
+        android:layout_height="312dp"
+        android:layout_weight="0.97"/>
 
-    <TextView
-        android:id="@+id/wifi"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/wifi"
-        android:textSize="26sp"/>
-
-    <CheckBox
-        android:id="@+id/checkBoxWifi"
+    <Button
+        android:id="@+id/scanBtn"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="50dp"
-        android:buttonTint="@color/unforgotchi_dark_purple"
-        android:text="@string/wifiPermission"/>
+        android:layout_height="50dp"
+        android:layout_gravity="bottom"
+        android:layout_margin="15dp"
+        android:background="@android:color/holo_red_light"
+        android:text="Scan WiFi"/>
 
-    <TextView
-        android:id="@+id/gps"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:icon="@drawable/ic_baseline_message_24"
-        android:text="@string/gps"
-        android:textSize="26sp"/>
-
-    <CheckBox
-        android:id="@+id/checkBoxGps"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="50dp"
-        android:buttonTint="@color/unforgotchi_dark_purple"
-        android:text="@string/locationsPermission"/>
-
-    <TextView
-        android:id="@+id/notifications"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:icon="@drawable/ic_baseline_message_24"
-        android:text="@string/notifications"
-        android:textSize="26sp"/>
-
-    <CheckBox
-        android:id="@+id/checkBoxNotificationsDesc"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:buttonTint="@color/unforgotchi_dark_purple"
-        android:text="@string/notificationDesc"/>
-
-    <CheckBox
-        android:id="@+id/checkBoxNotificationsSel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:buttonTint="@color/unforgotchi_dark_purple"
-        android:text="@string/notificationSel"/>
-
-    </LinearLayout>
-
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        app:headerLayout="@layout/nav_header"
-        app:menu="@menu/nav_menu"
-        android:layout_gravity="start"
-        android:fitsSystemWindows="true"/>
-
-</androidx.drawerlayout.widget.DrawerLayout>
+</LinearLayout>
