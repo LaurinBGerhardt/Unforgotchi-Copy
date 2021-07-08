@@ -8,10 +8,10 @@ interface LocationsDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addLocation(location: Location)
 
-    @Query("SELECT * FROM locations_table ORDER BY id ASC")
+    @Query("SELECT * FROM locations_table ORDER BY location_id ASC")
     fun readAllLocations(): LiveData<List<Location>>
 
-    @Update
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateLocation(location: Location)
 
     @Delete
