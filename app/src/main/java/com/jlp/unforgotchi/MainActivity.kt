@@ -31,29 +31,28 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.*
 import com.google.android.material.navigation.NavigationView
 import com.jlp.unforgotchi.db.ReminderListElementViewModel
-import com.jlp.unforgotchi.db.ReminderListViewModel
-import com.jlp.unforgotchi.detaillist.DetailListsAdapter
 import com.jlp.unforgotchi.list.Lists
 import com.jlp.unforgotchi.locations.Locations
 import com.jlp.unforgotchi.settings.Settings
 
 class MainActivity : AppCompatActivity() {
 
+    //for the notifications:
     private val CHANNEL_ID = "channel_id_test_01"
-    private val PERMISSION_ID = 1010
     private val notificationId = 101
-
     private var elementsArray = emptyArray<String>()
 
+    //for the navigation:
     lateinit var toggle : ActionBarDrawerToggle
 
+    //for the location service, can be deleted if we don't use location:
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private val PERMISSION_ID = 1010
     lateinit var locationRequest: LocationRequest
     lateinit var lastLocation: Location
-
     lateinit var showLocation : TextView
 
-    //private lateinit var listUserViewModel: ReminderListViewModel
+    //for the recyclerview to show current list:
     private lateinit var detailListUserViewModel: ReminderListElementViewModel
     private val adapter = MainAdapter()
 
@@ -62,35 +61,68 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //create the one channel we use for all our notifications:
         createNotificationChannel()
 
+        // for the navigation:
         val drawerLayout : DrawerLayout = findViewById(R.id.drawerLayout)
         val navView : NavigationView = findViewById(R.id.nav_view)
-        val notificationButton = findViewById<Button>(R.id.reminder_notification)
-        val getLocationButton = findViewById<Button>(R.id.getLocation)
-        getLocationButton.isVisible = false
-        showLocation = findViewById<TextView>(R.id.showLocation)
-        showLocation.isVisible = false
-        val noListsYet = findViewById<TextView>(R.id.noListsYet)
-        //set intents
+        //set intents for the navigation
         val homePage = Intent(this@MainActivity, MainActivity::class.java)
         val settingPage = Intent(this@MainActivity, Settings::class.java)
         val listsPage = Intent(this@MainActivity, Lists::class.java)
         val locationsPage = Intent(this@MainActivity, Locations::class.java)
+        toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        // getting the recyclerview by its id
+        navView.setNavigationItemSelectedListener {
+
+            when(it.itemId){
+
+                R.id.nav_home -> startActivity(homePage)
+                R.id.nav_lists -> startActivity(listsPage)
+                R.id.nav_locations -> startActivity(locationsPage)
+                R.id.nav_trash -> Toast.makeText(applicationContext, "Clicked placeholder", Toast.LENGTH_SHORT).show()
+                R.id.nav_settings -> startActivity(settingPage)
+                R.id.nav_login -> Toast.makeText(applicationContext, "Clicked placeholder", Toast.LENGTH_SHORT).show()
+                R.id.nav_share -> Toast.makeText(applicationContext, "Clicked placeholder", Toast.LENGTH_SHORT).show()
+                R.id.nav_rate_us -> Toast.makeText(applicationContext, "Clicked placeholder", Toast.LENGTH_SHORT).show()
+            }
+            true
+        }
+
+        //location Views, can be deleted if we don't use location
+        val getLocationButton = findViewById<Button>(R.id.getLocation)
+        getLocationButton.isVisible = false
+        showLocation = findViewById<TextView>(R.id.showLocation)
+        showLocation.isVisible = false
+        // for the location:
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        getLocationButton.setOnClickListener {
+            showLocation.isVisible = true
+            Log.d("Debug:",CheckPermission().toString())
+            Log.d("Debug:",isLocationEnabled().toString())
+            RequestPermission()
+            getLastLocation()
+            //mit lastLocation.longitude/ latitude kann jetzt Standort check gemacht werden und entsprechende Liste geladen werden
+        }
+
+
+        // for the recyclerview:
         val recyclerview = findViewById<RecyclerView>(R.id.lists_recycler_view)
-        // this grid layout holds all the cards with the saved locations:
         recyclerview.layoutManager = LinearLayoutManager(this)
-        // Setting the Adapter with the recyclerview
         recyclerview.adapter = adapter
         recyclerview.setHasFixedSize(true)
-        var position = 0
-
+        //text which is shown instead of the recyclerview when recyclerview would be empty, leads to list page on click
+        val noListsYet = findViewById<TextView>(R.id.noListsYet)
         noListsYet.setOnClickListener(){
             startActivity(listsPage)
         }
-
+        // the Elements of which lists should be shown on the mainPage, initialized as the elements of the first list
+        var position = 0
+        //selects the right list and shows its element or the noListsYet View if no Elements in List
         detailListUserViewModel = ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
         if(position==0){
             detailListUserViewModel.readAllElementsFromList1.observe(this, Observer { reminderListElement ->
@@ -104,7 +136,6 @@ class MainActivity : AppCompatActivity() {
                     adapter.setData(reminderListElement)
                     reminderListElement.forEach { element ->
                         elementsArray += element.listElementName
-                        Log.d("Debug:", "your last last location: " + elementsArray[0])
                     }
                 }
             })
@@ -227,6 +258,8 @@ class MainActivity : AppCompatActivity() {
             })
         }
 
+        // for the notification:
+        val notificationButton = findViewById<Button>(R.id.reminder_notification)
         notificationButton.setOnClickListener {
             var text = ""
             var x = 0
@@ -238,46 +271,6 @@ class MainActivity : AppCompatActivity() {
                 "Don't forget to take:",
                 text
             )
-        }
-
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-
-        getLocationButton.setOnClickListener {
-            showLocation.isVisible = true
-            Log.d("Debug:",CheckPermission().toString())
-            Log.d("Debug:",isLocationEnabled().toString())
-            RequestPermission()
-            getLastLocation()
-            //mit lastLocation.longitude/ latitude kann jetzt Standort check gemacht werden und entsprechende Liste geladen werden
-        }
-
-
-        toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
-
-        drawerLayout.addDrawerListener(toggle)
-
-        toggle.syncState()
-
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-
-        navView.setNavigationItemSelectedListener {
-
-            when(it.itemId){
-
-                R.id.nav_home -> startActivity(homePage)
-                R.id.nav_lists -> startActivity(listsPage)
-                R.id.nav_locations -> startActivity(locationsPage)
-                R.id.nav_trash -> Toast.makeText(applicationContext, "Clicked placeholder", Toast.LENGTH_SHORT).show()
-                R.id.nav_settings -> startActivity(settingPage)
-                R.id.nav_login -> Toast.makeText(applicationContext, "Clicked placeholder", Toast.LENGTH_SHORT).show()
-                R.id.nav_share -> Toast.makeText(applicationContext, "Clicked placeholder", Toast.LENGTH_SHORT).show()
-                R.id.nav_rate_us -> Toast.makeText(applicationContext, "Clicked placeholder", Toast.LENGTH_SHORT).show()
-
-            }
-
-            true
-
         }
 
     }
