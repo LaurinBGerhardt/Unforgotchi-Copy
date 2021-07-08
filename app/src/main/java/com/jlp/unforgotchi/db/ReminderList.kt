@@ -1,9 +1,7 @@
 package com.jlp.unforgotchi.db
 
 import android.net.Uri
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.*
 
 @Entity(tableName = "reminder_list_table")
 data class ReminderList(
@@ -15,12 +13,19 @@ data class ReminderList(
     constructor() : this(0, "", 0)
 }
 
-@Entity(tableName = "reminder_list_elements_table")
+@Entity(tableName = "reminder_list_elements_table",
+    foreignKeys = [ForeignKey(
+        entity = Location::class,
+        parentColumns = arrayOf("id"),
+        childColumns = arrayOf("location"),
+        onDelete = ForeignKey.CASCADE
+    )])
 data class ReminderListElement(
     @PrimaryKey(autoGenerate = true)
     var id: Int,
     var listElementName: String,
-    var list: Int
+    var list: Int,
+    var location : Int? = null
 ){
     constructor() : this(0, "", 0)
 }
@@ -34,3 +39,13 @@ data class Location(
 ){
     constructor() : this(0, "",null)
 }
+
+data class LocationToLists(
+    @Embedded
+    val location: Location,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "location"
+    )
+    val lists: List<ReminderListElement>
+)

@@ -10,4 +10,12 @@ class LocationsRepository(private val locationsDao: LocationsDao) {
     suspend fun addLocation(location: Location){
         locationsDao.addLocation(location)
     }
+
+    suspend fun updateLocation(location: Location){
+        locationsDao.updateLocation(location)
+    }
+
+    suspend fun deleteLocation(location: Location){
+        locationsDao.deleteLocation(location)
+    }
 }

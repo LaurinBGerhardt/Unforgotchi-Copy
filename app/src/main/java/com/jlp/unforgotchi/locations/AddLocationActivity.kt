@@ -29,7 +29,6 @@ class AddLocationActivity : AppCompatActivity() {
     this.applicationContext.grantUriPermission("com.jlp.unforgotchi",uri,
             Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
         uri?.let {
-            //previewImage.setImageBitmap(uriToBitmap(uri))
             previewImage.setImageURI(uri)
             imageData = uri//.path
             previewImageChanged = true
@@ -66,8 +65,6 @@ class AddLocationActivity : AppCompatActivity() {
         } else {
             val name = addLocNameView.text.toString()
             intent.putExtra("name", name)
-            //val img = previewImage.drawable.toBitmap()
-            //intent.putExtra("image",img)
             intent.putExtra("image",imageData)
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
@@ -80,8 +77,10 @@ class AddLocationActivity : AppCompatActivity() {
         finish()
     }
 
+    //This function is not used anymore. But because it was a pain to implement, it will remain here
+    //just in case it's going to be needed in a future update.
+    //This function converts an image Uri to a Bitmap
     private fun uriToBitmap(uri: Uri): Bitmap? {
-
         val scaledscreenwidth :Double
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
             val outMetrics = resources.displayMetrics
