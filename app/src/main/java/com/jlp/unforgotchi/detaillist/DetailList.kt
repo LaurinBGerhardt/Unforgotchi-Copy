@@ -29,32 +29,72 @@ import com.jlp.unforgotchi.settings.Settings
 class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
 
     lateinit var toggle : ActionBarDrawerToggle
-    private var arrayListNames = emptyArray<String>()
-    private var arrayListNumber = emptyArray<Int>()
 
     private lateinit var mUserViewModel: ReminderListElementViewModel
-    private val adapter = DetailListsAdapter(/*arrayList,*/ this)
+    private val adapter = DetailListsAdapter(this)
     private var position = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.detail_list_view)
 
+        // for the navigation menu
         val drawerLayout : DrawerLayout = findViewById(R.id.drawerLayout)
         val navView : NavigationView = findViewById(R.id.nav_view)
+        toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        //set intents
+        val homePage = Intent(this@DetailList, MainActivity::class.java)
+        val settingPage = Intent(this@DetailList, Settings::class.java)
+        val listsPage = Intent(this@DetailList, Lists::class.java)
+        val locationsPage = Intent(this@DetailList, Locations::class.java)
 
+        navView.setNavigationItemSelectedListener {
+
+            when(it.itemId){
+
+                R.id.nav_home -> startActivity(homePage)
+                R.id.nav_lists -> startActivity(listsPage)
+                R.id.nav_locations -> startActivity(locationsPage)
+                R.id.nav_trash -> Toast.makeText(
+                    applicationContext,
+                    "Clicked placeholder",
+                    Toast.LENGTH_SHORT
+                ).show()
+                R.id.nav_settings -> startActivity(settingPage)
+                R.id.nav_login -> Toast.makeText(
+                    applicationContext,
+                    "Clicked placeholder",
+                    Toast.LENGTH_SHORT
+                ).show()
+                R.id.nav_share -> Toast.makeText(
+                    applicationContext,
+                    "Clicked placeholder",
+                    Toast.LENGTH_SHORT
+                ).show()
+                R.id.nav_rate_us -> Toast.makeText(
+                    applicationContext,
+                    "Clicked placeholder",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            true
+        }
+
+        // getting information which list was clicked
         val bundle: Bundle? = intent.extras
         position = intent.getIntExtra("position", 0)
 
-        // getting the recyclerview by its id
+
+        // for the recyclerview
         val recyclerview = findViewById<RecyclerView>(R.id.lists_recycler_view)
-        // this grid layout holds all the cards with the saved locations:
         recyclerview.layoutManager = LinearLayoutManager(this)
-        // Setting the Adapter with the recyclerview
         recyclerview.adapter = adapter
         recyclerview.setHasFixedSize(true)
 
-
+        // show the element of the current list
         mUserViewModel = ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
         if(position==0){
             mUserViewModel.readAllElementsFromList1.observe(this, Observer { reminderListElement ->
@@ -113,15 +153,15 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         addItemButton.setOnClickListener {
             val builder = AlertDialog.Builder(this)
             val inflater = layoutInflater
-            val dialogLayout = inflater.inflate(R.layout.add_listname_layout, null)
-            val editText = dialogLayout.findViewById<EditText>(R.id.newListName)
+            val dialogLayout = inflater.inflate(R.layout.add_listitem_layout, null)
+            val editText = dialogLayout.findViewById<EditText>(R.id.newListItem)
 
             with(builder) {
                 setTitle("New List Item")
-                setPositiveButton("OK"){ dialog, which ->
+                setPositiveButton("OK"){ _, _ ->
                     insertListItem(editText.text.toString())
                 }
-                setNegativeButton("Cancel"){ dialog, which ->
+                setNegativeButton("Cancel"){ _, _ ->
                     Toast.makeText(applicationContext, "Cancel button clicked", Toast.LENGTH_SHORT).show()
                 }
                 setView(dialogLayout)
@@ -129,69 +169,17 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
             }
         }
 
-        //all down here for the navigation menu
-
-        toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
-
-        drawerLayout.addDrawerListener(toggle)
-
-        toggle.syncState()
-
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        //set intents
-        val homePage = Intent(this@DetailList, MainActivity::class.java)
-        val settingPage = Intent(this@DetailList, Settings::class.java)
-        val listsPage = Intent(this@DetailList, Lists::class.java)
-        val locationsPage = Intent(this@DetailList, Locations::class.java)
-
-
-
-        navView.setNavigationItemSelectedListener {
-
-            when(it.itemId){
-
-                R.id.nav_home -> startActivity(homePage)
-                R.id.nav_lists -> startActivity(listsPage)
-                R.id.nav_locations -> startActivity(locationsPage)
-                R.id.nav_trash -> Toast.makeText(
-                    applicationContext,
-                    "Clicked placeholder",
-                    Toast.LENGTH_SHORT
-                ).show()
-                R.id.nav_settings -> startActivity(settingPage)
-                R.id.nav_login -> Toast.makeText(
-                    applicationContext,
-                    "Clicked placeholder",
-                    Toast.LENGTH_SHORT
-                ).show()
-                R.id.nav_share -> Toast.makeText(
-                    applicationContext,
-                    "Clicked placeholder",
-                    Toast.LENGTH_SHORT
-                ).show()
-                R.id.nav_rate_us -> Toast.makeText(
-                    applicationContext,
-                    "Clicked placeholder",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-            }
-
-            true
-
-        }
-
+        // functions to build in swipe functionality
         val item = object : SwipeToDelete(this, 0, ItemTouchHelper.LEFT) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                deleteList(viewHolder.adapterPosition)
+                deleteListElement(viewHolder.adapterPosition)
             }
         }
-
         val itemTouchHelper=ItemTouchHelper(item)
         itemTouchHelper.attachToRecyclerView(recyclerview)
     }
 
+    // for navigation
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         if (toggle.onOptionsItemSelected(item)){
@@ -200,6 +188,7 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         return super.onOptionsItemSelected(item)
     }
 
+    // add Item to List
     private fun insertListItem(listElementName: String){
         if (!inputCheck(listElementName)){
             Toast.makeText(
@@ -209,37 +198,32 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
             ).show()
         }
         else {
-            // Create User Object
             val reminderListElement = ReminderListElement(0, listElementName, position)
-            // Add Data to Database
             mUserViewModel.addReminderListElement(reminderListElement)
-            arrayListNames += listElementName
-            arrayListNumber += position
-            //arrayList.add(reminderList)
-            //mUserViewModel.getCount.observe(this, Observer<Int> { integer -> index = integer })
             Toast.makeText(applicationContext, "Successfully added!", Toast.LENGTH_LONG).show()
         }
     }
 
+    // help function to verify whether input is given
     private fun inputCheck(listName: String): Boolean{
         return !(TextUtils.isEmpty(listName))
     }
 
-    private fun deleteList(positionItem: Int){
+    // delete element:
+    private fun deleteListElement(positionItem: Int){
         // Create User Object
         val reminderListElement = ReminderListElement(
-            positionItem,
-            arrayListNames[positionItem],
-            arrayListNumber[positionItem]
+            positionItem + 1,
+            "",
+            0
         )
         // Remove from Database
         mUserViewModel.deleteReminderListElement(reminderListElement)
-        arrayListNames.drop(positionItem)
-        arrayListNumber.drop(positionItem)
         Toast.makeText(applicationContext, "Successfully removed!", Toast.LENGTH_LONG).show()
     }
 
-    private fun editList(listElementName: String, position: Int) {
+    // change name of List Element
+    private fun editList(listElementName: String, positionInList: Int) {
         if (!inputCheck(listElementName)) {
             Toast.makeText(
                 applicationContext,
@@ -249,13 +233,12 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         } else {
             // Create Reminder List Element Object
             val updatedReminderListElement = ReminderListElement(
-                position,
+                positionInList +1,
                 listElementName,
-                R.drawable.ic_baseline_list_alt_24
+                position
             )
             // Update Current Object
             mUserViewModel.updateReminderListElement(updatedReminderListElement)
-            arrayListNames[position] = listElementName
             Toast.makeText(
                 applicationContext,
                 "Successfully updated!",
@@ -264,14 +247,15 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         }
     }
 
+    // opens window on item clicked to change name of clicked item
     override fun onItemClick(position: Int) {
         Toast.makeText(this, "Item $position clicked", Toast.LENGTH_SHORT).show()
 
         //open textDialog to adapt name
         val builder = AlertDialog.Builder(this)
         val inflater = layoutInflater
-        val dialogLayout = inflater.inflate(R.layout.add_listname_layout, null)
-        val editText = dialogLayout.findViewById<EditText>(R.id.newListName)
+        val dialogLayout = inflater.inflate(R.layout.add_listitem_layout, null)
+        val editText = dialogLayout.findViewById<EditText>(R.id.newListItem)
 
         with(builder) {
             setTitle("Change Items Name")
