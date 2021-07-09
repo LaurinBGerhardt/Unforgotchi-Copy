@@ -36,7 +36,8 @@ data class Location(
     @PrimaryKey(autoGenerate = true)
     var location_id: Int,
     var text: String,
-    var image : String?
+    var image : String?,
+    var wifiName : String? = null
 ){
     constructor() : this(0, "",null)
 }

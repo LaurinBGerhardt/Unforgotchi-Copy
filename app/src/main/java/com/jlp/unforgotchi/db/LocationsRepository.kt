@@ -15,6 +15,11 @@ class LocationsRepository(private val locationsDao: LocationsDao) {
         locationsDao.updateLocation(location)
     }
 
+    suspend fun updateLocation(location: Location, wifiName : String?){
+        var replacementLocation = Location(location.location_id, location.text,location.image,wifiName)
+        locationsDao.updateLocation(replacementLocation)
+    }
+
     suspend fun deleteLocation(location: Location){
         locationsDao.deleteLocation(location)
     }

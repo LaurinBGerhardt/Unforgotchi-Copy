@@ -26,9 +26,9 @@ class LocationsViewModel(application: Application): AndroidViewModel(application
         }
     }
 
-    fun updateLocation(location: Location){
+    fun updateLocation(location: Location,wifiName : String? = null){
         viewModelScope.launch(Dispatchers.IO) {
-            repository.updateLocation(location)
+            repository.updateLocation(location,wifiName)
         }
     }
 
