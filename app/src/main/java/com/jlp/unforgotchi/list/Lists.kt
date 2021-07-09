@@ -27,10 +27,8 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
 
     private lateinit var mUserViewModel: ReminderListViewModel
     lateinit var toggle: ActionBarDrawerToggle
-    private var arrayListNames = emptyArray<String>()
-    private val adapter = ListsAdapter(/*arrayList, */this)
+    private val adapter = ListsAdapter(this)
 
-    //private var index: Int = 0
     private var edit = false
     private var delete = false
 
@@ -38,23 +36,60 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.lists)
 
+        // for the navigation menu
         val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
         val navView: NavigationView = findViewById(R.id.nav_view)
+        toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        //set intents
+        val homePage = Intent(this@Lists, MainActivity::class.java)
+        val settingPage = Intent(this@Lists, Settings::class.java)
+        val listsPage = Intent(this@Lists, Lists::class.java)
+        val locationsPage = Intent(this@Lists, Locations::class.java)
+        // set click listeners
+        navView.setNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.nav_home -> startActivity(homePage)
+                R.id.nav_lists -> startActivity(listsPage)
+                R.id.nav_locations -> startActivity(locationsPage)
+                R.id.nav_trash -> Toast.makeText(
+                    applicationContext,
+                    "Clicked placeholder",
+                    Toast.LENGTH_SHORT
+                ).show()
+                R.id.nav_settings -> startActivity(settingPage)
+                R.id.nav_login -> Toast.makeText(
+                    applicationContext,
+                    "Clicked placeholder",
+                    Toast.LENGTH_SHORT
+                ).show()
+                R.id.nav_share -> Toast.makeText(
+                    applicationContext,
+                    "Clicked placeholder",
+                    Toast.LENGTH_SHORT
+                ).show()
+                R.id.nav_rate_us -> Toast.makeText(
+                    applicationContext,
+                    "Clicked placeholder",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            true
+        }
 
-        // getting the recyclerview by its id
+        // for recyclerview
         val recyclerview = findViewById<RecyclerView>(R.id.lists_recycler_view)
-        // this grid layout holds all the cards with the saved locations:
         recyclerview.layoutManager = GridLayoutManager(this, 2)
-        // Setting the Adapter with the recyclerview
         recyclerview.adapter = adapter
         recyclerview.setHasFixedSize(true)
 
+        // set Data out of database
         mUserViewModel = ViewModelProvider(this).get(ReminderListViewModel::class.java)
         mUserViewModel.readAllData.observe(this, Observer { reminderList ->
             adapter.setData(reminderList)
         })
-
-        //mUserViewModel.getCount.observe(this, Observer<Int> { integer -> index = integer })
 
         //when clicking the add-button:
         val addListsButton: View = findViewById(R.id.add_lists_button)
@@ -118,61 +153,9 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
             }
         }
 
-        //all down here for the navigation menu
-
-        toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
-
-        drawerLayout.addDrawerListener(toggle)
-
-        toggle.syncState()
-
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        //set intents
-        val homePage = Intent(this@Lists, MainActivity::class.java)
-        val settingPage = Intent(this@Lists, Settings::class.java)
-        val listsPage = Intent(this@Lists, Lists::class.java)
-        val locationsPage = Intent(this@Lists, Locations::class.java)
-
-
-
-        navView.setNavigationItemSelectedListener {
-
-            when (it.itemId) {
-
-                R.id.nav_home -> startActivity(homePage)
-                R.id.nav_lists -> startActivity(listsPage)
-                R.id.nav_locations -> startActivity(locationsPage)
-                R.id.nav_trash -> Toast.makeText(
-                    applicationContext,
-                    "Clicked placeholder",
-                    Toast.LENGTH_SHORT
-                ).show()
-                R.id.nav_settings -> startActivity(settingPage)
-                R.id.nav_login -> Toast.makeText(
-                    applicationContext,
-                    "Clicked placeholder",
-                    Toast.LENGTH_SHORT
-                ).show()
-                R.id.nav_share -> Toast.makeText(
-                    applicationContext,
-                    "Clicked placeholder",
-                    Toast.LENGTH_SHORT
-                ).show()
-                R.id.nav_rate_us -> Toast.makeText(
-                    applicationContext,
-                    "Clicked placeholder",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-            }
-
-            true
-
-        }
-
     }
 
+    // for navigation:
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         if (toggle.onOptionsItemSelected(item)) {
@@ -181,6 +164,7 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
         return super.onOptionsItemSelected(item)
     }
 
+    // function to add a new list
     private fun insertList(listName: String) {
         if (!inputCheck(listName)) {
             Toast.makeText(
@@ -195,40 +179,35 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
                 Toast.LENGTH_SHORT
             ).show()
         } else {
-            // Create User Object
             val reminderList = ReminderList(0, listName, R.drawable.ic_baseline_list_alt_24)
-            // Add Data to Database
             mUserViewModel.addReminderList(reminderList)
-            arrayListNames += listName
             mUserViewModel.readAllData.observe(this, Observer { reminderList ->
                 adapter.setData(reminderList)
             })
-            //arrayList.add(reminderList)
-            //mUserViewModel.getCount.observe(this, Observer<Int> { integer -> index = integer })
             Toast.makeText(applicationContext, "Successfully added!", Toast.LENGTH_LONG).show()
         }
     }
 
+    // helper function to verify if something has been entered
     private fun inputCheck(listName: String): Boolean {
         return !(TextUtils.isEmpty(listName))
     }
 
+    // function to remove a list
     private fun deleteList(position: Int) {
-        // Create User Object
         val reminderList = ReminderList(
-            position,
-            arrayListNames[position],
+            position + 1,
+            "",
             R.drawable.ic_baseline_list_alt_24
         )
-        // Remove from Database
         mUserViewModel.deleteReminderList(reminderList)
         mUserViewModel.readAllData.observe(this, Observer { reminderList ->
             adapter.setData(reminderList)
         })
-        arrayListNames.drop(position)
         Toast.makeText(applicationContext, "Successfully removed!", Toast.LENGTH_LONG).show()
     }
 
+    // function to change the name of a list
     private fun editList(listName: String, position: Int) {
         if (!inputCheck(listName)) {
             Toast.makeText(
@@ -237,15 +216,12 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
                 Toast.LENGTH_SHORT
             ).show()
         } else {
-            // Create Reminder List Object
             val updatedReminderList = ReminderList(
-                position,
+                position +1,
                 listName,
                 R.drawable.ic_baseline_list_alt_24
             )
-            // Update Current Object
             mUserViewModel.updateReminderList(updatedReminderList)
-            arrayListNames[position] = listName
             mUserViewModel.readAllData.observe(this, Observer { reminderList ->
                 adapter.setData(reminderList)
             })
@@ -257,6 +233,7 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
         }
     }
 
+    // handle on item clicks depending on which buttons are clicked
     override fun onItemClick(position: Int) {
         when {
             edit -> {

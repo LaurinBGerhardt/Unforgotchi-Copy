@@ -31,9 +31,6 @@ class ListsAdapter (
 
         val currentItem = reminderListsList[position]
 
-        // sets the Id to the textView from our itemHolder class
-        holder.indexView.text = currentItem.id.toString()
-
         // sets the image to the imageView from our itemHolder class
         holder.imageView.setImageResource(currentItem.image)
 
@@ -50,7 +47,6 @@ class ListsAdapter (
     // Holds the views for adding it to image and text
     inner class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView),
         View.OnClickListener {
-        val indexView: TextView = itemView.findViewById(R.id.lists_number)
         val imageView: ImageView = itemView.findViewById(R.id.lists_image)
         val textView: TextView = itemView.findViewById(R.id.lists_name)
 
