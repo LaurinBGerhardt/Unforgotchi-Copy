@@ -1,25 +1,34 @@
 package com.jlp.unforgotchi.detaillist
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
+import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.navigation.NavigationView
+import com.jlp.unforgotchi.MainActivity
 import com.jlp.unforgotchi.R
 import com.jlp.unforgotchi.db.ReminderList
 import com.jlp.unforgotchi.db.ReminderListElement
 import com.jlp.unforgotchi.db.ReminderListElementViewModel
+import com.jlp.unforgotchi.list.Lists
+import com.jlp.unforgotchi.locations.Locations
+import com.jlp.unforgotchi.settings.Settings
 
 class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
 
-    //lateinit var toggle : ActionBarDrawerToggle
+    lateinit var toggle : ActionBarDrawerToggle
     private var arrayListNames = emptyArray<String>()
     private var arrayListNumber = emptyArray<Int>()
 
@@ -31,8 +40,8 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.detail_list_view)
 
-        //val drawerLayout : DrawerLayout = findViewById(R.id.drawerLayout)
-        //val navView : NavigationView = findViewById(R.id.nav_view)
+        val drawerLayout : DrawerLayout = findViewById(R.id.drawerLayout)
+        val navView : NavigationView = findViewById(R.id.nav_view)
 
         val bundle: Bundle? = intent.extras
         position = intent.getIntExtra("position", 0)
@@ -121,7 +130,7 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         }
 
         //all down here for the navigation menu
-        /*
+
         toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
 
         drawerLayout.addDrawerListener(toggle)
@@ -172,7 +181,6 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
             true
 
         }
-        */
 
         val item = object : SwipeToDelete(this, 0, ItemTouchHelper.LEFT) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -184,13 +192,13 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         itemTouchHelper.attachToRecyclerView(recyclerview)
     }
 
-    /*override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         if (toggle.onOptionsItemSelected(item)){
             return true
         }
         return super.onOptionsItemSelected(item)
-    }*/
+    }
 
     private fun insertListItem(listElementName: String){
         if (!inputCheck(listElementName)){
