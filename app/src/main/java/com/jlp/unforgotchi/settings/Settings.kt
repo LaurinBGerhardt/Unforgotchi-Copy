@@ -1,10 +1,12 @@
 package com.jlp.unforgotchi.settings
 
-import android.content.BroadcastReceiver
-import android.content.Context
+import android.Manifest
 import android.content.Intent
-import android.content.IntentFilter
-import android.net.wifi.ScanResult
+import android.content.pm.PackageManager
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
+import android.net.wifi.SupplicantState
+import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.view.MenuItem
@@ -14,6 +16,7 @@ import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import com.jlp.unforgotchi.MainActivity
@@ -26,9 +29,12 @@ class Settings : AppCompatActivity() {
 
     lateinit var toggle : ActionBarDrawerToggle
 
-    private val wifiManager: WifiManager? = null
     private val arrayList: ArrayList<String> = ArrayList()
     private var adapter: ArrayAdapter<*>? = null
+    private val wifiManager: WifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
+    private val wifiInfo: WifiInfo = wifiManager.connectionInfo
+    private val connManager: ConnectivityManager = applicationContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+    private val networkInfo: NetworkInfo? = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +43,14 @@ class Settings : AppCompatActivity() {
         val navView : NavigationView = findViewById(R.id.nav_view)
         val buttonScan: Button = findViewById(R.id.scanBtn)
         val listView: ListView = findViewById(R.id.wifiList)
-        val wifiManager: WifiManager = getSystemService(WIFI_SERVICE) as WifiManager
+
+        if (!CheckPermissions()) askPermission(arrayOf(
+            Manifest.permission.ACCESS_WIFI_STATE,
+            Manifest.permission.CHANGE_WIFI_STATE,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ))
+
+
 
         toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
 
@@ -46,12 +59,15 @@ class Settings : AppCompatActivity() {
         toggle.syncState()
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, arrayList)
+        listView.adapter = adapter
 
         //set intents
         val homePage = Intent(this@Settings, MainActivity::class.java)
         val settingPage = Intent(this@Settings, Settings::class.java)
         val listsPage = Intent(this@Settings, Lists::class.java)
         val locationsPage = Intent(this@Settings, Locations::class.java)
+
 
 
         navView.setNavigationItemSelectedListener {
@@ -72,72 +88,73 @@ class Settings : AppCompatActivity() {
 
         }
 
-//        buttonScan.setOnClickListener{
-//                scanWifi()
-//        }
 
-        if (!wifiManager.isWifiEnabled) {
-            Toast.makeText(this, "WiFi is disabled ... Please enable it", Toast.LENGTH_LONG).show()
-        }
-
-        adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, arrayList)
-        listView.adapter = adapter
-//        scanWifi()
-
-        val intentFilter = IntentFilter()
-        intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)
-        this.registerReceiver(wifiScanReceiver, intentFilter)
-
-        val success = wifiManager.startScan()
-        if (!success) {
-            // scan failure handling
-            scanFailure()
-        }
-
-    }
-
-    private fun scanWifi() {
-        arrayList.clear()
-        registerReceiver(wifiScanReceiver, IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION))
-        wifiManager?.startScan()
-//        Toast.makeText(this, "Scanning WiFi ...", Toast.LENGTH_SHORT).show()
-    }
-
-    private val wifiScanReceiver = object : BroadcastReceiver() {
-
-        override fun onReceive(context: Context, intent: Intent) {
-            print("ONRECIEVE")
-            val success = intent.getBooleanExtra(WifiManager.EXTRA_RESULTS_UPDATED, false)
-            if (success) {
-                scanSuccess()
-            } else {
-                scanFailure()
-            }
-        }
-    }
-
-    private fun scanSuccess() {
-        val results = wifiManager?.scanResults
-        Toast.makeText(this, "close", Toast.LENGTH_SHORT).show()
-        if (results != null) {
-            Toast.makeText(this, "MADEIT", Toast.LENGTH_SHORT).show()
-            for (scanResult: ScanResult in results) {
-                arrayList.add(scanResult.SSID + " - " + scanResult.capabilities)
+        buttonScan.setOnClickListener{
+            if (isWifiConnected()) {
+                val macAddress = getMacAddress()
+                if (macAddress != null) arrayList.add(macAddress)
                 adapter?.notifyDataSetChanged()
             }
         }
     }
 
-    private fun scanFailure() {
-        // handle failure: new scan did NOT succeed
-        // consider using old scan results: these are the OLD results!
-        val results = wifiManager?.scanResults
-        Toast.makeText(this, "Scanning failed", Toast.LENGTH_SHORT).show()
-//        ... potentially use older scan results ...
+    private fun isWifiConnected(): Boolean {
+        if (!wifiManager.isWifiEnabled) {
+            Toast.makeText(this, "Please turn on Wifi and connect to a Network", Toast.LENGTH_LONG).show()
+            return false;
+        } else if (!networkInfo!!.isConnected) {
+            Toast.makeText(this, "Please connect to a WiFi-Network", Toast.LENGTH_LONG).show()
+            return false;
+        } else {
+            return true
+        }
+    }
+
+    private fun getMacAddress (): String? {
+        if (wifiInfo.supplicantState == SupplicantState.COMPLETED) {
+            return wifiInfo.macAddress
+        } else {
+            return "MAC Address not available"
+        }
+    }
+
+    private fun askPermission(PERMISSIONS: Array<String>) {
+        for (permission: String in PERMISSIONS) {
+            if(ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this,"Permission"+permission+"Granted",Toast.LENGTH_SHORT).show()
+            } else {
+                requestPermissions(arrayOf(permission), permission.hashCode())
+            }
+        }
+    }
+
+    /**
+     * @return Boolean - true: if we have permissions, otherwise false
+     */
+    fun CheckPermissions():Boolean{
+        if(ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+            ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+            ActivityCompat.checkSelfPermission(this,android.Manifest.permission.CHANGE_WIFI_STATE) == PackageManager.PERMISSION_GRANTED ||
+            ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_GRANTED){
+            return true
+        }
+        return false
+    }
+
+    @Override
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == 1) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this,"Permission Granted",Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this,"Permission Denied",Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
         if (toggle.onOptionsItemSelected(item)){
             return true
         }
