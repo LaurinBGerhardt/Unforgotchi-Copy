@@ -15,8 +15,9 @@ class LocationToListsRepository (private val locationToListsDao: LocationToLists
         locationToListsDao.saveLists(*reminderListElements)
     }
 
-    suspend fun updateLocation(location: Location){
-        locationToListsDao.updateLocation(location)
+    suspend fun updateLocation(location: Location, wifiName : String?){
+        val replacementLocation = Location(location.location_id, location.text,location.image,wifiName)
+        locationToListsDao.updateLocation(replacementLocation)
     }
 
     suspend fun updateLists(vararg reminderListElements: ReminderListElement){
