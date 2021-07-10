@@ -78,9 +78,14 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
                 }
                 val newLocation = Location(0, newLocName, newImgData?.toString(), newWifiName)
                 locationsDBViewModel.addLocation(newLocation)
-                specialValuesViewModel.setSpecialValue(SpecialValue(ValueNames.LATEST_LOCATION.name,newLocName))
-                //Toast.makeText(applicationContext, "WiFi $newWifiName added", Toast.LENGTH_SHORT).show()
-                //TODO: Toast if there already was a Location with that wifi
+                if(newWifiName != null) {
+                    specialValuesViewModel.setSpecialValue(
+                        SpecialValue(
+                            ValueNames.LATEST_LOCATION.name,
+                            newLocName
+                        )
+                    )
+                }
                 locationsAdapter.notifyDataSetChanged()
             }
         }

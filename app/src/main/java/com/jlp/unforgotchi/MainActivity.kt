@@ -29,9 +29,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
-import com.jlp.unforgotchi.db.LocationsViewModel
-import com.jlp.unforgotchi.db.ReminderListElementViewModel
-import com.jlp.unforgotchi.db.SpecialValuesViewModel
+import com.jlp.unforgotchi.db.*
 import com.jlp.unforgotchi.list.Lists
 import com.jlp.unforgotchi.locations.Locations
 
@@ -108,9 +106,14 @@ class MainActivity : AppCompatActivity() {
 //        setLatestLocation()
     }
 
-//    private fun setLatestLocation() {
-//        TODO("Not yet implemented")
-//    }
+    private fun setLatestLocation(location: Location) {
+        specialValuesViewModel.setSpecialValue(
+            SpecialValue(
+                ValueNames.LATEST_LOCATION.name,
+                location.text
+            )
+        )
+    }
 
     private fun getLatestLocation(): com.jlp.unforgotchi.db.Location? {
         var latestLocation: List<com.jlp.unforgotchi.db.Location>? = null

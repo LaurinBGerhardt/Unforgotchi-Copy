@@ -67,4 +67,6 @@ data class SpecialValue(
     @PrimaryKey()
     var valueName : String,
     var value : String
-)
+){
+    constructor() : this("","")
+}
