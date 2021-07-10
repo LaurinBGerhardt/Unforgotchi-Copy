@@ -20,6 +20,7 @@ import com.jlp.unforgotchi.MainActivity
 import com.jlp.unforgotchi.R
 import com.jlp.unforgotchi.list.Lists
 import com.jlp.unforgotchi.locations.Locations
+import java.lang.Math.abs
 
 
 class Settings : AppCompatActivity() {
@@ -120,7 +121,7 @@ class Settings : AppCompatActivity() {
             if(ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
 //                Toast.makeText(this,"Permission"+permission+"Granted",Toast.LENGTH_SHORT).show()
             } else {
-                requestPermissions(arrayOf(permission), 1010)
+                requestPermissions(arrayOf(permission), kotlin.math.abs(permission.hashCode()))
             }
         }
     }
