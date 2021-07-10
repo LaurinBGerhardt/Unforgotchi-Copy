@@ -19,12 +19,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.jlp.unforgotchi.MainActivity
 import com.jlp.unforgotchi.R
-import com.jlp.unforgotchi.db.ReminderList
 import com.jlp.unforgotchi.db.ReminderListElement
 import com.jlp.unforgotchi.db.ReminderListElementViewModel
 import com.jlp.unforgotchi.list.Lists
 import com.jlp.unforgotchi.locations.Locations
-import com.jlp.unforgotchi.settings.Settings
 
 class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
 
@@ -47,7 +45,6 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         //set intents
         val homePage = Intent(this@DetailList, MainActivity::class.java)
-        val settingPage = Intent(this@DetailList, Settings::class.java)
         val listsPage = Intent(this@DetailList, Lists::class.java)
         val locationsPage = Intent(this@DetailList, Locations::class.java)
 
@@ -63,7 +60,6 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
                     "Clicked placeholder",
                     Toast.LENGTH_SHORT
                 ).show()
-                R.id.nav_settings -> startActivity(settingPage)
                 R.id.nav_login -> Toast.makeText(
                     applicationContext,
                     "Clicked placeholder",

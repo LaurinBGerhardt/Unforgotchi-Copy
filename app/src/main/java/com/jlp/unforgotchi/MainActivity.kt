@@ -8,7 +8,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Location
 import android.net.wifi.SupplicantState
 import android.net.wifi.WifiManager
 import android.os.Build
@@ -30,11 +29,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
+import com.jlp.unforgotchi.db.LocationsViewModel
 import com.jlp.unforgotchi.db.ReminderListElementViewModel
 import com.jlp.unforgotchi.db.SpecialValuesViewModel
 import com.jlp.unforgotchi.list.Lists
 import com.jlp.unforgotchi.locations.Locations
-import com.jlp.unforgotchi.settings.Settings
 
 class MainActivity : AppCompatActivity() {
 
@@ -45,13 +44,6 @@ class MainActivity : AppCompatActivity() {
 
     //for the navigation:
     lateinit var toggle : ActionBarDrawerToggle
-
-    //for the location service, can be deleted if we don't use location:
-//    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private val PERMISSION_ID = 1010
-//    lateinit var locationRequest: LocationRequest
-    lateinit var lastLocation: Location
-    lateinit var showLocation : TextView
 
     //for the recyclerview to show current list:
     private lateinit var detailListUserViewModel: ReminderListElementViewModel
@@ -77,7 +69,6 @@ class MainActivity : AppCompatActivity() {
         val navView : NavigationView = findViewById(R.id.nav_view)
         //set intents for the navigation
         val homePage = Intent(this@MainActivity, MainActivity::class.java)
-        val settingPage = Intent(this@MainActivity, Settings::class.java)
         val listsPage = Intent(this@MainActivity, Lists::class.java)
         val locationsPage = Intent(this@MainActivity, Locations::class.java)
         toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
@@ -86,14 +77,11 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         navView.setNavigationItemSelectedListener {
-
             when(it.itemId){
-
                 R.id.nav_home -> startActivity(homePage)
                 R.id.nav_lists -> startActivity(listsPage)
                 R.id.nav_locations -> startActivity(locationsPage)
                 R.id.nav_trash -> Toast.makeText(applicationContext, "Clicked placeholder", Toast.LENGTH_SHORT).show()
-                R.id.nav_settings -> startActivity(settingPage)
                 R.id.nav_login -> Toast.makeText(applicationContext, "Clicked placeholder", Toast.LENGTH_SHORT).show()
                 R.id.nav_share -> Toast.makeText(applicationContext, "Clicked placeholder", Toast.LENGTH_SHORT).show()
                 R.id.nav_rate_us -> Toast.makeText(applicationContext, "Clicked placeholder", Toast.LENGTH_SHORT).show()
@@ -114,17 +102,28 @@ class MainActivity : AppCompatActivity() {
         val notificationButton = findViewById<Button>(R.id.reminder_notification)
         notificationButton.setOnClickListener {
             var text = ""
-            var x = 0
-            while (x < elementsArray.size) {
-                text += elementsArray[x] + "\n"
-                x++
-            }
-            sendNotification(
-                "Don't forget to take:",
-                text
-            )
+            elementsArray.forEach { element -> text += element + "\n" }
+            sendNotification("Don't forget to take:", text)
         }
+//        setLatestLocation()
+    }
 
+//    private fun setLatestLocation() {
+//        TODO("Not yet implemented")
+//    }
+
+    private fun getLatestLocation(): com.jlp.unforgotchi.db.Location? {
+        var latestLocation: List<com.jlp.unforgotchi.db.Location>? = null
+        ViewModelProvider(this).get(LocationsViewModel::class.java).readAllLocations.observe(this, {
+                locations -> latestLocation = locations.filter { containsWifi(it, getSsid(this)) }
+        })
+        return latestLocation?.get(0)
+    }
+
+    private fun containsWifi(location: com.jlp.unforgotchi.db.Location, ssid: String?): Boolean {
+        return if (ssid != null) {
+            location.wifiName == ssid
+        } else false
     }
 
     companion object {
@@ -135,10 +134,10 @@ class MainActivity : AppCompatActivity() {
         fun getSsid(con: Context): String? {
             context = con
             val wifiInfo = (context.getSystemService(WIFI_SERVICE) as WifiManager).connectionInfo
-            if (wifiInfo.supplicantState == SupplicantState.COMPLETED) {
-                return wifiInfo.ssid
+            return if (wifiInfo.supplicantState == SupplicantState.COMPLETED) {
+                wifiInfo.ssid
             } else {
-                return null
+                null
             }
         }
     }
@@ -326,10 +325,8 @@ class MainActivity : AppCompatActivity() {
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "Unforgotchi Notification Channel"
-            val descriptionText = "This is the Channel for all Unforgotchi Notifications"
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-                description = descriptionText
+            val channel = NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_DEFAULT).apply {
+                description = "This is the Channel for all Unforgotchi Notifications"
             }
             val notificationManager: NotificationManager =
                 this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

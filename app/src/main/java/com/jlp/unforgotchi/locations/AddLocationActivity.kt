@@ -95,17 +95,20 @@ class AddLocationActivity : AppCompatActivity() {
 
     private fun processInput() {
         val intent = Intent()
+        val name = addLocNameView.text.toString()
 
-        if (addLocNameView.text.isNullOrEmpty()) {
-            setResult(Activity.RESULT_CANCELED, intent)
-        } else if ( !(previewImageChanged) || previewImage.drawable == null) {
+        if (name.isNullOrEmpty()) setResult(Activity.RESULT_CANCELED, intent)
+        else createLocation(intent, name)
+
+        finish()
+    }
+
+    private fun createLocation(intent: Intent, name: String) {
+        if ( !(previewImageChanged) || previewImage.drawable == null) {
             previewImage.setImageResource(R.drawable.ic_baseline_location_city_24)
-            val name = addLocNameView.text.toString()
             intent.putExtra("name", name)
             intent.putExtra("wifiName", wifiName)
-            setResult(Activity.RESULT_OK, intent)
         } else {
-            val name = addLocNameView.text.toString()
             intent.putExtra("name", name)
             intent.putExtra("image",imageData)
             intent.putExtra("wifiName", wifiName)
@@ -115,9 +118,8 @@ class AddLocationActivity : AppCompatActivity() {
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             applicationContext.grantUriPermission("com.jlp.unforgotchi",imageData,
                 Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            setResult(Activity.RESULT_OK, intent)
         }
-        finish()
+        setResult(Activity.RESULT_OK, intent)
     }
 
     //This function is not used anymore. But because it was a pain to implement, it will remain here
