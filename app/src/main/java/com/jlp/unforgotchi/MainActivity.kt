@@ -30,6 +30,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
+import com.jlp.unforgotchi.db.LocationsViewModel
 import com.jlp.unforgotchi.db.ReminderListElementViewModel
 import com.jlp.unforgotchi.list.Lists
 import com.jlp.unforgotchi.locations.Locations
@@ -117,7 +118,26 @@ class MainActivity : AppCompatActivity() {
                 text
             )
         }
+        setLatestLocation()
+    }
 
+    private fun setLatestLocation() {
+        TODO("Not yet implemented")
+    }
+
+    private fun getLatestLocation(): com.jlp.unforgotchi.db.Location? {
+        var latestLocation: List<com.jlp.unforgotchi.db.Location>? = null;
+        val locationsDBViewModel: LocationsViewModel = ViewModelProvider(this).get(LocationsViewModel::class.java)
+        locationsDBViewModel.readAllLocations.observe(this, {
+                locations -> latestLocation = locations.filter { containsWifi(it, getSsid(this)) }
+        })
+        return latestLocation?.get(0)
+    }
+
+    private fun containsWifi(location: com.jlp.unforgotchi.db.Location, ssid: String?): Boolean {
+        return if (ssid != null) {
+            location.wifiName == ssid
+        } else false
     }
 
     companion object {
