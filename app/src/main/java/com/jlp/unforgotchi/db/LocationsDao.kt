@@ -17,4 +17,6 @@ interface LocationsDao {
     @Delete
     suspend fun deleteLocation(location: Location)
 
+    @Query("SELECT wifiName FROM locations_table ORDER BY location_id ASC")
+    fun getAllWifis() : LiveData<List<String?>>
 }

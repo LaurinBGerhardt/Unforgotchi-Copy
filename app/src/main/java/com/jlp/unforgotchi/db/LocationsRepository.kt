@@ -7,6 +7,8 @@ class LocationsRepository(private val locationsDao: LocationsDao) {
 
     val readAllLocations: LiveData<List<Location>> = locationsDao.readAllLocations()
 
+    val getAllWifis : LiveData<List<String?>> = locationsDao.getAllWifis()
+
     suspend fun addLocation(location: Location){
         locationsDao.addLocation(location)
     }

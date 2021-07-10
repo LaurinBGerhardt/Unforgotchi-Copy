@@ -31,12 +31,15 @@ data class ReminderListElement(
     constructor() : this(0, "", 0)
 }
 
-@Entity(tableName = "locations_table")
+@Entity(tableName = "locations_table",
+        indices = [ Index("wifiName",unique = true),
+                    Index("location_id",unique=true)])
 data class Location(
     @PrimaryKey(autoGenerate = true)
     var location_id: Int,
     var text: String,
     var image : String?,
+    @ColumnInfo(name="wifiName")
     var wifiName : String? = null
 ){
     constructor() : this(0, "",null)

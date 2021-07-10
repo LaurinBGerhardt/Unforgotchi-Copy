@@ -67,7 +67,7 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
                 val newLocName: String = data!!.getStringExtra("name") ?: "New Location"
                 val newWifiName : String? = data!!.getStringExtra("wifiName")
                 val newImgData : Uri? = data!!.getParcelableExtra<Uri?>("image")
-
+                /*
                 if(newImgData != null) {
                     contentResolver.takePersistableUriPermission(
                         newImgData,
@@ -81,8 +81,27 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
                         Location(0, newLocName, null,newWifiName)
                     )
                 }
-                locationsAdapter.notifyDataSetChanged()
-
+                 */
+                if( newWifiName != null &&
+                    locationsDBViewModel.getAllWifis.value?.contains(newWifiName) != null) {
+                    Toast.makeText(applicationContext,
+                        "There's already a Location with that WiFi",
+                        Toast.LENGTH_SHORT).show()
+                } else {
+                    if (newImgData != null) {
+                        contentResolver.takePersistableUriPermission(
+                            newImgData,
+                            data.flags and Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        )
+                    }
+                    //val duplicateWifis = locationsDBViewModel.getAllWifis.value?.filter { it ->
+                    //        it == newWifiName
+                    //}
+                    locationsDBViewModel.addLocation(
+                        Location(0, newLocName, newImgData?.toString(), newWifiName)
+                    )
+                    locationsAdapter.notifyDataSetChanged()
+                }
             }
         }
 

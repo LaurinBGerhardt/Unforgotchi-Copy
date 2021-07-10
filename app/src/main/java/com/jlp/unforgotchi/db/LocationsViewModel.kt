@@ -13,11 +13,15 @@ class LocationsViewModel(application: Application): AndroidViewModel(application
 
     private val repository: LocationsRepository
 
+    val getAllWifis : LiveData<List<String?>>
+
     init {
         val locationsDao = LocationsDatabase.getDatabase(application).locationsDao()
         repository = LocationsRepository(locationsDao)
 
         readAllLocations = repository.readAllLocations
+
+        getAllWifis = repository.getAllWifis
     }
 
     fun addLocation(location: Location){
