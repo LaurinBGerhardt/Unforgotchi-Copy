@@ -16,9 +16,12 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.navigation.NavigationView
 import com.jlp.unforgotchi.MainActivity
 import com.jlp.unforgotchi.R
+import com.jlp.unforgotchi.db.Location
+import com.jlp.unforgotchi.db.LocationsViewModel
 import com.jlp.unforgotchi.list.Lists
 import com.jlp.unforgotchi.locations.Locations
 
@@ -42,7 +45,9 @@ class Settings : AppCompatActivity() {
         val wifiInfo: WifiInfo = wifiManager.connectionInfo
         val connManager: ConnectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkInfo: NetworkInfo? = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
+        val locationsDBViewModel : LocationsViewModel
 
+        locationsDBViewModel = ViewModelProvider(this).get(LocationsViewModel::class.java)
         askPermissions(arrayOf(ACCESS_FINE_LOCATION, ACCESS_BACKGROUND_LOCATION, ACCESS_NETWORK_STATE, CHANGE_WIFI_STATE))
 
 
@@ -95,6 +100,14 @@ class Settings : AppCompatActivity() {
             val wifi: Any = listView.getItemAtPosition(position)
             Toast.makeText(baseContext, wifi.toString(), Toast.LENGTH_SHORT).show()
         }
+
+        locationsDBViewModel.readAllLocations.observe(this,
+            { locationsList ->
+                locations = locationsList
+//                Log.d("###", locationsList.toString())
+
+        })
+
     }
 
 //    private fun getLocations(locationsList: List<Location>) {
