@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
@@ -21,7 +20,6 @@ import com.jlp.unforgotchi.R
 import com.jlp.unforgotchi.db.Location
 import com.jlp.unforgotchi.db.LocationsViewModel
 import com.jlp.unforgotchi.list.Lists
-import com.jlp.unforgotchi.settings.Settings
 
 class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
 
@@ -94,7 +92,6 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
 
         //set intents to navigate to the other parts of the app:
         val homePage = Intent(this@Locations, MainActivity::class.java)
-        val settingPage = Intent(this@Locations, Settings::class.java)
         val listsPage = Intent(this@Locations, Lists::class.java)
         val locationsPage = Intent(this@Locations, Locations::class.java)
 
@@ -109,7 +106,6 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
                     "Clicked placeholder",
                     Toast.LENGTH_SHORT
                 ).show()
-                R.id.nav_settings -> startActivity(settingPage)
                 R.id.nav_login -> Toast.makeText(
                     applicationContext,
                     "Clicked placeholder",
