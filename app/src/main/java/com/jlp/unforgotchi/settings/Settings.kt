@@ -132,7 +132,6 @@ class Settings : AppCompatActivity() {
     }
 
      fun getSsid(wifiInfo: WifiInfo): String? {
-         askPermissions(arrayOf(ACCESS_FINE_LOCATION, ACCESS_BACKGROUND_LOCATION, ACCESS_NETWORK_STATE, CHANGE_WIFI_STATE))
         if (wifiInfo.supplicantState == SupplicantState.COMPLETED) {
             Toast.makeText(this, wifiInfo.ssid, Toast.LENGTH_LONG).show()
             return wifiInfo.ssid
