@@ -90,23 +90,7 @@ class AddLocationActivity : AppCompatActivity() {
             processInput()
         }
 
-//        askPermissions(arrayOf(
-//            Manifest.permission.ACCESS_FINE_LOCATION,
-//            Manifest.permission.ACCESS_BACKGROUND_LOCATION,
-//            Manifest.permission.ACCESS_NETWORK_STATE,
-//            Manifest.permission.CHANGE_WIFI_STATE
-//        ))
     }
-
-//    private fun askPermissions(PERMISSIONS: Array<String>) {
-//        for (permission: String in PERMISSIONS) {
-//            if(ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
-//                Log.d("###", "Permission"+permission+"Granted")
-//            } else {
-//                requestPermissions(arrayOf(permission), kotlin.math.abs(permission.hashCode()))
-//            }
-//        }
-//    }
 
     private fun getSsid(): String? {
         if (wifiInfo.supplicantState == SupplicantState.COMPLETED) {
