@@ -98,12 +98,12 @@ class MainActivity : AppCompatActivity() {
             elementsArray.forEach { element -> text += element + "\n" }
             sendNotification("Don't forget to take:", text)
         }
-        setLatestLocation()
+//        setLatestLocation()
     }
 
-    private fun setLatestLocation() {
-        TODO("Not yet implemented")
-    }
+//    private fun setLatestLocation() {
+//        TODO("Not yet implemented")
+//    }
 
     private fun getLatestLocation(): com.jlp.unforgotchi.db.Location? {
         var latestLocation: List<com.jlp.unforgotchi.db.Location>? = null
