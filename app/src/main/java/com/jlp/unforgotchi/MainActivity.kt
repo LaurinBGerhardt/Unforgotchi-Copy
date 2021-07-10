@@ -126,9 +126,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getLatestLocation(): com.jlp.unforgotchi.db.Location? {
-        var latestLocation: List<com.jlp.unforgotchi.db.Location>? = null;
-        val locationsDBViewModel: LocationsViewModel = ViewModelProvider(this).get(LocationsViewModel::class.java)
-        locationsDBViewModel.readAllLocations.observe(this, {
+        var latestLocation: List<com.jlp.unforgotchi.db.Location>? = null
+        ViewModelProvider(this).get(LocationsViewModel::class.java).readAllLocations.observe(this, {
                 locations -> latestLocation = locations.filter { containsWifi(it, getSsid(this)) }
         })
         return latestLocation?.get(0)
