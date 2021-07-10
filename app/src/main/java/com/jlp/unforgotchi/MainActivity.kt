@@ -105,6 +105,19 @@ class MainActivity : AppCompatActivity() {
 //        TODO("Not yet implemented")
 //    }
 
+//    private fun isConnectedToWifi(): Boolean {
+//        val connMgr = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+//        var isWifiConn: Boolean = false
+//        connMgr.allNetworks.forEach { network ->
+//            connMgr.getNetworkInfo(network)?.apply {
+//                if (type == ConnectivityManager.TYPE_WIFI) {
+//                    isWifiConn = isWifiConn or isConnected
+//                }
+//            }
+//        }
+//        return isWifiConn
+//    }
+
     private fun getLatestLocation(): com.jlp.unforgotchi.db.Location? {
         var latestLocation: List<com.jlp.unforgotchi.db.Location>? = null
         ViewModelProvider(this).get(LocationsViewModel::class.java).readAllLocations.observe(this, {
