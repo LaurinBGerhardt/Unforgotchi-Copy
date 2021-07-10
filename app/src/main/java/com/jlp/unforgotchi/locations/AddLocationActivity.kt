@@ -1,15 +1,22 @@
 package com.jlp.unforgotchi.locations
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.net.wifi.SupplicantState
+import android.net.wifi.WifiInfo
+import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.util.Log
 import android.widget.ImageButton
-import androidx.activity.result.contract.ActivityResultContracts
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.jlp.unforgotchi.R
@@ -19,6 +26,8 @@ import java.io.IOException
 
 class AddLocationActivity : AppCompatActivity() {
     private lateinit var addLocNameView: TextInputEditText
+    private lateinit var wifiManager: WifiManager
+    private lateinit var wifiInfo: WifiInfo
 
     private val previewImage by lazy { findViewById<ImageButton>(R.id.selected_location_image_button) }
     private var previewImageChanged : Boolean = false   //this is horrible coding dont copy this
@@ -43,12 +52,40 @@ class AddLocationActivity : AppCompatActivity() {
         setContentView(R.layout.add_location_layout)
         addLocNameView = findViewById(R.id.add_name_of_location)
         previewImage.setImageResource(R.drawable.ic_baseline_image_search_24)
+        wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
+        wifiInfo = wifiManager.connectionInfo
         previewImage.setOnClickListener {
             selectImageFromGallery()
         }
 
         findViewById<FloatingActionButton>(R.id.finish_adding_location).setOnClickListener {
             processInput()
+        }
+
+        askPermissions(arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+            Manifest.permission.ACCESS_NETWORK_STATE,
+            Manifest.permission.CHANGE_WIFI_STATE
+        ))
+    }
+
+    private fun askPermissions(PERMISSIONS: Array<String>) {
+        for (permission: String in PERMISSIONS) {
+            if(ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
+                Log.d("###", "Permission"+permission+"Granted")
+            } else {
+                requestPermissions(arrayOf(permission), kotlin.math.abs(permission.hashCode()))
+            }
+        }
+    }
+
+    private fun getSsid(): String? {
+        if (wifiInfo.supplicantState == SupplicantState.COMPLETED) {
+            Toast.makeText(this, wifiInfo.ssid, Toast.LENGTH_LONG).show()
+            return wifiInfo.ssid
+        } else {
+            return null
         }
     }
 
@@ -74,6 +111,7 @@ class AddLocationActivity : AppCompatActivity() {
                 Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
             setResult(Activity.RESULT_OK, intent)
         }
+        getSsid()
         finish()
     }
 
