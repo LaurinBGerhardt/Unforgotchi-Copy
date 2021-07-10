@@ -129,7 +129,7 @@ class MainActivity : AppCompatActivity() {
             context = con
             val wifiInfo = (context.getSystemService(WIFI_SERVICE) as WifiManager).connectionInfo
             if (wifiInfo.supplicantState == SupplicantState.COMPLETED) {
-                Toast.makeText(context,"WiFi " +wifiInfo.ssid+ " added", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(context,"WiFi " +wifiInfo.ssid+ " added", Toast.LENGTH_SHORT).show()
                 return wifiInfo.ssid
             } else {
                 return null

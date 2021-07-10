@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
@@ -67,41 +68,25 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
                 val newLocName: String = data!!.getStringExtra("name") ?: "New Location"
                 val newWifiName : String? = data!!.getStringExtra("wifiName")
                 val newImgData : Uri? = data!!.getParcelableExtra<Uri?>("image")
-                /*
-                if(newImgData != null) {
+
+                if (newImgData != null) {
                     contentResolver.takePersistableUriPermission(
                         newImgData,
                         data.flags and Intent.FLAG_GRANT_READ_URI_PERMISSION
                     )
-                    locationsDBViewModel.addLocation(
-                        Location(0, newLocName, newImgData.toString(),newWifiName)
-                    )
-                } else {
-                    locationsDBViewModel.addLocation(
-                        Location(0, newLocName, null,newWifiName)
-                    )
                 }
-                 */
-                if( newWifiName != null &&
-                    locationsDBViewModel.getAllWifis.value?.contains(newWifiName) != null) {
-                    Toast.makeText(applicationContext,
-                        "There's already a Location with that WiFi",
-                        Toast.LENGTH_SHORT).show()
-                } else {
-                    if (newImgData != null) {
-                        contentResolver.takePersistableUriPermission(
-                            newImgData,
-                            data.flags and Intent.FLAG_GRANT_READ_URI_PERMISSION
-                        )
-                    }
-                    //val duplicateWifis = locationsDBViewModel.getAllWifis.value?.filter { it ->
-                    //        it == newWifiName
-                    //}
-                    locationsDBViewModel.addLocation(
-                        Location(0, newLocName, newImgData?.toString(), newWifiName)
-                    )
-                    locationsAdapter.notifyDataSetChanged()
+                locationsDBViewModel.addLocation(
+                    Location(0, newLocName, newImgData?.toString(), newWifiName)
+                )
+                if(newWifiName != null) {
+                    Toast.makeText(
+                        applicationContext,
+                        "WiFi $newWifiName added",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
+                //TODO: Toast if there already was a Location with that wifi
+                locationsAdapter.notifyDataSetChanged()
             }
         }
 
