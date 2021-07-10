@@ -5,9 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E6680128"
-    android:foregroundTint="#E62727"
-    android:foregroundTintMode="add"
+    android:background="#CC680218"
     android:hapticFeedbackEnabled="false"
     android:outlineProvider="bounds">
 
@@ -78,23 +76,35 @@
     <Spinner
         android:id="@+id/select_lists_spinner"
         style="@android:style/Widget.DeviceDefault.Light.Spinner"
-        android:layout_width="408dp"
-        android:layout_height="46dp"
+        android:layout_width="168dp"
+        android:layout_height="60dp"
         android:layout_centerHorizontal="true"
-        android:background="#4D680128"
+        android:spinnerMode="dropdown"
+        app:layout_constraintEnd_toEndOf="@+id/textView2"
+        app:layout_constraintStart_toStartOf="@+id/textView2"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Lists"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/select_lists_spinner"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text = "Add Lists"
-        android:textSize="20sp"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="@+id/select_lists_spinner"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/select_lists_spinner" />
+    <Button
+        android:id="@+id/add_wifi_to_location_button"
+        android:layout_width="168dp"
+        android:layout_height="60dp"
+        android:backgroundTint="#99680218"
+        android:text="Add Current Wifi"
+        app:layout_constraintEnd_toEndOf="@+id/select_lists_spinner"
+        app:layout_constraintStart_toStartOf="@+id/select_lists_spinner"
+        app:layout_constraintTop_toBottomOf="@+id/select_lists_spinner" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/finish_adding_location"

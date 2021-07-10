@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.net.wifi.SupplicantState
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Bundle
@@ -12,12 +13,12 @@ import android.util.DisplayMetrics
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Spinner
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
-import com.jlp.unforgotchi.MainActivity
 import com.jlp.unforgotchi.R
 import com.jlp.unforgotchi.db.ReminderList
 import com.jlp.unforgotchi.db.ReminderListViewModel
@@ -69,12 +70,21 @@ class AddLocationActivity : AppCompatActivity() {
 
         //This is for the Dropdown Menu:
         val reminderListsVM: ReminderListViewModel = ViewModelProvider(this).get(ReminderListViewModel::class.java)
+
+        // fill the 'spinner_items' array with all items to show
+        //val allObjects: List<DropdownListElement> = getMyObjects() // from wherever
+        //val currentLists : List<ReminderList> = reminderListsVM.readCurrentData()
+        //for (list in currentLists) {
+        //    dropdownItems.add(DropDownAdapter.DropDownItem(list, list.listName))
+        //}
         reminderListsVM.readAllData.observe(this, Observer { reminderLists ->
             for (reminderList in reminderLists) {
                 dropdownItems.add(DropDownAdapter.DropDownItem(reminderList, reminderList.listName))
             }
         })
+
         val headerText = "Select a List"
+
         val spinner: Spinner = findViewById(R.id.select_lists_spinner)
         val adapter = DropDownAdapter(this, headerText, dropdownItems, selectedLists)
         spinner.adapter = adapter
@@ -82,11 +92,19 @@ class AddLocationActivity : AppCompatActivity() {
         // From here it should be possible to just see what's inside selectedLists
         // and work with that
 
-        //Do this last!:
         findViewById<FloatingActionButton>(R.id.finish_adding_location).setOnClickListener {
             processInput()
         }
 
+    }
+
+    private fun getSsid(): String? {
+        if (wifiInfo.supplicantState == SupplicantState.COMPLETED) {
+            Log.d("SSID: ", wifiInfo.ssid)
+            return wifiInfo.ssid
+        } else {
+            return null
+        }
     }
 
     private fun processInput() {

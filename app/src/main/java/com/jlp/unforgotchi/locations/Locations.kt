@@ -65,6 +65,7 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
                 // This happens when the AddLocationActivity ends:
                 val data: Intent? = result.data
                 val newLocName: String = data!!.getStringExtra("name") ?: "New Location"
+                val newWifiName : String? = data!!.getStringExtra("wifiName")
                 val newImgData : Uri? = data!!.getParcelableExtra<Uri?>("image")
 
                 if(newImgData != null) {
@@ -73,11 +74,11 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
                         data.flags and Intent.FLAG_GRANT_READ_URI_PERMISSION
                     )
                     locationsDBViewModel.addLocation(
-                        Location(0, newLocName, newImgData.toString())
+                        Location(0, newLocName, newImgData.toString(),newWifiName)
                     )
                 } else {
                     locationsDBViewModel.addLocation(
-                        Location(0, newLocName, null)
+                        Location(0, newLocName, null,newWifiName)
                     )
                 }
                 locationsAdapter.notifyDataSetChanged()
