@@ -1,7 +1,7 @@
 package com.jlp.unforgotchi
 
+//import com.google.android.gms.location.*
 import android.Manifest
-import android.Manifest.permission.ACCESS_WIFI_STATE
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -9,17 +9,15 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
-import android.location.LocationManager
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Looper
 import android.util.Log
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -29,7 +27,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-//import com.google.android.gms.location.*
 import com.google.android.material.navigation.NavigationView
 import com.jlp.unforgotchi.db.ReminderListElementViewModel
 import com.jlp.unforgotchi.list.Lists
@@ -113,7 +110,12 @@ class MainActivity : AppCompatActivity() {
 
         recyclerViewSetup(listsPage)
 
-        if (!CheckPermission()) askPermission(ACCESS_WIFI_STATE)
+        askPermissions(arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+            Manifest.permission.ACCESS_NETWORK_STATE,
+            Manifest.permission.CHANGE_WIFI_STATE
+        ))
 
         // for the notification:
         val notificationButton = findViewById<Button>(R.id.reminder_notification)
@@ -282,11 +284,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun askPermission(PERMISSION: String) {
-        if(ActivityCompat.checkSelfPermission(this, PERMISSION) == PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this,"Permission Granted",Toast.LENGTH_SHORT).show()
-        } else {
-            requestPermissions(arrayOf(PERMISSION), 1)
+    private fun askPermissions(PERMISSIONS: Array<String>) {
+        for (permission: String in PERMISSIONS) {
+            if(ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
+                Log.d("###", "Permission"+permission+"Granted")
+            } else {
+                requestPermissions(arrayOf(permission), kotlin.math.abs(permission.hashCode()))
+            }
         }
     }
 
