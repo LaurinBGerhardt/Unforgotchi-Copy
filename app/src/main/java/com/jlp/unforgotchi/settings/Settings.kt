@@ -8,10 +8,12 @@ import android.net.NetworkInfo
 import android.net.wifi.SupplicantState
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -34,6 +36,7 @@ class Settings : AppCompatActivity() {
     private var adapter: ArrayAdapter<*>? = null
     private lateinit var locations: List<Location>
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.settings)
@@ -104,7 +107,7 @@ class Settings : AppCompatActivity() {
         locationsDBViewModel.readAllLocations.observe(this,
             { locationsList ->
                 locations = locationsList
-//                Log.d("###", locationsList.toString())
+                Log.d("###", locationsList.toString())
 
         })
 
@@ -129,17 +132,19 @@ class Settings : AppCompatActivity() {
     }
 
      fun getSsid(wifiInfo: WifiInfo): String? {
+         askPermissions(arrayOf(ACCESS_FINE_LOCATION, ACCESS_BACKGROUND_LOCATION, ACCESS_NETWORK_STATE, CHANGE_WIFI_STATE))
         if (wifiInfo.supplicantState == SupplicantState.COMPLETED) {
+            Toast.makeText(this, wifiInfo.ssid, Toast.LENGTH_LONG).show()
             return wifiInfo.ssid
         } else {
-            return "SSID not available"
+            return null
         }
     }
 
     private fun askPermissions(PERMISSIONS: Array<String>) {
         for (permission: String in PERMISSIONS) {
             if(ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
-//                Toast.makeText(this,"Permission"+permission+"Granted",Toast.LENGTH_SHORT).show()
+                Log.d("###", "Permission"+permission+"Granted")
             } else {
                 requestPermissions(arrayOf(permission), kotlin.math.abs(permission.hashCode()))
             }
