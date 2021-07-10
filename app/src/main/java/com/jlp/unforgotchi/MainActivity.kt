@@ -9,6 +9,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.net.wifi.SupplicantState
+import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -57,6 +59,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        MainActivity.Companion.context = this
         setContentView(R.layout.activity_main)
 
         //create the one channel we use for all our notifications:
@@ -115,6 +118,23 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
+    }
+
+    companion object {
+        //Ignore warning; Context is held in inner class anyways; see for yourself
+        //https://stackoverflow.com/questions/54075649/access-application-context-in-companion-object-in-kotlin
+        private lateinit var context: Context
+
+        fun getSsid(con: Context): String? {
+            context = con
+            val wifiInfo = (context.getSystemService(WIFI_SERVICE) as WifiManager).connectionInfo
+            if (wifiInfo.supplicantState == SupplicantState.COMPLETED) {
+                Toast.makeText(context,"WiFi " +wifiInfo.ssid+ " added", Toast.LENGTH_SHORT).show()
+                return wifiInfo.ssid
+            } else {
+                return null
+            }
+        }
     }
 
     private fun recyclerViewSetup(listsPage: Intent) {
@@ -332,93 +352,14 @@ class MainActivity : AppCompatActivity() {
             notify(notificationId, builder.build())
         }
     }
-
-    fun CheckPermission():Boolean{
-        //this function will return a boolean
-        //true: if we have permission
-        //false if not
-        if(ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-            ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-            ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_GRANTED){
-            return true
-        }
-        return false
-    }
-
-    fun RequestPermission(){
-        //this function will allows us to tell the user to request the necessary permission if they are not granted
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION,android.Manifest.permission.ACCESS_FINE_LOCATION),
-            PERMISSION_ID
-        )
-    }
-
-
-//    fun isLocationEnabled():Boolean{
-//        //this function will return to us the state of the location service
-//        //if the gps or the network provider is enabled then it will return true otherwise it will return false
-//        var locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-//        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-//    }
-
-//    fun getLastLocation(){
-//        if(CheckPermission()){
-//            if(isLocationEnabled()){
-//                if (ActivityCompat.checkSelfPermission(
-//                        this,
-//                        Manifest.permission.ACCESS_FINE_LOCATION
-//                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-//                        this,
-//                        Manifest.permission.ACCESS_COARSE_LOCATION
-//                    ) != PackageManager.PERMISSION_GRANTED
-//                ) {
-//                    return
-//                }
-//                fusedLocationProviderClient.lastLocation.addOnCompleteListener { task->
-//                    var location: Location? = task.result
-//                    if(location == null){
-//                        NewLocationData()
-//                    }else{
-//                        Log.d("Debug:" ,"Your Location:"+ location.longitude)
-//                    }
-//                }
-//            }else{
-//                Toast.makeText(this,"Please Turn on Your device Location",Toast.LENGTH_SHORT).show()
-//            }
-//        }else{
-//            RequestPermission()
+//    TODO check for permissions in Bugfxing phase
+//    fun CheckPermission():Boolean{
+//        //returns true: if we have permission, false if not
+//        if(ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+//            ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+//            ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_GRANTED){
+//            return true
 //        }
-//    }
-
-
-//    fun NewLocationData(){
-//        var locationRequest =  LocationRequest()
-//        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-//        locationRequest.interval = 0
-//        locationRequest.fastestInterval = 0
-//        locationRequest.numUpdates = 1
-//        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-//        if (ActivityCompat.checkSelfPermission(
-//                this,
-//                Manifest.permission.ACCESS_FINE_LOCATION
-//            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-//                this,
-//                Manifest.permission.ACCESS_COARSE_LOCATION
-//            ) != PackageManager.PERMISSION_GRANTED
-//        ) {return
-//        }
-//        fusedLocationProviderClient!!.requestLocationUpdates(
-//            locationRequest,locationCallback, Looper.myLooper()
-//        )
-//    }
-
-
-//    private val locationCallback = object : LocationCallback(){
-//        override fun onLocationResult(locationResult: LocationResult) {
-//            lastLocation = locationResult.lastLocation
-//            Log.d("Debug:","your last last location: "+ lastLocation.longitude.toString())
-//            showLocation.text = "You Last Location is : Long: "+ lastLocation.longitude + " , Lat: " + lastLocation.latitude + "\n"
-//        }
+//        return false
 //    }
 }
