@@ -78,13 +78,7 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
                 locationsDBViewModel.addLocation(
                     Location(0, newLocName, newImgData?.toString(), newWifiName)
                 )
-                if(newWifiName != null) {
-                    Toast.makeText(
-                        applicationContext,
-                        "WiFi $newWifiName added",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+                //Toast.makeText(applicationContext, "WiFi $newWifiName added", Toast.LENGTH_SHORT).show()
                 //TODO: Toast if there already was a Location with that wifi
                 locationsAdapter.notifyDataSetChanged()
             }
