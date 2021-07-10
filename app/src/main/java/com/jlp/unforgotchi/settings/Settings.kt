@@ -29,10 +29,6 @@ class Settings : AppCompatActivity() {
 
     private val arrayList: ArrayList<String> = ArrayList()
     private var adapter: ArrayAdapter<*>? = null
-    private val wifiManager: WifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
-    private val wifiInfo: WifiInfo = wifiManager.connectionInfo
-    private val connManager: ConnectivityManager = applicationContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-    private val networkInfo: NetworkInfo? = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +37,10 @@ class Settings : AppCompatActivity() {
         val navView : NavigationView = findViewById(R.id.nav_view)
         val buttonScan: Button = findViewById(R.id.scanBtn)
         val listView: ListView = findViewById(R.id.wifiList)
+        val wifiManager: WifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
+        val wifiInfo: WifiInfo = wifiManager.connectionInfo
+        val connManager: ConnectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo: NetworkInfo? = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
 
         if (!CheckPermissions()) askPermission(arrayOf(
             Manifest.permission.ACCESS_WIFI_STATE,
@@ -89,8 +89,8 @@ class Settings : AppCompatActivity() {
 
 
         buttonScan.setOnClickListener{
-            if (isWifiConnected()) {
-                val macAddress = getMacAddress()
+            if (isWifiConnected(wifiManager, networkInfo)) {
+                val macAddress = getMacAddress(wifiInfo)
                 if (macAddress != null) arrayList.add(macAddress)
                 adapter?.notifyDataSetChanged()
             }
@@ -102,7 +102,7 @@ class Settings : AppCompatActivity() {
         }
     }
 
-    private fun isWifiConnected(): Boolean {
+    private fun isWifiConnected(wifiManager: WifiManager, networkInfo: NetworkInfo?): Boolean {
         if (!wifiManager.isWifiEnabled) {
             Toast.makeText(this, "Please turn on Wifi and connect to a Network", Toast.LENGTH_LONG).show()
             return false;
@@ -114,7 +114,7 @@ class Settings : AppCompatActivity() {
         }
     }
 
-    private fun getMacAddress (): String? {
+    private fun getMacAddress(wifiInfo: WifiInfo): String? {
         if (wifiInfo.supplicantState == SupplicantState.COMPLETED) {
 //            return wifiInfo.macAddress
             return wifiInfo.networkId.toString()
