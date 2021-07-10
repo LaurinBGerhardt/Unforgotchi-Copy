@@ -8,11 +8,15 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.widget.ImageButton
-import androidx.activity.result.contract.ActivityResultContracts
+import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.jlp.unforgotchi.R
+import com.jlp.unforgotchi.db.ReminderList
+import com.jlp.unforgotchi.db.ReminderListViewModel
 import java.io.FileDescriptor
 import java.io.IOException
 
@@ -38,6 +42,10 @@ class AddLocationActivity : AppCompatActivity() {
         selectImageFromGalleryResult.launch("image/*")
     }
 
+    //For the Dropdown Menu:
+    private val dropdownItems: MutableList<DropDownAdapter.DropDownItem<ReminderList>> = ArrayList()
+    private val selectedLists: MutableSet<ReminderList> = HashSet()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.add_location_layout)
@@ -46,6 +54,29 @@ class AddLocationActivity : AppCompatActivity() {
         previewImage.setOnClickListener {
             selectImageFromGallery()
         }
+
+        val reminderListsVM: ReminderListViewModel = ViewModelProvider(this).get(ReminderListViewModel::class.java)
+
+        // fill the 'spinner_items' array with all items to show
+        //val allObjects: List<DropdownListElement> = getMyObjects() // from wherever
+        //val currentLists : List<ReminderList> = reminderListsVM.readCurrentData()
+        //for (list in currentLists) {
+        //    dropdownItems.add(DropDownAdapter.DropDownItem(list, list.listName))
+        //}
+        reminderListsVM.readAllData.observe(this, Observer { reminderLists ->
+            for (reminderList in reminderLists) {
+                dropdownItems.add(DropDownAdapter.DropDownItem(reminderList, reminderList.listName))
+            }
+        })
+
+        val headerText = "Select a List"
+
+        val spinner: Spinner = findViewById(R.id.select_lists_spinner)
+        val adapter = DropDownAdapter(this, headerText, dropdownItems, selectedLists)
+        spinner.adapter = adapter
+
+        // From here it should be possible to just see what's inside selectedLists
+        // and work with that
 
         findViewById<FloatingActionButton>(R.id.finish_adding_location).setOnClickListener {
             processInput()
