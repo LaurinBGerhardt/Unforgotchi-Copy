@@ -5,20 +5,17 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.net.wifi.SupplicantState
-import android.net.wifi.WifiInfo
-import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Spinner
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
+import com.jlp.unforgotchi.MainActivity
 import com.jlp.unforgotchi.R
 import com.jlp.unforgotchi.db.ReminderList
 import com.jlp.unforgotchi.db.ReminderListViewModel
@@ -28,8 +25,6 @@ import java.io.IOException
 
 class AddLocationActivity : AppCompatActivity() {
     private lateinit var addLocNameView: TextInputEditText
-    private lateinit var wifiManager: WifiManager
-    private lateinit var wifiInfo: WifiInfo
 
     private val previewImage by lazy { findViewById<ImageButton>(R.id.selected_location_image_button) }
     private var previewImageChanged : Boolean = false   //this is horrible coding dont copy this
@@ -96,15 +91,6 @@ class AddLocationActivity : AppCompatActivity() {
             processInput()
         }
 
-    }
-
-    private fun getSsid(): String? {
-        if (wifiInfo.supplicantState == SupplicantState.COMPLETED) {
-            Log.d("SSID: ", wifiInfo.ssid)
-            return wifiInfo.ssid
-        } else {
-            return null
-        }
     }
 
     private fun processInput() {
