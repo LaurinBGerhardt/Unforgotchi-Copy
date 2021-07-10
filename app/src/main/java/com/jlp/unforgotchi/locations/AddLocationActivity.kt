@@ -11,6 +11,7 @@ import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
@@ -33,6 +34,8 @@ class AddLocationActivity : AppCompatActivity() {
     private val previewImage by lazy { findViewById<ImageButton>(R.id.selected_location_image_button) }
     private var previewImageChanged : Boolean = false   //this is horrible coding dont copy this
     private var imageData : Uri? = null
+    private val addWifiButton : Button by lazy { findViewById<Button>(R.id.add_wifi_to_location_button) }
+    private var wifiName : String? = null
 
     //private val selectImageFromGalleryResult  = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
     private val selectImageFromGalleryResult  = registerForActivityResult(RetreiveImageContract()) { uri: Uri? ->
@@ -63,22 +66,18 @@ class AddLocationActivity : AppCompatActivity() {
             selectImageFromGallery()
         }
 
-        val reminderListsVM: ReminderListViewModel = ViewModelProvider(this).get(ReminderListViewModel::class.java)
+        addWifiButton.setOnClickListener{
+            //TODO: for Paul: do something and set wifiName = ...
+        }
 
-        // fill the 'spinner_items' array with all items to show
-        //val allObjects: List<DropdownListElement> = getMyObjects() // from wherever
-        //val currentLists : List<ReminderList> = reminderListsVM.readCurrentData()
-        //for (list in currentLists) {
-        //    dropdownItems.add(DropDownAdapter.DropDownItem(list, list.listName))
-        //}
+        //This is for the Dropdown Menu:
+        val reminderListsVM: ReminderListViewModel = ViewModelProvider(this).get(ReminderListViewModel::class.java)
         reminderListsVM.readAllData.observe(this, Observer { reminderLists ->
             for (reminderList in reminderLists) {
                 dropdownItems.add(DropDownAdapter.DropDownItem(reminderList, reminderList.listName))
             }
         })
-
         val headerText = "Select a List"
-
         val spinner: Spinner = findViewById(R.id.select_lists_spinner)
         val adapter = DropDownAdapter(this, headerText, dropdownItems, selectedLists)
         spinner.adapter = adapter
@@ -86,6 +85,7 @@ class AddLocationActivity : AppCompatActivity() {
         // From here it should be possible to just see what's inside selectedLists
         // and work with that
 
+        //Do this last!:
         findViewById<FloatingActionButton>(R.id.finish_adding_location).setOnClickListener {
             processInput()
         }
@@ -110,11 +110,13 @@ class AddLocationActivity : AppCompatActivity() {
             previewImage.setImageResource(R.drawable.ic_baseline_location_city_24)
             val name = addLocNameView.text.toString()
             intent.putExtra("name", name)
+            intent.putExtra("wifiName", wifiName)
             setResult(Activity.RESULT_OK, intent)
         } else {
             val name = addLocNameView.text.toString()
             intent.putExtra("name", name)
             intent.putExtra("image",imageData)
+            intent.putExtra("wifiName", wifiName)
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
             intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
