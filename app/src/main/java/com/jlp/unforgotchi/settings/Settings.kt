@@ -10,10 +10,8 @@ import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.view.MenuItem
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.ListView
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -97,6 +95,11 @@ class Settings : AppCompatActivity() {
                 adapter?.notifyDataSetChanged()
             }
         }
+
+        listView.setOnItemClickListener { parent, view, position, id ->
+            val o: Any = listView.getItemAtPosition(position)
+            Toast.makeText(baseContext, o.toString(), Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun isWifiConnected(): Boolean {
@@ -113,7 +116,8 @@ class Settings : AppCompatActivity() {
 
     private fun getMacAddress (): String? {
         if (wifiInfo.supplicantState == SupplicantState.COMPLETED) {
-            return wifiInfo.macAddress
+//            return wifiInfo.macAddress
+            return wifiInfo.networkId.toString()
         } else {
             return "MAC Address not available"
         }
