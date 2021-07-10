@@ -10,9 +10,9 @@ import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.util.Log
 import android.widget.ImageButton
 import android.widget.Spinner
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -94,7 +94,7 @@ class AddLocationActivity : AppCompatActivity() {
 
     private fun getSsid(): String? {
         if (wifiInfo.supplicantState == SupplicantState.COMPLETED) {
-            Toast.makeText(this, wifiInfo.ssid, Toast.LENGTH_LONG).show()
+            Log.d("SSID: ", wifiInfo.ssid)
             return wifiInfo.ssid
         } else {
             return null
