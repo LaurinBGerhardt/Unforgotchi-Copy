@@ -147,10 +147,10 @@ class MainActivity : AppCompatActivity() {
         fun getSsid(con: Context): String? {
             context = con
             val wifiInfo = (context.getSystemService(WIFI_SERVICE) as WifiManager).connectionInfo
-            if (wifiInfo.supplicantState == SupplicantState.COMPLETED) {
-                return wifiInfo.ssid
+            return if (wifiInfo.supplicantState == SupplicantState.COMPLETED) {
+                wifiInfo.ssid
             } else {
-                return null
+                null
             }
         }
     }
