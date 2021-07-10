@@ -68,15 +68,10 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
                 val newImgData : Uri? = data!!.getParcelableExtra<Uri?>("image")
 
                 if(newImgData != null) {
-                    //val newImgData : String? = data!!.getStringExtra("image")
-                    val flags = data.flags /*or (Intent.FLAG_GRANT_READ_URI_PERMISSION
-                            or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)*/
-
                     contentResolver.takePersistableUriPermission(
                         newImgData,
-                        flags and Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        data.flags and Intent.FLAG_GRANT_READ_URI_PERMISSION
                     )
-
                     locationsDBViewModel.addLocation(
                         Location(0, newLocName, newImgData.toString())
                     )

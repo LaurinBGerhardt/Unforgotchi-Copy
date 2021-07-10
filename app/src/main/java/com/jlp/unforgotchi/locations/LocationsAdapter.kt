@@ -34,13 +34,8 @@ class LocationsAdapter(
         val itemsViewModel = mList[position]
 
         // sets the image to the imageview from our itemHolder class
-        //holder.imageView.setImageResource(ItemsViewModel.image)
-        //holder.imageView.setImageDrawable(ItemsViewModel.image)
         if(itemsViewModel.image != null) {
-            //holder.imageView.setImageBitmap(itemsViewModel.image)
-            //holder.imageView.setImageURI(Uri.parse(itemsViewModel.image!!))
             Glide.with(holder.itemView.context)
-                //.load(File(itemsViewModel.image!!))
                 .load(Uri.parse(itemsViewModel.image!!))
                 .into(holder.imageView)
         } else {

@@ -25,4 +25,16 @@ class LocationsViewModel(application: Application): AndroidViewModel(application
             repository.addLocation(location)
         }
     }
+
+    fun updateLocation(location: Location,wifiName : String? = null){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.updateLocation(location,wifiName)
+        }
+    }
+
+    fun deleteLocation(location: Location){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteLocation(location)
+        }
+    }
 }
