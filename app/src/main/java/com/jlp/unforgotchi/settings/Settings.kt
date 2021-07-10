@@ -1,6 +1,6 @@
 package com.jlp.unforgotchi.settings
 
-import android.Manifest
+import android.Manifest.permission.*
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
@@ -10,7 +10,6 @@ import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
 import android.widget.*
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -42,14 +41,7 @@ class Settings : AppCompatActivity() {
         val connManager: ConnectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkInfo: NetworkInfo? = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
 
-        if (!CheckPermissions()) askPermission(arrayOf(
-            Manifest.permission.ACCESS_WIFI_STATE,
-            Manifest.permission.CHANGE_WIFI_STATE,
-            Manifest.permission.ACCESS_NETWORK_STATE,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ))
-
-
+        askPermissions(arrayOf(ACCESS_FINE_LOCATION, ACCESS_BACKGROUND_LOCATION, ACCESS_NETWORK_STATE, CHANGE_WIFI_STATE))
 
         toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
 
@@ -90,15 +82,15 @@ class Settings : AppCompatActivity() {
 
         buttonScan.setOnClickListener{
             if (isWifiConnected(wifiManager, networkInfo)) {
-                val macAddress = getMacAddress(wifiInfo)
+                val macAddress = getSsid(wifiInfo)
                 if (macAddress != null) arrayList.add(macAddress)
                 adapter?.notifyDataSetChanged()
             }
         }
 
         listView.setOnItemClickListener { parent, view, position, id ->
-            val o: Any = listView.getItemAtPosition(position)
-            Toast.makeText(baseContext, o.toString(), Toast.LENGTH_SHORT).show()
+            val wifi: Any = listView.getItemAtPosition(position)
+            Toast.makeText(baseContext, wifi.toString(), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -114,19 +106,18 @@ class Settings : AppCompatActivity() {
         }
     }
 
-    private fun getMacAddress(wifiInfo: WifiInfo): String? {
+    private fun getSsid(wifiInfo: WifiInfo): String? {
         if (wifiInfo.supplicantState == SupplicantState.COMPLETED) {
-//            return wifiInfo.macAddress
-            return wifiInfo.networkId.toString()
+            return wifiInfo.ssid
         } else {
-            return "MAC Address not available"
+            return "SSID not available"
         }
     }
 
-    private fun askPermission(PERMISSIONS: Array<String>) {
+    private fun askPermissions(PERMISSIONS: Array<String>) {
         for (permission: String in PERMISSIONS) {
             if(ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this,"Permission"+permission+"Granted",Toast.LENGTH_SHORT).show()
+//                Toast.makeText(this,"Permission"+permission+"Granted",Toast.LENGTH_SHORT).show()
             } else {
                 requestPermissions(arrayOf(permission), permission.hashCode())
             }
@@ -141,6 +132,7 @@ class Settings : AppCompatActivity() {
             ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
             ActivityCompat.checkSelfPermission(this,android.Manifest.permission.CHANGE_WIFI_STATE) == PackageManager.PERMISSION_GRANTED ||
             ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_NETWORK_STATE) == PackageManager.PERMISSION_GRANTED ||
+            ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED ||
             ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_GRANTED){
             return true
         }
@@ -150,7 +142,7 @@ class Settings : AppCompatActivity() {
     @Override
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
+        Toast.makeText(this,"Permission Granted",Toast.LENGTH_SHORT).show()
         if (requestCode == 1) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this,"Permission Granted",Toast.LENGTH_SHORT).show()
