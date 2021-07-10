@@ -10,10 +10,10 @@ import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.util.Log
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Spinner
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -67,7 +67,7 @@ class AddLocationActivity : AppCompatActivity() {
         }
 
         addWifiButton.setOnClickListener{
-            //TODO: for Paul: do something and set wifiName = ...
+            wifiName = getSsid()
         }
 
         //This is for the Dropdown Menu:
@@ -94,7 +94,7 @@ class AddLocationActivity : AppCompatActivity() {
 
     private fun getSsid(): String? {
         if (wifiInfo.supplicantState == SupplicantState.COMPLETED) {
-            Log.d("SSID: ", wifiInfo.ssid)
+            Toast.makeText(this,"WiFi " +wifiInfo.ssid+ " added", Toast.LENGTH_SHORT).show()
             return wifiInfo.ssid
         } else {
             return null
