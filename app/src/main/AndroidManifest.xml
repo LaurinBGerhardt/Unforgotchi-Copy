@@ -26,7 +26,11 @@
         <activity android:name=".locations.Locations"></activity>
         <activity android:name=".locations.AddLocationActivity"></activity>
         <activity android:name=".detaillist.DetailList"></activity>
-
+        <service
+            android:name=".WifiConnectionObserver"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -36,8 +40,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-
-
     </application>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
