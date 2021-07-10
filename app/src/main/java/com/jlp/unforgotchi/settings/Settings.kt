@@ -9,6 +9,7 @@ import android.net.wifi.SupplicantState
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.widget.*
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -20,7 +21,6 @@ import com.jlp.unforgotchi.MainActivity
 import com.jlp.unforgotchi.R
 import com.jlp.unforgotchi.list.Lists
 import com.jlp.unforgotchi.locations.Locations
-import java.lang.Math.abs
 
 
 class Settings : AppCompatActivity() {
@@ -29,6 +29,7 @@ class Settings : AppCompatActivity() {
 
     private val arrayList: ArrayList<String> = ArrayList()
     private var adapter: ArrayAdapter<*>? = null
+    private lateinit var locations: List<Location>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,7 +97,13 @@ class Settings : AppCompatActivity() {
         }
     }
 
-    private fun isWifiConnected(wifiManager: WifiManager, networkInfo: NetworkInfo?): Boolean {
+//    private fun getLocations(locationsList: List<Location>) {
+//        for (location in locationsList) {
+//            Log.d("###", location.toString())
+//        }
+//    }
+
+    fun isWifiConnected(wifiManager: WifiManager, networkInfo: NetworkInfo?): Boolean {
         if (!wifiManager.isWifiEnabled) {
             Toast.makeText(this, "Please turn on Wifi and connect to a Network", Toast.LENGTH_LONG).show()
             return false;
@@ -108,7 +115,7 @@ class Settings : AppCompatActivity() {
         }
     }
 
-    private fun getSsid(wifiInfo: WifiInfo): String? {
+     fun getSsid(wifiInfo: WifiInfo): String? {
         if (wifiInfo.supplicantState == SupplicantState.COMPLETED) {
             return wifiInfo.ssid
         } else {
