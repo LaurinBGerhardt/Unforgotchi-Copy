@@ -1,9 +1,7 @@
 package com.jlp.unforgotchi.locations
 
-import android.Manifest
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -12,11 +10,9 @@ import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.util.Log
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.jlp.unforgotchi.R
@@ -62,23 +58,23 @@ class AddLocationActivity : AppCompatActivity() {
             processInput()
         }
 
-        askPermissions(arrayOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_BACKGROUND_LOCATION,
-            Manifest.permission.ACCESS_NETWORK_STATE,
-            Manifest.permission.CHANGE_WIFI_STATE
-        ))
+//        askPermissions(arrayOf(
+//            Manifest.permission.ACCESS_FINE_LOCATION,
+//            Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+//            Manifest.permission.ACCESS_NETWORK_STATE,
+//            Manifest.permission.CHANGE_WIFI_STATE
+//        ))
     }
 
-    private fun askPermissions(PERMISSIONS: Array<String>) {
-        for (permission: String in PERMISSIONS) {
-            if(ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
-                Log.d("###", "Permission"+permission+"Granted")
-            } else {
-                requestPermissions(arrayOf(permission), kotlin.math.abs(permission.hashCode()))
-            }
-        }
-    }
+//    private fun askPermissions(PERMISSIONS: Array<String>) {
+//        for (permission: String in PERMISSIONS) {
+//            if(ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
+//                Log.d("###", "Permission"+permission+"Granted")
+//            } else {
+//                requestPermissions(arrayOf(permission), kotlin.math.abs(permission.hashCode()))
+//            }
+//        }
+//    }
 
     private fun getSsid(): String? {
         if (wifiInfo.supplicantState == SupplicantState.COMPLETED) {
