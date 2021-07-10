@@ -91,23 +91,6 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        //location Views, can be deleted if we don't use location
-//        val getLocationButton = findViewById<Button>(R.id.getLocation)
-//        getLocationButton.isVisible = false
-//        showLocation = findViewById<TextView>(R.id.showLocation)
-//        showLocation.isVisible = false
-//        // for the location:
-//        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-//        getLocationButton.setOnClickListener {
-//            showLocation.isVisible = true
-//            Log.d("Debug:",CheckPermission().toString())
-//            Log.d("Debug:",isLocationEnabled().toString())
-//            RequestPermission()
-//            getLastLocation()
-//            //mit lastLocation.longitude/ latitude kann jetzt Standort check gemacht werden und entsprechende Liste geladen werden
-//        }
-
-
         recyclerViewSetup(listsPage)
 
         askPermissions(arrayOf(
@@ -285,9 +268,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun askPermissions(PERMISSIONS: Array<String>) {
-        for (permission: String in PERMISSIONS) {
-            if(ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
-                Log.d("###", "Permission"+permission+"Granted")
+        PERMISSIONS.forEach { permission ->
+            if (ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
+                Log.d("###", "Permission" + permission + "Granted")
             } else {
                 requestPermissions(arrayOf(permission), kotlin.math.abs(permission.hashCode()))
             }
@@ -297,7 +280,6 @@ class MainActivity : AppCompatActivity() {
     @Override
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
         if (requestCode == 1) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this,"Permission Granted",Toast.LENGTH_SHORT).show()
