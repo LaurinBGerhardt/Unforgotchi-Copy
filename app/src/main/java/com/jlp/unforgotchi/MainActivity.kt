@@ -8,7 +8,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Location
 import android.net.wifi.SupplicantState
 import android.net.wifi.WifiManager
 import android.os.Build
@@ -46,13 +45,6 @@ class MainActivity : AppCompatActivity() {
     //for the navigation:
     lateinit var toggle : ActionBarDrawerToggle
 
-    //for the location service, can be deleted if we don't use location:
-//    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private val PERMISSION_ID = 1010
-//    lateinit var locationRequest: LocationRequest
-    lateinit var lastLocation: Location
-    lateinit var showLocation : TextView
-
     //for the recyclerview to show current list:
     private lateinit var detailListUserViewModel: ReminderListElementViewModel
     private val adapter = MainAdapter()
@@ -80,9 +72,7 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         navView.setNavigationItemSelectedListener {
-
             when(it.itemId){
-
                 R.id.nav_home -> startActivity(homePage)
                 R.id.nav_lists -> startActivity(listsPage)
                 R.id.nav_locations -> startActivity(locationsPage)
@@ -108,15 +98,8 @@ class MainActivity : AppCompatActivity() {
         val notificationButton = findViewById<Button>(R.id.reminder_notification)
         notificationButton.setOnClickListener {
             var text = ""
-            var x = 0
-            while (x < elementsArray.size) {
-                text += elementsArray[x] + "\n"
-                x++
-            }
-            sendNotification(
-                "Don't forget to take:",
-                text
-            )
+            elementsArray.forEach { element -> text += element + "\n" }
+            sendNotification("Don't forget to take:", text)
         }
         setLatestLocation()
     }
@@ -338,10 +321,8 @@ class MainActivity : AppCompatActivity() {
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "Unforgotchi Notification Channel"
-            val descriptionText = "This is the Channel for all Unforgotchi Notifications"
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-                description = descriptionText
+            val channel = NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_DEFAULT).apply {
+                description = "This is the Channel for all Unforgotchi Notifications"
             }
             val notificationManager: NotificationManager =
                 this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
