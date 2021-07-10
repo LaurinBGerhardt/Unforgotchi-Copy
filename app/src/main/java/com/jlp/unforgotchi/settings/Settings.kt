@@ -43,6 +43,7 @@ class Settings : AppCompatActivity() {
 
         askPermissions(arrayOf(ACCESS_FINE_LOCATION, ACCESS_BACKGROUND_LOCATION, ACCESS_NETWORK_STATE, CHANGE_WIFI_STATE))
 
+
         toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
 
         drawerLayout.addDrawerListener(toggle)
@@ -82,8 +83,8 @@ class Settings : AppCompatActivity() {
 
         buttonScan.setOnClickListener{
             if (isWifiConnected(wifiManager, networkInfo)) {
-                val macAddress = getSsid(wifiInfo)
-                if (macAddress != null) arrayList.add(macAddress)
+                val ssid = getSsid(wifiInfo)
+                if (ssid != null) arrayList.add(ssid)
                 adapter?.notifyDataSetChanged()
             }
         }
@@ -119,7 +120,7 @@ class Settings : AppCompatActivity() {
             if(ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
 //                Toast.makeText(this,"Permission"+permission+"Granted",Toast.LENGTH_SHORT).show()
             } else {
-                requestPermissions(arrayOf(permission), permission.hashCode())
+                requestPermissions(arrayOf(permission), 1010)
             }
         }
     }
