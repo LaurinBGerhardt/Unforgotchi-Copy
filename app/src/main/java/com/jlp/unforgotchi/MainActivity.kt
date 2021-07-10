@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.jlp.unforgotchi.db.ReminderListElementViewModel
+import com.jlp.unforgotchi.db.SpecialValuesViewModel
 import com.jlp.unforgotchi.list.Lists
 import com.jlp.unforgotchi.locations.Locations
 import com.jlp.unforgotchi.settings.Settings
@@ -56,11 +57,17 @@ class MainActivity : AppCompatActivity() {
     private lateinit var detailListUserViewModel: ReminderListElementViewModel
     private val adapter = MainAdapter()
 
+    //The table for special values (like the latest location):
+    private lateinit var specialValuesViewModel: SpecialValuesViewModel
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MainActivity.Companion.context = this
         setContentView(R.layout.activity_main)
+
+        //The table for special values (like the latest location):
+        specialValuesViewModel = ViewModelProvider(this).get(SpecialValuesViewModel::class.java)
 
         //create the one channel we use for all our notifications:
         createNotificationChannel()
