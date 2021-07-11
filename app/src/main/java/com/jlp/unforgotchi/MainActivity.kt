@@ -32,6 +32,7 @@ import com.google.android.material.navigation.NavigationView
 import com.jlp.unforgotchi.db.*
 import com.jlp.unforgotchi.list.Lists
 import com.jlp.unforgotchi.locations.Locations
+import kotlin.properties.Delegates
 
 class MainActivity : AppCompatActivity() {
 
@@ -49,6 +50,7 @@ class MainActivity : AppCompatActivity() {
 
     //The table for special values (like the latest location):
     private lateinit var specialValuesViewModel: SpecialValuesViewModel
+    private lateinit var locationsViewModel: LocationsViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +60,7 @@ class MainActivity : AppCompatActivity() {
 
         //The table for special values (like the latest location):
         specialValuesViewModel = ViewModelProvider(this).get(SpecialValuesViewModel::class.java)
-
+        locationsViewModel = ViewModelProvider(this).get(LocationsViewModel::class.java)
         //create the one channel we use for all our notifications:
         createNotificationChannel()
 
@@ -108,7 +110,7 @@ class MainActivity : AppCompatActivity() {
         val network = CheckWifi(this)
         network.registerNetworkCallback()
 
-        if (isNetworkConnected){
+        if (isConnected){
             Toast.makeText(this,"Connected",Toast.LENGTH_LONG).show()
         }else{
             Toast.makeText(this,"FOOOOO",Toast.LENGTH_LONG).show()
@@ -139,7 +141,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun getLatestLocation(): com.jlp.unforgotchi.db.Location? {
         var latestLocation: List<com.jlp.unforgotchi.db.Location>? = null
-        ViewModelProvider(this).get(LocationsViewModel::class.java).readAllLocations.observe(this, {
+        locationsViewModel.readAllLocations.observe(this, {
                 locations -> latestLocation = locations.filter { containsWifi(it, getSsid(this)) }
         })
         return latestLocation?.get(0)
@@ -155,7 +157,12 @@ class MainActivity : AppCompatActivity() {
         //Ignore warning; Context is held in inner class anyways; see for yourself
         //https://stackoverflow.com/questions/54075649/access-application-context-in-companion-object-in-kotlin
         private lateinit var context: Context
-        var isNetworkConnected = false
+        var isConnected: Boolean by Delegates.observable(false) { property, oldValue, newValue ->
+        //  TODO hier notification schicken
+            Log.d("Observable property: ", property.toString())
+            Log.d("Observable old: ", oldValue.toString())
+            Log.d("Observable new: ", newValue.toString())
+        }
 
         fun getSsid(con: Context): String? {
             context = con
@@ -164,6 +171,12 @@ class MainActivity : AppCompatActivity() {
                 wifiInfo.ssid
             } else {
                 null
+            }
+        }
+
+        class Status {
+            var isConnected: Boolean by Delegates.observable(false) { property, oldValue, newValue ->
+
             }
         }
     }
