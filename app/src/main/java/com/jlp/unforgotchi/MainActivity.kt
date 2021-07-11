@@ -14,7 +14,6 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
-import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -38,7 +37,6 @@ class MainActivity : AppCompatActivity() {
     //for the notifications:
     private val CHANNEL_ID = "channel_id_test_01"
     private val notificationId = 101
-    private var elementsArray = emptyArray<String>()
 
     //for the navigation:
     lateinit var toggle : ActionBarDrawerToggle
@@ -54,14 +52,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        context = this
         setContentView(R.layout.activity_main)
-
-        //The table for special values (like the latest location):
-        specialValuesViewModel = ViewModelProvider(this).get(SpecialValuesViewModel::class.java)
-        locationsViewModel = ViewModelProvider(this).get(LocationsViewModel::class.java)
-        //create the one channel we use for all our notifications:
-        createNotificationChannel()
 
         // for the navigation:
         val drawerLayout : DrawerLayout = findViewById(R.id.drawerLayout)
@@ -71,6 +62,11 @@ class MainActivity : AppCompatActivity() {
         val listsPage = Intent(this@MainActivity, Lists::class.java)
         val locationsPage = Intent(this@MainActivity, Locations::class.java)
         val aboutUsPage = Intent(this@MainActivity, AboutUs::class.java)
+
+        context = this
+        specialValuesViewModel = ViewModelProvider(this).get(SpecialValuesViewModel::class.java)
+        locationsViewModel = ViewModelProvider(this).get(LocationsViewModel::class.java)
+        itemsToRemember = emptyArray<String>()
 
         toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
         drawerLayout.addDrawerListener(toggle)
@@ -96,22 +92,10 @@ class MainActivity : AppCompatActivity() {
             Manifest.permission.CHANGE_WIFI_STATE
         ))
 
-        // for the notification:
-        val notificationButton = findViewById<Button>(R.id.reminder_notification)
-        notificationButton.setOnClickListener {
-            var text = ""
-            elementsArray.forEach { element -> text += element + "\n" }
-            sendNotification("Don't forget to take:", text)
-        }
-//        setLatestLocation()
         val network = CheckWifi(this)
         network.registerNetworkCallback()
-
-        if (isConnected){
-//            TODO what to do?
-        }else{
-//            TODO what to do?
-        }
+        createNotificationChannel()
+        if (!isConnected) Toast.makeText(this,"Please enable Wifi",Toast.LENGTH_LONG).show()
     }
 
     private fun setLatestLocation(location: Location) {
@@ -122,19 +106,6 @@ class MainActivity : AppCompatActivity() {
             )
         )
     }
-
-//    private fun isConnectedToWifi(): Boolean {
-//        val connMgr = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-//        var isWifiConn: Boolean = false
-//        connMgr.allNetworks.forEach { network ->
-//            connMgr.getNetworkInfo(network)?.apply {
-//                if (type == ConnectivityManager.TYPE_WIFI) {
-//                    isWifiConn = isWifiConn or isConnected
-//                }
-//            }
-//        }
-//        return isWifiConn
-//    }
 
     private fun getLatestLocation(): Location? {
         var latestLocation: List<Location>? = null
@@ -154,11 +125,13 @@ class MainActivity : AppCompatActivity() {
         //Ignore warning; Context is held in inner class anyways; see for yourself
         //https://stackoverflow.com/questions/54075649/access-application-context-in-companion-object-in-kotlin
         private lateinit var context: Context
+        private lateinit var itemsToRemember: Array<String>
         var isConnected: Boolean by Delegates.observable(false) { property, oldValue, newValue ->
         //  TODO hier notification schicken
             Log.d("Observable property: ", property.toString())
             Log.d("Observable old: ", oldValue.toString())
             Log.d("Observable new: ", newValue.toString())
+            sendNotification("Test")
         }
 
         fun getSsid(con: Context): String? {
@@ -168,6 +141,25 @@ class MainActivity : AppCompatActivity() {
                 wifiInfo.ssid
             } else {
                 null
+            }
+        }
+
+        private fun sendNotification(title: String) {
+            val intent = Intent(context, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+            val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
+            val builder = NotificationCompat.Builder(context, "channel_id_test_01")
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setContentTitle(title)
+                .setContentText(itemsToRemember.joinToString(","))
+                .setContentIntent((pendingIntent))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+            builder.setAutoCancel(true)
+
+            with(NotificationManagerCompat.from(context)) {
+                notify(101, builder.build())
             }
         }
     }
@@ -198,7 +190,7 @@ class MainActivity : AppCompatActivity() {
                     recyclerview.isVisible = true
                     adapter.setData(reminderListElement)
                     reminderListElement.forEach { element ->
-                        elementsArray += element.listElementName
+                        itemsToRemember += element.listElementName
                     }
                 }
             })
@@ -365,27 +357,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun sendNotification(title: String, description: String) {
-
-        val intent = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
-
-        val builder = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle(title)
-            .setContentText(description)
-            .setContentIntent((pendingIntent))
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-
-        builder.setAutoCancel(true)
-
-        with(NotificationManagerCompat.from(this)) {
-            notify(notificationId, builder.build())
-        }
-    }
 //    TODO check for permissions in Bugfxing phase
 //    fun CheckPermission():Boolean{
 //        //returns true: if we have permission, false if not
