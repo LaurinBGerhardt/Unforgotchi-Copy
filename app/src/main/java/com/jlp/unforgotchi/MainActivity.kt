@@ -24,7 +24,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -55,7 +54,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        MainActivity.Companion.context = this
+        context = this
         setContentView(R.layout.activity_main)
 
         //The table for special values (like the latest location):
@@ -111,9 +110,9 @@ class MainActivity : AppCompatActivity() {
         network.registerNetworkCallback()
 
         if (isConnected){
-            Toast.makeText(this,"Connected",Toast.LENGTH_LONG).show()
+//            TODO what to do?
         }else{
-            Toast.makeText(this,"FOOOOO",Toast.LENGTH_LONG).show()
+//            TODO what to do?
         }
     }
 
@@ -139,15 +138,15 @@ class MainActivity : AppCompatActivity() {
 //        return isWifiConn
 //    }
 
-    private fun getLatestLocation(): com.jlp.unforgotchi.db.Location? {
-        var latestLocation: List<com.jlp.unforgotchi.db.Location>? = null
+    private fun getLatestLocation(): Location? {
+        var latestLocation: List<Location>? = null
         locationsViewModel.readAllLocations.observe(this, {
                 locations -> latestLocation = locations.filter { containsWifi(it, getSsid(this)) }
         })
         return latestLocation?.get(0)
     }
 
-    private fun containsWifi(location: com.jlp.unforgotchi.db.Location, ssid: String?): Boolean {
+    private fun containsWifi(location: Location, ssid: String?): Boolean {
         return if (ssid != null) {
             location.wifiName == ssid
         } else false
@@ -173,12 +172,6 @@ class MainActivity : AppCompatActivity() {
                 null
             }
         }
-
-        class Status {
-            var isConnected: Boolean by Delegates.observable(false) { property, oldValue, newValue ->
-
-            }
-        }
     }
 
     private fun recyclerViewSetup(listsPage: Intent) {
@@ -189,15 +182,15 @@ class MainActivity : AppCompatActivity() {
         recyclerview.setHasFixedSize(true)
         //text which is shown instead of the recyclerview when recyclerview would be empty, leads to list page on click
         val noListsYet = findViewById<TextView>(R.id.noListsYet)
-        noListsYet.setOnClickListener(){
+        noListsYet.setOnClickListener {
             startActivity(listsPage)
         }
         // the Elements of which lists should be shown on the mainPage, initialized as the elements of the first list
-        var position = 0
+        val position = 0
         //selects the right list and shows its element or the noListsYet View if no Elements in List
         detailListUserViewModel = ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
         if(position==0){
-            detailListUserViewModel.readAllElementsFromList1.observe(this, Observer { reminderListElement ->
+            detailListUserViewModel.readAllElementsFromList1.observe(this, { reminderListElement ->
                 if (reminderListElement.isEmpty()){
                     noListsYet.isVisible = true
                     recyclerview.isVisible = false
@@ -213,7 +206,7 @@ class MainActivity : AppCompatActivity() {
             })
         }
         if(position==1){
-            detailListUserViewModel.readAllElementsFromList2.observe(this, Observer { reminderListElement ->
+            detailListUserViewModel.readAllElementsFromList2.observe(this, { reminderListElement ->
                 if (reminderListElement.isEmpty()){
                     noListsYet.isVisible = true
                     recyclerview.isVisible = false
@@ -226,7 +219,7 @@ class MainActivity : AppCompatActivity() {
             })
         }
         if(position==2){
-            detailListUserViewModel.readAllElementsFromList3.observe(this, Observer { reminderListElement ->
+            detailListUserViewModel.readAllElementsFromList3.observe(this, { reminderListElement ->
                 if (reminderListElement.isEmpty()){
                     noListsYet.isVisible = true
                     recyclerview.isVisible = false
@@ -239,7 +232,7 @@ class MainActivity : AppCompatActivity() {
             })
         }
         if(position==3){
-            detailListUserViewModel.readAllElementsFromList4.observe(this, Observer { reminderListElement ->
+            detailListUserViewModel.readAllElementsFromList4.observe(this, { reminderListElement ->
                 if (reminderListElement.isEmpty()){
                     noListsYet.isVisible = true
                     recyclerview.isVisible = false
@@ -252,7 +245,7 @@ class MainActivity : AppCompatActivity() {
             })
         }
         if(position==4){
-            detailListUserViewModel.readAllElementsFromList5.observe(this, Observer { reminderListElement ->
+            detailListUserViewModel.readAllElementsFromList5.observe(this, { reminderListElement ->
                 if (reminderListElement.isEmpty()){
                     noListsYet.isVisible = true
                     recyclerview.isVisible = false
@@ -265,7 +258,7 @@ class MainActivity : AppCompatActivity() {
             })
         }
         if(position==5){
-            detailListUserViewModel.readAllElementsFromList6.observe(this, Observer { reminderListElement ->
+            detailListUserViewModel.readAllElementsFromList6.observe(this, { reminderListElement ->
                 if (reminderListElement.isEmpty()){
                     noListsYet.isVisible = true
                     recyclerview.isVisible = false
@@ -278,7 +271,7 @@ class MainActivity : AppCompatActivity() {
             })
         }
         if(position==6){
-            detailListUserViewModel.readAllElementsFromList7.observe(this, Observer { reminderListElement ->
+            detailListUserViewModel.readAllElementsFromList7.observe(this, { reminderListElement ->
                 if (reminderListElement.isEmpty()){
                     noListsYet.isVisible = true
                     recyclerview.isVisible = false
@@ -291,7 +284,7 @@ class MainActivity : AppCompatActivity() {
             })
         }
         if(position==7){
-            detailListUserViewModel.readAllElementsFromList8.observe(this, Observer { reminderListElement ->
+            detailListUserViewModel.readAllElementsFromList8.observe(this, { reminderListElement ->
                 if (reminderListElement.isEmpty()){
                     noListsYet.isVisible = true
                     recyclerview.isVisible = false
@@ -304,7 +297,7 @@ class MainActivity : AppCompatActivity() {
             })
         }
         if(position==8){
-            detailListUserViewModel.readAllElementsFromList9.observe(this, Observer { reminderListElement ->
+            detailListUserViewModel.readAllElementsFromList9.observe(this, { reminderListElement ->
                 if (reminderListElement.isEmpty()){
                     noListsYet.isVisible = true
                     recyclerview.isVisible = false
@@ -317,7 +310,7 @@ class MainActivity : AppCompatActivity() {
             })
         }
         if(position==9){
-            detailListUserViewModel.readAllElementsFromList10.observe(this, Observer { reminderListElement ->
+            detailListUserViewModel.readAllElementsFromList10.observe(this, { reminderListElement ->
                 if (reminderListElement.isEmpty()){
                     noListsYet.isVisible = true
                     recyclerview.isVisible = false
@@ -389,7 +382,7 @@ class MainActivity : AppCompatActivity() {
             .setContentIntent((pendingIntent))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
-        builder.setAutoCancel(true);
+        builder.setAutoCancel(true)
 
         with(NotificationManagerCompat.from(this)) {
             notify(notificationId, builder.build())

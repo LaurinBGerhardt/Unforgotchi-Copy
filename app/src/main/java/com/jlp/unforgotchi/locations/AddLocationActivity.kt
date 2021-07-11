@@ -11,7 +11,6 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
@@ -29,7 +28,7 @@ class AddLocationActivity : AppCompatActivity() {
     private val previewImage by lazy { findViewById<ImageButton>(R.id.selected_location_image_button) }
     private var previewImageChanged : Boolean = false   //this is horrible coding dont copy this
     private var imageData : Uri? = null
-    private val addWifiButton : Button by lazy { findViewById<Button>(R.id.add_wifi_to_location_button) }
+    private val addWifiButton : Button by lazy { findViewById(R.id.add_wifi_to_location_button) }
     private var wifiName : String? = null
 
     //private val selectImageFromGalleryResult  = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -72,7 +71,7 @@ class AddLocationActivity : AppCompatActivity() {
         //for (list in currentLists) {
         //    dropdownItems.add(DropDownAdapter.DropDownItem(list, list.listName))
         //}
-        reminderListsVM.readAllData.observe(this, Observer { reminderLists ->
+        reminderListsVM.readAllData.observe(this, { reminderLists ->
             for (reminderList in reminderLists) {
                 dropdownItems.add(DropDownAdapter.DropDownItem(reminderList, reminderList.listName))
             }
@@ -97,7 +96,7 @@ class AddLocationActivity : AppCompatActivity() {
         val intent = Intent()
         val name = addLocNameView.text.toString()
 
-        if (name.isNullOrEmpty()) setResult(Activity.RESULT_CANCELED, intent)
+        if (name.isEmpty()) setResult(Activity.RESULT_CANCELED, intent)
         else createLocation(intent, name)
 
         finish()
@@ -126,16 +125,15 @@ class AddLocationActivity : AppCompatActivity() {
     //just in case it's going to be needed in a future update.
     //This function converts an image Uri to a Bitmap
     private fun uriToBitmap(uri: Uri): Bitmap? {
-        val scaledscreenwidth :Double
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+        val scaledScreenWidth :Double = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
             val outMetrics = resources.displayMetrics
-            scaledscreenwidth = outMetrics.widthPixels / 2.0
+            outMetrics.widthPixels / 2.0
         } else {
             @Suppress("DEPRECATION")
             val displayMetrics = DisplayMetrics()
             @Suppress("DEPRECATION")
             windowManager.defaultDisplay.getMetrics(displayMetrics)
-            scaledscreenwidth = displayMetrics.widthPixels / 2.0
+            displayMetrics.widthPixels / 2.0
         }
 
         try {
@@ -146,8 +144,8 @@ class AddLocationActivity : AppCompatActivity() {
             val imagewidth = image.width.toFloat()
             val image2 = Bitmap.createScaledBitmap(
                 BitmapFactory.decodeFileDescriptor(fileDescriptor),
-                scaledscreenwidth.toInt(),
-                (scaledscreenwidth * (imageheight / imagewidth)).toInt(),
+                scaledScreenWidth.toInt(),
+                (scaledScreenWidth * (imageheight / imagewidth)).toInt(),
                 true
             )
             parcelFileDescriptor.close()
