@@ -18,14 +18,14 @@
         android:icon="@drawable/ic_baseline_location_city_24"
         android:title="@string/locations"/>
 
-    <item android:title="Personal">
+    <item android:title="How to use Unforgotchi">
 
         <menu>
 
             <item
-                android:id="@+id/nav_about_us"
+                android:id="@+id/nav_first_steps"
                 android:icon="@drawable/ic_baseline_message_24"
-                android:title="About Us"/>
+                android:title="First Steps"/>
 
         </menu>
 

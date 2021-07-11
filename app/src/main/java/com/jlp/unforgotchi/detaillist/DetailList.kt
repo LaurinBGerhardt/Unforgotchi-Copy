@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
-import com.jlp.unforgotchi.AboutUs
+import com.jlp.unforgotchi.FirstSteps
 import com.jlp.unforgotchi.MainActivity
 import com.jlp.unforgotchi.R
 import com.jlp.unforgotchi.db.ReminderListElement
@@ -48,7 +48,7 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         val homePage = Intent(this@DetailList, MainActivity::class.java)
         val listsPage = Intent(this@DetailList, Lists::class.java)
         val locationsPage = Intent(this@DetailList, Locations::class.java)
-        val aboutUsPage = Intent(this@DetailList, AboutUs::class.java)
+        val aboutUsPage = Intent(this@DetailList, FirstSteps::class.java)
 
         navView.setNavigationItemSelectedListener {
 
@@ -57,7 +57,7 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
                 R.id.nav_home -> startActivity(homePage)
                 R.id.nav_lists -> startActivity(listsPage)
                 R.id.nav_locations -> startActivity(locationsPage)
-                R.id.nav_about_us -> startActivity(aboutUsPage)
+                R.id.nav_first_steps -> startActivity(aboutUsPage)
             }
             true
         }

@@ -1,6 +1,5 @@
 package com.jlp.unforgotchi.locations
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -16,7 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
-import com.jlp.unforgotchi.AboutUs
+import com.jlp.unforgotchi.FirstSteps
 import com.jlp.unforgotchi.MainActivity
 import com.jlp.unforgotchi.R
 import com.jlp.unforgotchi.db.*
@@ -106,7 +105,7 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
         val homePage = Intent(this@Locations, MainActivity::class.java)
         val listsPage = Intent(this@Locations, Lists::class.java)
         val locationsPage = Intent(this@Locations, Locations::class.java)
-        val aboutUsPage = Intent(this@Locations, AboutUs::class.java)
+        val aboutUsPage = Intent(this@Locations, FirstSteps::class.java)
 
 
         //This stuff is for the Drawer Layout so one can navigate the entire app:
@@ -115,7 +114,7 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
                 R.id.nav_home -> startActivity(homePage)
                 R.id.nav_lists -> startActivity(listsPage)
                 R.id.nav_locations -> startActivity(locationsPage)
-                R.id.nav_about_us -> startActivity(aboutUsPage)
+                R.id.nav_first_steps -> startActivity(aboutUsPage)
             }
             true
         }

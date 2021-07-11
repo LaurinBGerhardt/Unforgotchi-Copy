@@ -46,7 +46,7 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
         val homePage = Intent(this@Lists, MainActivity::class.java)
         val listsPage = Intent(this@Lists, Lists::class.java)
         val locationsPage = Intent(this@Lists, Locations::class.java)
-        val aboutUsPage = Intent(this@Lists, AboutUs::class.java)
+        val aboutUsPage = Intent(this@Lists, FirstSteps::class.java)
 
         // set click listeners
         navView.setNavigationItemSelectedListener {
@@ -54,7 +54,7 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
                 R.id.nav_home -> startActivity(homePage)
                 R.id.nav_lists -> startActivity(listsPage)
                 R.id.nav_locations -> startActivity(locationsPage)
-                R.id.nav_about_us -> startActivity(aboutUsPage)
+                R.id.nav_first_steps -> startActivity(aboutUsPage)
             }
             true
         }
