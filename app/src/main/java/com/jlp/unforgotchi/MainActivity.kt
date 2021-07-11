@@ -48,7 +48,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var detailListUserViewModel: ReminderListElementViewModel
     private val adapter = MainAdapter()
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MainActivity.Companion.context = this
@@ -64,6 +63,7 @@ class MainActivity : AppCompatActivity() {
         val homePage = Intent(this@MainActivity, MainActivity::class.java)
         val listsPage = Intent(this@MainActivity, Lists::class.java)
         val locationsPage = Intent(this@MainActivity, Locations::class.java)
+
         toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
@@ -99,6 +99,14 @@ class MainActivity : AppCompatActivity() {
             sendNotification("Don't forget to take:", text)
         }
 //        setLatestLocation()
+        val network = CheckWifi(this)
+        network.registerNetworkCallback()
+
+        if (isNetworkConnected){
+            Toast.makeText(this,"Connected",Toast.LENGTH_LONG).show()
+        }else{
+            Toast.makeText(this,"FOOOOO",Toast.LENGTH_LONG).show()
+        }
     }
 
 //    private fun setLatestLocation() {
@@ -136,6 +144,7 @@ class MainActivity : AppCompatActivity() {
         //Ignore warning; Context is held in inner class anyways; see for yourself
         //https://stackoverflow.com/questions/54075649/access-application-context-in-companion-object-in-kotlin
         private lateinit var context: Context
+        var isNetworkConnected = false
 
         fun getSsid(con: Context): String? {
             context = con
