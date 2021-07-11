@@ -131,7 +131,8 @@ class MainActivity : AppCompatActivity() {
             Log.d("Observable property: ", property.toString())
             Log.d("Observable old: ", oldValue.toString())
             Log.d("Observable new: ", newValue.toString())
-            sendNotification("Test")
+
+            if (!newValue && newValue != oldValue) sendNotification("Unforgotchi")
         }
 
         fun getSsid(con: Context): String? {
@@ -152,7 +153,7 @@ class MainActivity : AppCompatActivity() {
             val builder = NotificationCompat.Builder(context, "channel_id_test_01")
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle(title)
-                .setContentText(itemsToRemember.joinToString(","))
+                .setContentText(itemsToRemember.joinToString(", "))
                 .setContentIntent((pendingIntent))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
