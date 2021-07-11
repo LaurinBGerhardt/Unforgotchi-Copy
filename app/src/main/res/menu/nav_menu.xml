@@ -18,38 +18,14 @@
         android:icon="@drawable/ic_baseline_location_city_24"
         android:title="@string/locations"/>
 
-    <item
-        android:id="@+id/nav_trash"
-        android:icon="@drawable/ic_baseline_message_24"
-        android:title="placeholder"/>
-
-    <item
-        android:title="placeholder">
+    <item android:title="Personal">
 
         <menu>
 
             <item
-                android:id="@+id/nav_login"
+                android:id="@+id/nav_about_us"
                 android:icon="@drawable/ic_baseline_message_24"
-                android:title="placeholder"/>
-
-        </menu>
-
-    </item>
-
-    <item android:title="placeholder">
-
-        <menu>
-
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_baseline_message_24"
-                android:title="placeholder"/>
-
-            <item
-                android:id="@+id/nav_rate_us"
-                android:icon="@drawable/ic_baseline_message_24"
-                android:title="placeholder"/>
+                android:title="About Us"/>
 
         </menu>
 
