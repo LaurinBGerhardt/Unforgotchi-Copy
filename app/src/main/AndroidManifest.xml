@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.CONNECTIVITY_SERVICE"/>
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
 
     <application
@@ -26,11 +27,6 @@
         <activity android:name=".locations.Locations"></activity>
         <activity android:name=".locations.AddLocationActivity"></activity>
         <activity android:name=".detaillist.DetailList"></activity>
-        <service
-            android:name=".WifiConnectionObserver"
-            android:enabled="true"
-            android:exported="true" >
-        </service>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
