@@ -21,7 +21,7 @@ import java.io.FileDescriptor
 import java.io.IOException
 
 
-class AddLocationActivity : AppCompatActivity() {
+class AddLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private lateinit var addLocNameView: TextInputEditText
 
     private val previewImage by lazy { findViewById<ImageButton>(R.id.selected_location_image_button) }
@@ -29,6 +29,8 @@ class AddLocationActivity : AppCompatActivity() {
     private var imageData : Uri? = null
     private val addWifiButton : Button by lazy { findViewById(R.id.add_wifi_to_location_button) }
     private var wifiName : String? = null
+
+    var spinner:Spinner? = null
 
     //private val selectImageFromGalleryResult  = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
     private val selectImageFromGalleryResult  = registerForActivityResult(RetreiveImageContract()) { uri: Uri? ->
@@ -47,7 +49,7 @@ class AddLocationActivity : AppCompatActivity() {
     //For the custom Dropdown Menu which allows for selecting multiple lists:
     //private val dropdownItems: MutableList<DropDownAdapter.DropDownItem<ReminderList>> = ArrayList()
     //private val selectedLists: MutableSet<ReminderList> = HashSet()
-    private val dropDownItems : MutableList<String> = ArrayList()
+    var dropDownItems : MutableList<String> = ArrayList()
     //private val dropDownItemsAndIds : MutableList<Pair<String,Int>> = ArrayList()
     //private var listNameAndId = Pair("",0)
     private val dropDownIds : MutableList<Int> = ArrayList()
@@ -71,30 +73,12 @@ class AddLocationActivity : AppCompatActivity() {
 
         Log.d("!!!!!! Laenge der Liste der ReminderListen Value: ","${reminderListsVM.readAllData.value?.size}")
         reminderListsVM.readAllData.observe(this) { reminderLists ->
-            for(reminderList in reminderLists) {
-                Log.d("!!!!!! Laenge der Liste der ReminderListen in Observe: ","${reminderLists.size}")
-                //For the custom Dropdown Menu which allows for selecting multiple lists:
-                //dropdownItems.add(DropDownAdapter.DropDownItem(reminderList, reminderList.listName))
-                //Version for a single list per location:
-                dropDownItems.add(reminderList.listName)
-                //dropDownItemsAndIds.add(Pair(reminderList.listName,reminderList.id))
-                dropDownIds.add(reminderList.id)
+            reminderLists.forEach{ element ->
+                dropDownItems.add(element.listName)
+                dropDownIds.add(element.id)
             }
+            setupSpinner()
         }
-
-
-        val spinner: Spinner = findViewById(R.id.select_lists_spinner)
-        //For the custom Dropdown Menu which allows for selecting multiple lists:
-        //val headerText = "Select a List"
-        //val adapter = DropDownAdapter(this, headerText, dropdownItems, selectedLists)
-        //spinner.adapter = adapter
-        //After this point all selected lists should be inside selectedLists
-
-        //For the version where only a single list is allowed:
-        val adapter = ArrayAdapter(this@AddLocationActivity, android.R.layout.simple_spinner_dropdown_item,dropDownItems)
-        spinner.adapter = adapter
-        spinner.onItemSelectedListener = CustomItemSelectedListener()
-
         /*
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -110,13 +94,20 @@ class AddLocationActivity : AppCompatActivity() {
             }
         }*/
 
-        findViewById<FloatingActionButton>(R.id.finish_adding_location).setOnClickListener {
-            Log.d("!!!!!! spinner.selectedItemPosition direkt vor processInput(): ","${spinner.selectedItemPosition}")
-            //listId = dropDownIds[spinner.selectedItemPosition]
+        findViewById<FloatingActionButton>(R.id.finish_adding_location).setOnClickListener {): ","${spinner.selectedItemPosition}")
+            listId = dropDownIds[spinner.selectedItemPosition]
             Log.d("!!!!!! ListIds direkt vor processInput(): ","$listId")
             processInput()
         }
 
+    }
+
+    private fun setupSpinner() {
+        spinner = findViewById<Spinner>(R.id.select_lists_spinner)
+        spinner!!.onItemSelectedListener = this
+        val aa = ArrayAdapter(this, android.R.layout.simple_spinner_item, dropDownItems)
+        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner!!.setAdapter(aa)
     }
 
     private fun processInput() {
@@ -189,17 +180,12 @@ class AddLocationActivity : AppCompatActivity() {
         return null
     }
 
-    inner class CustomItemSelectedListener : Activity(), AdapterView.OnItemSelectedListener {
-
-        override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
-            // An item was selected. You can retrieve the selected item using parent.getItemAtPosition(pos)
-            Log.d("!!!!!! ListId wird geupdated weil man auf ein Element im Spinner geklickt hat","$parent.selectedItemPosition")
-            listId = dropDownIds[parent.selectedItemPosition]
-        }
-
-        override fun onNothingSelected(parent: AdapterView<*>) {
-            // Please do nothing
-        }
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+//        TODO @laurin hier irgendwas mit item an position machen
+        Log.d("#1#2#3#4################","${parent!!.getItemAtPosition(position)}")
     }
 
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+        TODO("Not yet implemented")
+    }
 }
