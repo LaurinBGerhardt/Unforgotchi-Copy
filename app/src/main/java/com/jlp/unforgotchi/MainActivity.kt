@@ -329,6 +329,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     @Override
+//    TODO currently nonsensical; check for the proper hash code
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 1) {
