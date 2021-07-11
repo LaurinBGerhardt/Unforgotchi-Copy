@@ -17,8 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.jlp.unforgotchi.MainActivity
 import com.jlp.unforgotchi.R
-import com.jlp.unforgotchi.db.Location
-import com.jlp.unforgotchi.db.LocationsViewModel
+import com.jlp.unforgotchi.db.*
 import com.jlp.unforgotchi.list.Lists
 
 class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
@@ -29,6 +28,7 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
     private val locationsAdapter = LocationsAdapter(
         mutableListOf<Location>(), this
     )
+    private lateinit var specialValuesViewModel: SpecialValuesViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,13 +54,16 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
             locationsList -> locationsAdapter.setData(locationsList)
         })
 
+        //For SpecialValues:
+        specialValuesViewModel = ViewModelProvider(this).get(SpecialValuesViewModel::class.java)
+
         // When the add-button is clicked, this Launcher will launch the Add-Activity.
         // The Add-Activity will then give back the result (i.e. the data of the new element)
         // which is then processed in the lambda here:
         var addLocationActivityLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
+            if (result.resultCode == RESULT_OK) {
                 // This happens when the AddLocationActivity ends:
                 val data: Intent? = result.data
                 val newLocName: String = data!!.getStringExtra("name") ?: "New Location"
@@ -73,11 +76,16 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
                         data.flags and Intent.FLAG_GRANT_READ_URI_PERMISSION
                     )
                 }
-                locationsDBViewModel.addLocation(
-                    Location(0, newLocName, newImgData?.toString(), newWifiName)
-                )
-                //Toast.makeText(applicationContext, "WiFi $newWifiName added", Toast.LENGTH_SHORT).show()
-                //TODO: Toast if there already was a Location with that wifi
+                val newLocation = Location(0, newLocName, newImgData?.toString(), newWifiName)
+                locationsDBViewModel.addLocation(newLocation)
+                if(newWifiName != null) {
+                    specialValuesViewModel.setSpecialValue(
+                        SpecialValue(
+                            ValueNames.LATEST_LOCATION.name,
+                            newLocName
+                        )
+                    )
+                }
                 locationsAdapter.notifyDataSetChanged()
             }
         }

@@ -32,17 +32,21 @@ data class ReminderListElement(
 }
 
 @Entity(tableName = "locations_table",
-        indices = [ Index("wifiName",unique = true),
+        indices = [ Index("wifi_name",unique = true),
                     Index("location_id",unique=true)])
 data class Location(
     @PrimaryKey(autoGenerate = true)
     var location_id: Int,
     var text: String,
     var image : String?,
-    @ColumnInfo(name="wifiName")
-    var wifiName : String? = null
+    @ColumnInfo(name="wifi_name")
+    var wifiName : String? = null/*,
+    //This SHOULD work, but it doesn't. This code is here because in the future we may fix it.
+    @ColumnInfo(name="is_latest")
+    var _isLatest : Boolean = false
+    */
 ){
-    constructor() : this(0, "",null)
+    constructor() : this(0, "",null,null)
 }
 
 data class LocationToLists(
@@ -57,3 +61,12 @@ data class LocationToLists(
     )
     val lists: List<ReminderListElement>
 )
+
+@Entity(tableName = "special_values")
+data class SpecialValue(
+    @PrimaryKey()
+    var valueName : String,
+    var value : String
+){
+    constructor() : this("","")
+}

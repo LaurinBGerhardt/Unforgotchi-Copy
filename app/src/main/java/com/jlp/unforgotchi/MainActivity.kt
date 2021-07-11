@@ -29,8 +29,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
-import com.jlp.unforgotchi.db.LocationsViewModel
-import com.jlp.unforgotchi.db.ReminderListElementViewModel
+import com.jlp.unforgotchi.db.*
 import com.jlp.unforgotchi.list.Lists
 import com.jlp.unforgotchi.locations.Locations
 
@@ -48,10 +47,17 @@ class MainActivity : AppCompatActivity() {
     private lateinit var detailListUserViewModel: ReminderListElementViewModel
     private val adapter = MainAdapter()
 
+    //The table for special values (like the latest location):
+    private lateinit var specialValuesViewModel: SpecialValuesViewModel
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MainActivity.Companion.context = this
         setContentView(R.layout.activity_main)
+
+        //The table for special values (like the latest location):
+        specialValuesViewModel = ViewModelProvider(this).get(SpecialValuesViewModel::class.java)
 
         //create the one channel we use for all our notifications:
         createNotificationChannel()
@@ -109,9 +115,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-//    private fun setLatestLocation() {
-//        TODO("Not yet implemented")
-//    }
+    private fun setLatestLocation(location: Location) {
+        specialValuesViewModel.setSpecialValue(
+            SpecialValue(
+                ValueNames.LATEST_LOCATION.name,
+                location.text
+            )
+        )
+    }
 
 //    private fun isConnectedToWifi(): Boolean {
 //        val connMgr = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
