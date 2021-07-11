@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
@@ -70,6 +71,8 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
                 val newLocName: String = data!!.getStringExtra("name") ?: "New Location"
                 val newWifiName : String? = data!!.getStringExtra("wifiName")
                 val newImgData : Uri? = data!!.getParcelableExtra<Uri?>("image")
+                val listId : Int = data!!.getIntExtra("listId",-5)
+                Log.d("!!!!!! ListIds direkt vorm Hinzufuegen in die DB: ","$listId")
 
                 if (newImgData != null) {
                     contentResolver.takePersistableUriPermission(
@@ -77,7 +80,7 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
                         data.flags and Intent.FLAG_GRANT_READ_URI_PERMISSION
                     )
                 }
-                val newLocation = Location(0, newLocName, newImgData?.toString(), newWifiName)
+                val newLocation = Location(0, newLocName, newImgData?.toString(), newWifiName, listId)
                 locationsDBViewModel.addLocation(newLocation)
                 if(newWifiName != null) {
                     specialValuesViewModel.setSpecialValue(

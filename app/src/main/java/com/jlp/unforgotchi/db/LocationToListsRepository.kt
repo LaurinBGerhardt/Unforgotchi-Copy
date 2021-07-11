@@ -16,7 +16,7 @@ class LocationToListsRepository (private val locationToListsDao: LocationToLists
     }
 
     suspend fun updateLocation(location: Location, wifiName : String?){
-        val replacementLocation = Location(location.location_id, location.text,location.image,wifiName)
+        val replacementLocation = Location(location.location_id, location.text,location.image,wifiName, location.listId)
         locationToListsDao.updateLocation(replacementLocation)
     }
 

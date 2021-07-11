@@ -7,22 +7,21 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.Spinner
+import android.util.Log
+import android.view.View
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.jlp.unforgotchi.MainActivity
 import com.jlp.unforgotchi.R
-import com.jlp.unforgotchi.db.ReminderList
 import com.jlp.unforgotchi.db.ReminderListViewModel
 import java.io.FileDescriptor
 import java.io.IOException
 
 
-class AddLocationActivity : AppCompatActivity() {
+class AddLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private lateinit var addLocNameView: TextInputEditText
 
     private val previewImage by lazy { findViewById<ImageButton>(R.id.selected_location_image_button) }
@@ -30,6 +29,8 @@ class AddLocationActivity : AppCompatActivity() {
     private var imageData : Uri? = null
     private val addWifiButton : Button by lazy { findViewById(R.id.add_wifi_to_location_button) }
     private var wifiName : String? = null
+
+    var spinner:Spinner? = null
 
     //private val selectImageFromGalleryResult  = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
     private val selectImageFromGalleryResult  = registerForActivityResult(RetreiveImageContract()) { uri: Uri? ->
@@ -45,9 +46,14 @@ class AddLocationActivity : AppCompatActivity() {
         selectImageFromGalleryResult.launch("image/*")
     }
 
-    //For the Dropdown Menu:
-    private val dropdownItems: MutableList<DropDownAdapter.DropDownItem<ReminderList>> = ArrayList()
-    private val selectedLists: MutableSet<ReminderList> = HashSet()
+    //For the custom Dropdown Menu which allows for selecting multiple lists:
+    //private val dropdownItems: MutableList<DropDownAdapter.DropDownItem<ReminderList>> = ArrayList()
+    //private val selectedLists: MutableSet<ReminderList> = HashSet()
+    var dropDownItems : MutableList<String> = ArrayList()
+    //private val dropDownItemsAndIds : MutableList<Pair<String,Int>> = ArrayList()
+    //private var listNameAndId = Pair("",0)
+    private val dropDownIds : MutableList<Int> = ArrayList()
+    private var listId = -2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,31 +71,43 @@ class AddLocationActivity : AppCompatActivity() {
         //This is for the Dropdown Menu:
         val reminderListsVM: ReminderListViewModel = ViewModelProvider(this).get(ReminderListViewModel::class.java)
 
-        // fill the 'spinner_items' array with all items to show
-        //val allObjects: List<DropdownListElement> = getMyObjects() // from wherever
-        //val currentLists : List<ReminderList> = reminderListsVM.readCurrentData()
-        //for (list in currentLists) {
-        //    dropdownItems.add(DropDownAdapter.DropDownItem(list, list.listName))
-        //}
-        reminderListsVM.readAllData.observe(this, { reminderLists ->
-            for (reminderList in reminderLists) {
-                dropdownItems.add(DropDownAdapter.DropDownItem(reminderList, reminderList.listName))
+        Log.d("!!!!!! Laenge der Liste der ReminderListen Value: ","${reminderListsVM.readAllData.value?.size}")
+        reminderListsVM.readAllData.observe(this) { reminderLists ->
+            reminderLists.forEach{ element ->
+                dropDownItems.add(element.listName)
+                dropDownIds.add(element.id)
             }
-        })
+            setupSpinner()
+        }
+        /*
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+                Toast.makeText(this@AddLocationActivity,"You Should Select a WiFi",Toast.LENGTH_LONG).show()
+            }
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                //listNameAndId = dropDownItemsAndIds[position]
+                Log.d("!!!!!! Position in onItemSelected: ","$listId")
+                Log.d("!!!!!! ListIds VOR assignment in onItemSelected: ","$listId")
+                listId = dropDownIds[position]
+                Log.d("!!!!!! ListIds NACH assignment in onItemSelected: ","$listId")
+                findViewById<TextView>(R.id.select_list_text_view).text = dropDownItems[position]
+            }
+        }*/
 
-        val headerText = "Select a List"
-
-        val spinner: Spinner = findViewById(R.id.select_lists_spinner)
-        val adapter = DropDownAdapter(this, headerText, dropdownItems, selectedLists)
-        spinner.adapter = adapter
-
-        // From here it should be possible to just see what's inside selectedLists
-        // and work with that
-
-        findViewById<FloatingActionButton>(R.id.finish_adding_location).setOnClickListener {
+        findViewById<FloatingActionButton>(R.id.finish_adding_location).setOnClickListener {//): ","${spinner.selectedItemPosition}")
+            listId = dropDownIds[spinner!!.selectedItemPosition]
+            Log.d("!!!!!! ListIds direkt vor processInput(): ","$listId")
             processInput()
         }
 
+    }
+
+    private fun setupSpinner() {
+        spinner = findViewById<Spinner>(R.id.select_lists_spinner)
+        spinner!!.onItemSelectedListener = this
+        val aa = ArrayAdapter(this, android.R.layout.simple_spinner_item, dropDownItems)
+        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner!!.setAdapter(aa)
     }
 
     private fun processInput() {
@@ -103,14 +121,20 @@ class AddLocationActivity : AppCompatActivity() {
     }
 
     private fun createLocation(intent: Intent, name: String) {
+        Log.d("!!!!!! ListIds am Anfang von createLocation: ","$listId")
         if ( !(previewImageChanged) || previewImage.drawable == null) {
             previewImage.setImageResource(R.drawable.ic_baseline_location_city_24)
             intent.putExtra("name", name)
             intent.putExtra("wifiName", wifiName)
+            //intent.putExtra("listId",listNameAndId[1])
+            intent.putExtra("listId",listId)
+
         } else {
             intent.putExtra("name", name)
             intent.putExtra("image",imageData)
             intent.putExtra("wifiName", wifiName)
+           // intent.putExtra("listId",listNameAndId[1])
+            intent.putExtra("listId",listId)
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
             intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
@@ -154,5 +178,14 @@ class AddLocationActivity : AppCompatActivity() {
             e.printStackTrace()
         }
         return null
+    }
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+//        TODO @laurin hier irgendwas mit item an position machen
+        Log.d("#1#2#3#4################","${parent!!.getItemAtPosition(position)}")
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+        TODO("Not yet implemented")
     }
 }

@@ -40,13 +40,15 @@ data class Location(
     var text: String,
     var image : String?,
     @ColumnInfo(name="wifi_name")
-    var wifiName : String? = null/*,
+    var wifiName : String? = null,
+    var listId : Int
     //This SHOULD work, but it doesn't. This code is here because in the future we may fix it.
+    /*
     @ColumnInfo(name="is_latest")
     var _isLatest : Boolean = false
     */
 ){
-    constructor() : this(0, "",null,null)
+    constructor() : this(0, "",null,null, -10)
 }
 
 data class LocationToLists(
