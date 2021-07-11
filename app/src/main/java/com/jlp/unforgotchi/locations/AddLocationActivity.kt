@@ -94,8 +94,8 @@ class AddLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
             }
         }*/
 
-        findViewById<FloatingActionButton>(R.id.finish_adding_location).setOnClickListener {): ","${spinner.selectedItemPosition}")
-            listId = dropDownIds[spinner.selectedItemPosition]
+        findViewById<FloatingActionButton>(R.id.finish_adding_location).setOnClickListener {//): ","${spinner.selectedItemPosition}")
+            listId = dropDownIds[spinner!!.selectedItemPosition]
             Log.d("!!!!!! ListIds direkt vor processInput(): ","$listId")
             processInput()
         }
