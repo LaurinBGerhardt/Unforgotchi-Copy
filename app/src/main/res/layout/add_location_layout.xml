@@ -10,11 +10,11 @@
     android:outlineProvider="bounds">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/select_list_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
         android:text="New Location"
         android:textAlignment="center"
         android:textAppearance="?attr/textAppearanceHeadline4"
@@ -36,7 +36,7 @@
         app:layout_constraintDimensionRatio="16:9"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/select_list_text_view"
         tools:src="@drawable/ic_baseline_image_search_24" />
 
     <TextView
@@ -54,7 +54,7 @@
         android:layout_height="81dp"
         android:layout_gravity="center"
         android:hint="Location Name"
-        android:padding="8dp"
+        android:padding="4dp"
         android:textColorHint="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -79,16 +79,19 @@
         android:layout_width="168dp"
         android:layout_height="60dp"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@color/white"
+        android:foreground="#99680128"
         android:spinnerMode="dropdown"
-        app:layout_constraintEnd_toEndOf="@+id/textView2"
-        app:layout_constraintStart_toStartOf="@+id/textView2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/select_lists_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add Lists"
+        android:text="Select List"
         android:textColor="@color/white"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/select_lists_spinner"

@@ -19,7 +19,7 @@ class LocationsRepository(private val locationsDao: LocationsDao) {
     }
 
     suspend fun updateLocation(location: Location, wifiName : String?){
-        val replacementLocation = Location(location.location_id, location.text,location.image,wifiName)
+        val replacementLocation = Location(location.location_id, location.text,location.image,wifiName,location.listId)
         locationsDao.updateLocation(replacementLocation)
     }
 
