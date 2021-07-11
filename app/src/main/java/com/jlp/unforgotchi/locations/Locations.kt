@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
+import com.jlp.unforgotchi.AboutUs
 import com.jlp.unforgotchi.MainActivity
 import com.jlp.unforgotchi.R
 import com.jlp.unforgotchi.db.*
@@ -102,6 +103,8 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
         val homePage = Intent(this@Locations, MainActivity::class.java)
         val listsPage = Intent(this@Locations, Lists::class.java)
         val locationsPage = Intent(this@Locations, Locations::class.java)
+        val aboutUsPage = Intent(this@Locations, AboutUs::class.java)
+
 
         //This stuff is for the Drawer Layout so one can navigate the entire app:
         navView.setNavigationItemSelectedListener {
@@ -109,26 +112,7 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
                 R.id.nav_home -> startActivity(homePage)
                 R.id.nav_lists -> startActivity(listsPage)
                 R.id.nav_locations -> startActivity(locationsPage)
-                R.id.nav_trash -> Toast.makeText(
-                    applicationContext,
-                    "Clicked placeholder",
-                    Toast.LENGTH_SHORT
-                ).show()
-                R.id.nav_login -> Toast.makeText(
-                    applicationContext,
-                    "Clicked placeholder",
-                    Toast.LENGTH_SHORT
-                ).show()
-                R.id.nav_share -> Toast.makeText(
-                    applicationContext,
-                    "Clicked placeholder",
-                    Toast.LENGTH_SHORT
-                ).show()
-                R.id.nav_rate_us -> Toast.makeText(
-                    applicationContext,
-                    "Clicked placeholder",
-                    Toast.LENGTH_SHORT
-                ).show()
+                R.id.nav_about_us -> startActivity(aboutUsPage)
             }
             true
         }

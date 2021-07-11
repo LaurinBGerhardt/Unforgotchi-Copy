@@ -46,32 +46,15 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
         val homePage = Intent(this@Lists, MainActivity::class.java)
         val listsPage = Intent(this@Lists, Lists::class.java)
         val locationsPage = Intent(this@Lists, Locations::class.java)
+        val aboutUsPage = Intent(this@Lists, AboutUs::class.java)
+
         // set click listeners
         navView.setNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.nav_home -> startActivity(homePage)
                 R.id.nav_lists -> startActivity(listsPage)
                 R.id.nav_locations -> startActivity(locationsPage)
-                R.id.nav_trash -> Toast.makeText(
-                    applicationContext,
-                    "Clicked placeholder",
-                    Toast.LENGTH_SHORT
-                ).show()
-                R.id.nav_login -> Toast.makeText(
-                    applicationContext,
-                    "Clicked placeholder",
-                    Toast.LENGTH_SHORT
-                ).show()
-                R.id.nav_share -> Toast.makeText(
-                    applicationContext,
-                    "Clicked placeholder",
-                    Toast.LENGTH_SHORT
-                ).show()
-                R.id.nav_rate_us -> Toast.makeText(
-                    applicationContext,
-                    "Clicked placeholder",
-                    Toast.LENGTH_SHORT
-                ).show()
+                R.id.nav_about_us -> startActivity(aboutUsPage)
             }
             true
         }
