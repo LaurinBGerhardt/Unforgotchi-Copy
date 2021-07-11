@@ -7,7 +7,6 @@ import android.net.ConnectivityManager.NetworkCallback
 import android.net.Network
 import android.net.NetworkInfo
 import android.net.NetworkRequest
-import android.util.Log
 
 
 class CheckWifi constructor(applicationContext: Context) {
@@ -17,25 +16,21 @@ class CheckWifi constructor(applicationContext: Context) {
     fun registerNetworkCallback() {
         try {
             val connectivityManager = applicationContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-
             val builder = NetworkRequest.Builder()
             builder.build()
             connectivityManager.registerDefaultNetworkCallback(object : NetworkCallback() {
                 override fun onAvailable(network: Network) {
                     val networkInfo: NetworkInfo? = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
-                    if(networkInfo?.isConnected == true) MainActivity.isNetworkConnected = true
-                    Log.d("###########", networkInfo?.isConnected.toString())
+                    if(networkInfo?.isConnected == true) MainActivity.isConnected = true
                 }
 
                 override fun onLost(network: Network) {
-                    val networkInfo: NetworkInfo? = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
-                    MainActivity.isNetworkConnected = false
-                    Log.d("********", networkInfo?.isConnected.toString())
+                    MainActivity.isConnected = false
                 }
             })
-            MainActivity.isNetworkConnected = false
+            MainActivity.isConnected = false
         } catch (e: Exception) {
-            MainActivity.isNetworkConnected = false
+            MainActivity.isConnected = false
         }
     }
 }
