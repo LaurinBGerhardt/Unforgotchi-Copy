@@ -26,7 +26,7 @@
         <activity android:name=".locations.Locations"></activity>
         <activity android:name=".locations.AddLocationActivity"></activity>
         <activity android:name=".detaillist.DetailList"></activity>
-        <activity android:name=".AboutUs"></activity>
+        <activity android:name=".FirstSteps"></activity>
 
         <provider
             android:name="androidx.core.content.FileProvider"

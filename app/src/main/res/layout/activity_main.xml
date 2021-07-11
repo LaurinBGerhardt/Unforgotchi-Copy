@@ -24,37 +24,24 @@
             android:textStyle="bold"
             android:layout_gravity="center"/>
 
-        <Button
-            android:id="@+id/reminder_notification"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Send Reminder Notification"
-            android:layout_gravity="center"/>
-
-        <Button
-            android:id="@+id/getLocation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Get Location"
-            android:layout_gravity="center"/>
-
         <TextView
-            android:id="@+id/showLocation"
+            android:id="@+id/noListsYetMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="Current GPS Location"
+            android:text="No Connected Lists yet."
             android:textColor="@color/colorPrimary"
             android:textSize="24sp"
             android:textStyle="bold"
+            android:layout_marginTop="10dp"
             android:layout_gravity="center"/>
 
         <TextView
-            android:id="@+id/noListsYet"
+            android:id="@+id/firstSteps"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="No Lists yet. Click here to add a list"
+            android:text="Click here to learn the first steps."
             android:textColor="@color/colorPrimary"
             android:textSize="24sp"
             android:textStyle="bold"
@@ -67,6 +54,7 @@
             app:layoutManager="LinearLayoutManager"
             tools:layout_editor_absoluteX="16dp"
             tools:layout_editor_absoluteY="0dp"
+            android:layout_marginTop="10dp"
             tools:listitem="@layout/detail_lists_item"
             />
 

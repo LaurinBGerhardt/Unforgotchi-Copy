@@ -10,13 +10,13 @@ import com.google.android.material.navigation.NavigationView
 import com.jlp.unforgotchi.list.Lists
 import com.jlp.unforgotchi.locations.Locations
 
-class AboutUs : AppCompatActivity() {
+class FirstSteps : AppCompatActivity() {
 
     lateinit var toggle: ActionBarDrawerToggle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.about_us)
+        setContentView(R.layout.first_steps)
 
         // for the navigation menu
         val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
@@ -28,10 +28,10 @@ class AboutUs : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         //set intents
-        val homePage = Intent(this@AboutUs, MainActivity::class.java)
-        val listsPage = Intent(this@AboutUs, Lists::class.java)
-        val locationsPage = Intent(this@AboutUs, Locations::class.java)
-        val aboutUsPage = Intent(this@AboutUs, AboutUs::class.java)
+        val homePage = Intent(this@FirstSteps, MainActivity::class.java)
+        val listsPage = Intent(this@FirstSteps, Lists::class.java)
+        val locationsPage = Intent(this@FirstSteps, Locations::class.java)
+        val aboutUsPage = Intent(this@FirstSteps, FirstSteps::class.java)
 
         // set click listeners
         navView.setNavigationItemSelectedListener {
@@ -39,7 +39,7 @@ class AboutUs : AppCompatActivity() {
                 R.id.nav_home -> startActivity(homePage)
                 R.id.nav_lists -> startActivity(listsPage)
                 R.id.nav_locations -> startActivity(locationsPage)
-                R.id.nav_about_us -> startActivity(aboutUsPage)
+                R.id.nav_first_steps -> startActivity(aboutUsPage)
             }
             true
         }
