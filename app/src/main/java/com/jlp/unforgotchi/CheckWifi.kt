@@ -10,9 +10,7 @@ import android.net.NetworkRequest
 
 
 class CheckWifi constructor(applicationContext: Context) {
-    // You need to pass the context when creating the class
     val applicationContext: Context = applicationContext
-    // Network Check
     fun registerNetworkCallback() {
         try {
             val connectivityManager = applicationContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
