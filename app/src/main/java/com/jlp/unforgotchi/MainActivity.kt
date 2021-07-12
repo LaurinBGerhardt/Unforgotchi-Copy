@@ -177,11 +177,11 @@ class MainActivity : AppCompatActivity() {
         }
         // the Elements of which lists should be shown on the mainPage, initialized as the elements of the first list
         var position = 0
-        var location = previousLocations?.get(0)
+        var location: Location? = null
+        if (previousLocations?.isNotEmpty() == true) location =previousLocations?.get(0)
         if (location != null) {
             position = location.listId
             setLatestLocation(location)
-            Log.d("*'*'*'*'*'*'", location.toString())
             Toast.makeText(this,location.toString(),Toast.LENGTH_SHORT).show()
         }
         else {
@@ -213,52 +213,52 @@ class MainActivity : AppCompatActivity() {
         }
         if(position==1){
             detailListUserViewModel.readAllElementsFromList2.observe(this, { reminderListElement ->
-                recyclerViewHelper(reminderListElement, firstStepsLink, recyclerview)
+                helper(reminderListElement, firstStepsLink, recyclerview)
             })
         }
         if(position==2){
             detailListUserViewModel.readAllElementsFromList3.observe(this, { reminderListElement ->
-                recyclerViewHelper(reminderListElement, firstStepsLink, recyclerview)
+                helper(reminderListElement, firstStepsLink, recyclerview)
             })
         }
         if(position==3){
             detailListUserViewModel.readAllElementsFromList4.observe(this, { reminderListElement ->
-                recyclerViewHelper(reminderListElement, firstStepsLink, recyclerview)
+                helper(reminderListElement, firstStepsLink, recyclerview)
             })
         }
         if(position==4){
             detailListUserViewModel.readAllElementsFromList5.observe(this, { reminderListElement ->
-                recyclerViewHelper(reminderListElement, firstStepsLink, recyclerview)
+                helper(reminderListElement, firstStepsLink, recyclerview)
             })
         }
         if(position==5){
             detailListUserViewModel.readAllElementsFromList6.observe(this, { reminderListElement ->
-                recyclerViewHelper(reminderListElement, firstStepsLink, recyclerview)
+                helper(reminderListElement, firstStepsLink, recyclerview)
             })
         }
         if(position==6){
             detailListUserViewModel.readAllElementsFromList7.observe(this, { reminderListElement ->
-                recyclerViewHelper(reminderListElement, firstStepsLink, recyclerview)
+                helper(reminderListElement, firstStepsLink, recyclerview)
             })
         }
         if(position==7){
             detailListUserViewModel.readAllElementsFromList8.observe(this, { reminderListElement ->
-                recyclerViewHelper(reminderListElement, firstStepsLink, recyclerview)
+                helper(reminderListElement, firstStepsLink, recyclerview)
             })
         }
         if(position==8){
             detailListUserViewModel.readAllElementsFromList9.observe(this, { reminderListElement ->
-                recyclerViewHelper(reminderListElement, firstStepsLink, recyclerview)
+                helper(reminderListElement, firstStepsLink, recyclerview)
             })
         }
         if(position==9){
             detailListUserViewModel.readAllElementsFromList10.observe(this, { reminderListElement ->
-                recyclerViewHelper(reminderListElement, firstStepsLink, recyclerview)
+                helper(reminderListElement, firstStepsLink, recyclerview)
             })
         }
     }
 
-    private fun recyclerViewHelper(elem: List<ReminderListElement>, textView: TextView, recyclerView: RecyclerView) {
+    private fun helper(elem: List<ReminderListElement>, textView: TextView, recyclerView: RecyclerView) {
         if (elem.isEmpty()){
             textView.isVisible = true
             recyclerView.isVisible = false
