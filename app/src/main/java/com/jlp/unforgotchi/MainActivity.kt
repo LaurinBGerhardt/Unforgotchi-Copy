@@ -48,6 +48,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var specialValuesViewModel: SpecialValuesViewModel
     private lateinit var locationsViewModel: LocationsViewModel
 
+    private var previousLocations: List<Location>? = ArrayList()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,6 +74,13 @@ class MainActivity : AppCompatActivity() {
         toggle.syncState()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        locationsViewModel.readAllLocations.observe(this) {locations ->
+            previousLocations =  locations.filter {
+                containsWifi(it, getSsid(this))
+            }
+            recyclerViewSetup(firstStepsPage)
+        }
+
         navView.setNavigationItemSelectedListener {
             when(it.itemId){
                 R.id.nav_home -> startActivity(homePage)
@@ -81,8 +90,6 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
-
-        recyclerViewSetup(firstStepsPage)
 
         askPermissions(arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -105,14 +112,6 @@ class MainActivity : AppCompatActivity() {
                 location.listId
             )
         )
-    }
-
-    private fun getLatestLocation(): Location? {
-        var latestLocation: List<Location>? = null
-        locationsViewModel.readAllLocations.observe(this, {
-                locations -> latestLocation = locations.filter { containsWifi(it, getSsid(this)) }
-        })
-        return latestLocation?.get(0)
     }
 
     private fun containsWifi(location: Location, ssid: String?): Boolean {
@@ -178,11 +177,12 @@ class MainActivity : AppCompatActivity() {
         }
         // the Elements of which lists should be shown on the mainPage, initialized as the elements of the first list
         var position = 0
-        var latestLocation = getLatestLocation()
-        if (getLatestLocation() != null) {
-            position = latestLocation!!.listId
-            setLatestLocation(latestLocation)
-            Toast.makeText(this,"Got list via wifi ssid",Toast.LENGTH_SHORT).show()
+        var location = previousLocations?.get(0)
+        if (location != null) {
+            position = location.listId
+            setLatestLocation(location)
+            Log.d("*'*'*'*'*'*'", location.toString())
+            Toast.makeText(this,location.toString(),Toast.LENGTH_SHORT).show()
         }
         else {
             specialValuesViewModel.readAllSpecialValues.observe(this, { specialValue ->
