@@ -66,6 +66,7 @@ class AddLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
 
         addWifiButton.setOnClickListener{
             wifiName = MainActivity.getSsid(this)
+            Toast.makeText(this,"Wifi added",Toast.LENGTH_SHORT).show()
         }
 
         //This is for the Dropdown Menu:

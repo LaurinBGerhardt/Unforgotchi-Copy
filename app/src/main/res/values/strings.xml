@@ -25,4 +25,5 @@
     <string name="notificationDesc">Enable notifications</string>
     <string name="notificationSel">Select Ringtone</string>
     <string name="scan_wifi">Scan WiFi</string>
+    <string name="learn_the_first_steps_here"><u>Click to learn the first steps.</u></string>
 </resources>

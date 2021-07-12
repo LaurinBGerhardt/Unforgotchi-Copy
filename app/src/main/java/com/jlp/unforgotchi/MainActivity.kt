@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         val homePage = Intent(this@MainActivity, MainActivity::class.java)
         val listsPage = Intent(this@MainActivity, Lists::class.java)
         val locationsPage = Intent(this@MainActivity, Locations::class.java)
-        val aboutUsPage = Intent(this@MainActivity, FirstSteps::class.java)
+        val firstStepsPage = Intent(this@MainActivity, FirstSteps::class.java)
 
         context = this
         specialValuesViewModel = ViewModelProvider(this).get(SpecialValuesViewModel::class.java)
@@ -77,12 +77,12 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_home -> startActivity(homePage)
                 R.id.nav_lists -> startActivity(listsPage)
                 R.id.nav_locations -> startActivity(locationsPage)
-                R.id.nav_first_steps -> startActivity(aboutUsPage)
+                R.id.nav_first_steps -> startActivity(firstStepsPage)
             }
             true
         }
 
-        recyclerViewSetup(listsPage)
+        recyclerViewSetup(firstStepsPage)
 
         askPermissions(arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -101,7 +101,8 @@ class MainActivity : AppCompatActivity() {
         specialValuesViewModel.setSpecialValue(
             SpecialValue(
                 ValueNames.LATEST_LOCATION.name,
-                location.text
+                location.text,
+                location.listId
             )
         )
     }
@@ -126,12 +127,11 @@ class MainActivity : AppCompatActivity() {
         private lateinit var context: Context
         private lateinit var itemsToRemember: Array<String>
         var isConnected: Boolean by Delegates.observable(false) { property, oldValue, newValue ->
-        //  TODO hier notification schicken
             Log.d("Observable property: ", property.toString())
             Log.d("Observable old: ", oldValue.toString())
             Log.d("Observable new: ", newValue.toString())
 
-            if (!newValue && newValue != oldValue) sendNotification("Unforgotchi")
+            if (!newValue && newValue != oldValue) sendNotification()
         }
 
         fun getSsid(con: Context): String? {
@@ -144,14 +144,14 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        private fun sendNotification(title: String) {
+        private fun sendNotification() {
             val intent = Intent(context, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }
             val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
             val builder = NotificationCompat.Builder(context, "channel_id_test_01")
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle(title)
+                .setContentTitle("Don't forget to take:")
                 .setContentText(itemsToRemember.joinToString(", "))
                 .setContentIntent((pendingIntent))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -164,7 +164,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun recyclerViewSetup(listsPage: Intent) {
+    private fun recyclerViewSetup(firstStepsPage: Intent) {
         // for the recyclerview:
         val recyclerview = findViewById<RecyclerView>(R.id.lists_recycler_view)
         recyclerview.layoutManager = LinearLayoutManager(this)
@@ -174,10 +174,23 @@ class MainActivity : AppCompatActivity() {
         val noListsYetMessage = findViewById<TextView>(R.id.noListsYetMessage)
         val firstStepsLink = findViewById<TextView>(R.id.firstSteps)
         firstStepsLink.setOnClickListener {
-            startActivity(listsPage)
+            startActivity(firstStepsPage)
         }
         // the Elements of which lists should be shown on the mainPage, initialized as the elements of the first list
-        val position = 0
+        var position = 0
+        var latestLocation = getLatestLocation()
+        if (getLatestLocation() != null) {
+            position = latestLocation!!.listId
+            setLatestLocation(latestLocation)
+            Toast.makeText(this,"Got list via wifi ssid",Toast.LENGTH_SHORT).show()
+        }
+        else {
+            specialValuesViewModel.readAllSpecialValues.observe(this, { specialValue ->
+                if (specialValue.isNotEmpty()) {
+                    position = specialValue.last().listID
+                }
+            })
+        }
         //selects the right list and shows its element or the noListsYet View if no Elements in List
         detailListUserViewModel = ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
         if(position==0){

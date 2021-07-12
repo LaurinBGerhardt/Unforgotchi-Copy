@@ -85,7 +85,8 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
                     specialValuesViewModel.setSpecialValue(
                         SpecialValue(
                             ValueNames.LATEST_LOCATION.name,
-                            newLocName
+                            newLocName,
+                            newLocation.listId
                         )
                     )
                 }

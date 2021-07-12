@@ -31,7 +31,7 @@ class FirstSteps : AppCompatActivity() {
         val homePage = Intent(this@FirstSteps, MainActivity::class.java)
         val listsPage = Intent(this@FirstSteps, Lists::class.java)
         val locationsPage = Intent(this@FirstSteps, Locations::class.java)
-        val aboutUsPage = Intent(this@FirstSteps, FirstSteps::class.java)
+        val firstSteps = Intent(this@FirstSteps, FirstSteps::class.java)
 
         // set click listeners
         navView.setNavigationItemSelectedListener {
@@ -39,7 +39,7 @@ class FirstSteps : AppCompatActivity() {
                 R.id.nav_home -> startActivity(homePage)
                 R.id.nav_lists -> startActivity(listsPage)
                 R.id.nav_locations -> startActivity(locationsPage)
-                R.id.nav_first_steps -> startActivity(aboutUsPage)
+                R.id.nav_first_steps -> startActivity(firstSteps)
             }
             true
         }

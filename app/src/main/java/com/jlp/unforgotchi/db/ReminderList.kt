@@ -68,7 +68,8 @@ data class LocationToLists(
 data class SpecialValue(
     @PrimaryKey()
     var valueName : String,
-    var value : String
+    var value : String,
+    var listID : Int
 ){
-    constructor() : this("","")
+    constructor() : this("","", 0)
 }
