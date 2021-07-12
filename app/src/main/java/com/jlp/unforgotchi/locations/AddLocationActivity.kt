@@ -80,20 +80,6 @@ class AddLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
             }
             setupSpinner()
         }
-        /*
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-                Toast.makeText(this@AddLocationActivity,"You Should Select a WiFi",Toast.LENGTH_LONG).show()
-            }
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                //listNameAndId = dropDownItemsAndIds[position]
-                Log.d("!!!!!! Position in onItemSelected: ","$listId")
-                Log.d("!!!!!! ListIds VOR assignment in onItemSelected: ","$listId")
-                listId = dropDownIds[position]
-                Log.d("!!!!!! ListIds NACH assignment in onItemSelected: ","$listId")
-                findViewById<TextView>(R.id.select_list_text_view).text = dropDownItems[position]
-            }
-        }*/
 
         findViewById<FloatingActionButton>(R.id.finish_adding_location).setOnClickListener {//): ","${spinner.selectedItemPosition}")
             listId = dropDownIds[spinner!!.selectedItemPosition]
