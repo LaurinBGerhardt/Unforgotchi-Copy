@@ -105,10 +105,8 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
             } else {
                 if (delete) {
                     delete = false
-                    deleteListsButton.setBackgroundColor(0xFF820333.toInt())
                 } else {
                     delete = true
-                    deleteListsButton.setBackgroundColor(0xFF000000.toInt())
                 }
             }
         }
@@ -125,10 +123,8 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
             } else {
                 if (edit) {
                     edit = false
-                    editListsButton.setBackgroundColor(0xFF820333.toInt())
                 } else {
                     edit = true
-                    editListsButton.setBackgroundColor(0xFF000000.toInt())
                 }
             }
         }

@@ -14,6 +14,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -150,7 +151,7 @@ class MainActivity : AppCompatActivity() {
             }
             val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
             val builder = NotificationCompat.Builder(context, "channel_id_test_01")
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setSmallIcon(R.drawable.ic_unforgotchi)
                 .setContentTitle("Don't forget to take:")
                 .setContentText(itemsToRemember.joinToString(", "))
                 .setContentIntent((pendingIntent))
@@ -171,7 +172,7 @@ class MainActivity : AppCompatActivity() {
         recyclerview.adapter = adapter
         recyclerview.setHasFixedSize(true)
         //text which is shown instead of the recyclerview when recyclerview would be empty, leads to list page on click
-        val noListsYetMessage = findViewById<TextView>(R.id.noListsYetMessage)
+        val noListsYetMessage = findViewById<LinearLayout>(R.id.noListsYetMessage)
         val firstStepsLink = findViewById<TextView>(R.id.firstSteps)
         firstStepsLink.setOnClickListener {
             startActivity(firstStepsPage)
@@ -197,12 +198,10 @@ class MainActivity : AppCompatActivity() {
             detailListUserViewModel.readAllElementsFromList1.observe(this, { reminderListElement ->
                 if (reminderListElement.isEmpty()){
                     noListsYetMessage.isVisible = true
-                    firstStepsLink.isVisible = true
                     recyclerview.isVisible = false
                 }
                 else {
                     noListsYetMessage.isVisible = false
-                    firstStepsLink.isVisible = false
                     recyclerview.isVisible = true
                     adapter.setData(reminderListElement)
                     reminderListElement.forEach { element ->
@@ -214,11 +213,11 @@ class MainActivity : AppCompatActivity() {
         if(position==1){
             detailListUserViewModel.readAllElementsFromList2.observe(this, { reminderListElement ->
                 if (reminderListElement.isEmpty()){
-                    firstStepsLink.isVisible = true
+                    noListsYetMessage.isVisible = true
                     recyclerview.isVisible = false
                 }
                 else {
-                    firstStepsLink.isVisible = false
+                    noListsYetMessage.isVisible = false
                     recyclerview.isVisible = true
                     adapter.setData(reminderListElement)
                 }
@@ -227,11 +226,11 @@ class MainActivity : AppCompatActivity() {
         if(position==2){
             detailListUserViewModel.readAllElementsFromList3.observe(this, { reminderListElement ->
                 if (reminderListElement.isEmpty()){
-                    firstStepsLink.isVisible = true
+                    noListsYetMessage.isVisible = true
                     recyclerview.isVisible = false
                 }
                 else {
-                    firstStepsLink.isVisible = false
+                    noListsYetMessage.isVisible = false
                     recyclerview.isVisible = true
                     adapter.setData(reminderListElement)
                 }
@@ -240,11 +239,11 @@ class MainActivity : AppCompatActivity() {
         if(position==3){
             detailListUserViewModel.readAllElementsFromList4.observe(this, { reminderListElement ->
                 if (reminderListElement.isEmpty()){
-                    firstStepsLink.isVisible = true
+                    noListsYetMessage.isVisible = true
                     recyclerview.isVisible = false
                 }
                 else {
-                    firstStepsLink.isVisible = false
+                    noListsYetMessage.isVisible = false
                     recyclerview.isVisible = true
                     adapter.setData(reminderListElement)
                 }
@@ -253,11 +252,11 @@ class MainActivity : AppCompatActivity() {
         if(position==4){
             detailListUserViewModel.readAllElementsFromList5.observe(this, { reminderListElement ->
                 if (reminderListElement.isEmpty()){
-                    firstStepsLink.isVisible = true
+                    noListsYetMessage.isVisible = true
                     recyclerview.isVisible = false
                 }
                 else {
-                    firstStepsLink.isVisible = false
+                    noListsYetMessage.isVisible = false
                     recyclerview.isVisible = true
                     adapter.setData(reminderListElement)
                 }
@@ -266,11 +265,11 @@ class MainActivity : AppCompatActivity() {
         if(position==5){
             detailListUserViewModel.readAllElementsFromList6.observe(this, { reminderListElement ->
                 if (reminderListElement.isEmpty()){
-                    firstStepsLink.isVisible = true
+                    noListsYetMessage.isVisible = true
                     recyclerview.isVisible = false
                 }
                 else {
-                    firstStepsLink.isVisible = false
+                    noListsYetMessage.isVisible = false
                     recyclerview.isVisible = true
                     adapter.setData(reminderListElement)
                 }
@@ -279,11 +278,11 @@ class MainActivity : AppCompatActivity() {
         if(position==6){
             detailListUserViewModel.readAllElementsFromList7.observe(this, { reminderListElement ->
                 if (reminderListElement.isEmpty()){
-                    firstStepsLink.isVisible = true
+                    noListsYetMessage.isVisible = true
                     recyclerview.isVisible = false
                 }
                 else {
-                    firstStepsLink.isVisible = false
+                    noListsYetMessage.isVisible = false
                     recyclerview.isVisible = true
                     adapter.setData(reminderListElement)
                 }
@@ -292,11 +291,11 @@ class MainActivity : AppCompatActivity() {
         if(position==7){
             detailListUserViewModel.readAllElementsFromList8.observe(this, { reminderListElement ->
                 if (reminderListElement.isEmpty()){
-                    firstStepsLink.isVisible = true
+                    noListsYetMessage.isVisible = true
                     recyclerview.isVisible = false
                 }
                 else {
-                    firstStepsLink.isVisible = false
+                    noListsYetMessage.isVisible = false
                     recyclerview.isVisible = true
                     adapter.setData(reminderListElement)
                 }
@@ -305,11 +304,11 @@ class MainActivity : AppCompatActivity() {
         if(position==8){
             detailListUserViewModel.readAllElementsFromList9.observe(this, { reminderListElement ->
                 if (reminderListElement.isEmpty()){
-                    firstStepsLink.isVisible = true
+                    noListsYetMessage.isVisible = true
                     recyclerview.isVisible = false
                 }
                 else {
-                    firstStepsLink.isVisible = false
+                    noListsYetMessage.isVisible = false
                     recyclerview.isVisible = true
                     adapter.setData(reminderListElement)
                 }
@@ -318,11 +317,11 @@ class MainActivity : AppCompatActivity() {
         if(position==9){
             detailListUserViewModel.readAllElementsFromList10.observe(this, { reminderListElement ->
                 if (reminderListElement.isEmpty()){
-                    firstStepsLink.isVisible = true
+                    noListsYetMessage.isVisible = true
                     recyclerview.isVisible = false
                 }
                 else {
-                    firstStepsLink.isVisible = false
+                    noListsYetMessage.isVisible = false
                     recyclerview.isVisible = true
                     adapter.setData(reminderListElement)
                 }
