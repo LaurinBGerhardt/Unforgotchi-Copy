@@ -7,34 +7,116 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".locations.Locations">
-    <androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/locations_recycler_view"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layoutManager="GridLayoutManager"
-            tools:layout_editor_absoluteX="16dp"
-            tools:layout_editor_absoluteY="0dp"
-            tools:listitem="@layout/location_item"/>
+            android:orientation="vertical"
+            android:padding="15dp"
+            android:layout_weight="8">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/add_location_button"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/rounded_square_lighter">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:background="@drawable/rounded_square">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Your Locations"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    android:layout_gravity="center"/>
+
+            </LinearLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/locations_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layoutManager="GridLayoutManager"
+                    tools:layout_editor_absoluteX="16dp"
+                    tools:layout_editor_absoluteY="0dp"
+                    tools:listitem="@layout/location_item"/>
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/add_location_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    app:borderWidth="0dp"
+                    android:backgroundTint="@color/unforgotchi_purple"
+                    android:src="@drawable/ic_add_white_24"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginBottom="8dp"
+    android:layout_weight="1"
+    android:layout_gravity="center"
+    android:gravity="center">
+
+        <TextView
+            android:id="@+id/delete_lists_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            app:borderWidth="0dp"
-            android:backgroundTint="@color/unforgotchi_purple"
-            android:src="@drawable/ic_add_white_24"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:layout_weight="1"
+            android:text="Delete"
+            android:textColor="@color/colorPrimary"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/rounded_square"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/edit_lists_button"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit"
+            android:textColor="@color/colorPrimary"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/rounded_square"/>
+
+    </LinearLayout>
+
+    </LinearLayout>
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
