@@ -76,57 +76,17 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
 
         // show the element of the current list
         mUserViewModel = ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
-        //kann nicht so gehandhabt werden, da ListId über 10 hinaus steigt. Wenn Elemente gelöscht, zählt ListId ja weiter
-        if(position==1){
-            mUserViewModel.readAllElementsFromList1.observe(this, Observer { reminderListElement ->
-                adapter.setData(reminderListElement)
-            })
-        }
-        if(position==2){
-            mUserViewModel.readAllElementsFromList2.observe(this, Observer { reminderListElement ->
-                adapter.setData(reminderListElement)
-            })
-        }
-        if(position==3){
-            mUserViewModel.readAllElementsFromList3.observe(this, Observer { reminderListElement ->
-                adapter.setData(reminderListElement)
-            })
-        }
-        if(position==4){
-            mUserViewModel.readAllElementsFromList4.observe(this, Observer { reminderListElement ->
-                adapter.setData(reminderListElement)
-            })
-        }
-        if(position==5){
-            mUserViewModel.readAllElementsFromList5.observe(this, Observer { reminderListElement ->
-                adapter.setData(reminderListElement)
-            })
-        }
-        if(position==6){
-            mUserViewModel.readAllElementsFromList6.observe(this, Observer { reminderListElement ->
-                adapter.setData(reminderListElement)
-            })
-        }
-        if(position==7){
-            mUserViewModel.readAllElementsFromList7.observe(this, Observer { reminderListElement ->
-                adapter.setData(reminderListElement)
-            })
-        }
-        if(position==8){
-            mUserViewModel.readAllElementsFromList8.observe(this, Observer { reminderListElement ->
-                adapter.setData(reminderListElement)
-            })
-        }
-        if(position==9){
-            mUserViewModel.readAllElementsFromList9.observe(this, Observer { reminderListElement ->
-                adapter.setData(reminderListElement)
-            })
-        }
-        if(position==10){
-            mUserViewModel.readAllElementsFromList10.observe(this, Observer { reminderListElement ->
-                adapter.setData(reminderListElement)
-            })
-        }
+        mUserViewModel.readAllElement.observe(this, Observer { reminderListElement ->
+            var listOfRightElements = listOf<ReminderListElement>()
+            var counter = 0
+            while (counter < reminderListElement.size) {
+                if (reminderListElement[counter].id == position){
+                    listOfRightElements += reminderListElement[counter]
+                }
+            }
+            adapter.setData(listOfRightElements)
+            counter = 0
+        })
 
 
         //when clicking the add-button:
@@ -192,64 +152,20 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
 
 
     private fun deleteListElement(positionItem: Int){
-        var array = emptyArray<ReminderListElement>()
-        if(position==0){
-            mUserViewModel.readAllElementsFromList1.observe(this, Observer { reminderListElement ->
-                array += reminderListElement
-            })
-        }
-        if(position==1){
-            mUserViewModel.readAllElementsFromList2.observe(this, Observer { reminderListElement ->
-                array += reminderListElement
-            })
-        }
-        if(position==2){
-            mUserViewModel.readAllElementsFromList3.observe(this, Observer { reminderListElement ->
-                array += reminderListElement
-            })
-        }
-        if(position==3){
-            mUserViewModel.readAllElementsFromList4.observe(this, Observer { reminderListElement ->
-                array += reminderListElement
-            })
-        }
-        if(position==4){
-            mUserViewModel.readAllElementsFromList5.observe(this, Observer { reminderListElement ->
-                array += reminderListElement
-            })
-        }
-        if(position==5){
-            mUserViewModel.readAllElementsFromList6.observe(this, Observer { reminderListElement ->
-                array += reminderListElement
-            })
-        }
-        if(position==6){
-            mUserViewModel.readAllElementsFromList7.observe(this, Observer { reminderListElement ->
-                array += reminderListElement
-            })
-        }
-        if(position==7){
-            mUserViewModel.readAllElementsFromList8.observe(this, Observer { reminderListElement ->
-                array += reminderListElement
-            })
-        }
-        if(position==8){
-            mUserViewModel.readAllElementsFromList9.observe(this, Observer { reminderListElement ->
-                array += reminderListElement
-            })
-        }
-        if(position==9){
-            mUserViewModel.readAllElementsFromList10.observe(this, Observer { reminderListElement ->
-                array += reminderListElement
-            })
-        }
-        val clickedListElementId = array[positionItem].id
-        val clickedListElementName = array[positionItem].listElementName
-        val clickedListElementList = array[positionItem].list
+        var listOfRightElements = listOf<ReminderListElement>()
+        mUserViewModel.readAllElement.observe(this, Observer { reminderListElement ->
+            var listOfElements = reminderListElement
+            var counter = 0
+            while (counter < reminderListElement.size) {
+                if (listOfElements[counter].id == position){
+                    listOfRightElements += listOfElements[counter]
+                }
+            }
+        })
         val reminderListElement = ReminderListElement(
-            clickedListElementId,
-            clickedListElementName,
-            clickedListElementList
+            listOfRightElements[positionItem].id,
+            listOfRightElements[positionItem].listElementName,
+            listOfRightElements[positionItem].list
         )
         // Remove from Database
         mUserViewModel.deleteReminderListElement(reminderListElement)
@@ -265,11 +181,22 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
                 Toast.LENGTH_SHORT
             ).show()
         } else {
-            // Create Reminder List Element Object
+            var listOfRightElements = listOf<ReminderListElement>()
+            mUserViewModel.readAllElement.observe(this, Observer { reminderListElement ->
+                var listOfElements = reminderListElement
+                var counter = 0
+                while (counter < reminderListElement.size) {
+                    if (listOfElements[counter].id == position){
+                        listOfRightElements += listOfElements[counter]
+                    }
+                }
+            })
+            val clickedListElementId = listOfRightElements[positionInList].id
+            val clickedListElementList = listOfRightElements[positionInList].list
             val updatedReminderListElement = ReminderListElement(
-                positionInList +1,
+                clickedListElementId,
                 listElementName,
-                position
+                clickedListElementList
             )
             // Update Current Object
             mUserViewModel.updateReminderListElement(updatedReminderListElement)

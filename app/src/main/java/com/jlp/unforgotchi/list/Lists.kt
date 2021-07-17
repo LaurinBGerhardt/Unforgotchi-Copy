@@ -2,11 +2,13 @@ package com.jlp.unforgotchi.list
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Paint
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -98,7 +100,7 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
         }
 
         //when clicking the delete-button:
-        val deleteListsButton: View = findViewById(R.id.delete_lists_button)
+        val deleteListsButton: TextView = findViewById(R.id.delete_lists_button)
         deleteListsButton.setOnClickListener {
             if (edit) {
                 Toast.makeText(
@@ -109,14 +111,16 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
             } else {
                 if (delete) {
                     delete = false
+                    deleteListsButton.paintFlags = deleteListsButton.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
                 } else {
                     delete = true
+                    deleteListsButton.paintFlags = deleteListsButton.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                 }
             }
         }
 
         //when clicking the edit button:
-        val editListsButton: View = findViewById(R.id.edit_lists_button)
+        val editListsButton: TextView = findViewById(R.id.edit_lists_button)
         editListsButton.setOnClickListener {
             if (delete) {
                 Toast.makeText(
@@ -127,8 +131,10 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
             } else {
                 if (edit) {
                     edit = false
+                    editListsButton.paintFlags = editListsButton.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
                 } else {
                     edit = true
+                    editListsButton.paintFlags = editListsButton.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                 }
             }
         }
@@ -190,66 +196,25 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
         listViewModel.readAllData.observe(this, Observer { reminderList ->
             adapter.setData(reminderList)
         })
-        var itemArray = emptyArray<ReminderListElement>()
-        //kann nicht so gehandhabt werden, da ListId über 10 hinaus steigt. Wenn Elemente gelöscht, zählt ListId ja weiter
-        if(clickedListId==1){
-            itemViewModel.readAllElementsFromList1.observe(this, Observer { reminderListElement ->
-                itemArray += reminderListElement
-            })
+        var listOfRightElements = listOf<ReminderListElement>()
+        itemViewModel.readAllElement.observe(this, Observer { reminderListElement ->
+            var listOfElements = reminderListElement
+            var counter = 0
+            while (counter < reminderListElement.size) {
+                if (listOfElements[counter].id == position) {
+                    listOfRightElements += listOfElements[counter]
+                }
+            }
+        })
+        var counter = 0
+        while (counter < listOfRightElements.size){
+            val reminderListElement = ReminderListElement(
+                listOfRightElements[counter].id,
+                listOfRightElements[counter].listElementName,
+                listOfRightElements[counter].list
+            )
+            itemViewModel.deleteReminderListElement(reminderListElement)
         }
-        if(clickedListId==2){
-            itemViewModel.readAllElementsFromList2.observe(this, Observer { reminderListElement ->
-                itemArray += reminderListElement
-            })
-        }
-        if(clickedListId==3){
-            itemViewModel.readAllElementsFromList3.observe(this, Observer { reminderListElement ->
-                itemArray += reminderListElement
-            })
-        }
-        if(clickedListId==4){
-            itemViewModel.readAllElementsFromList4.observe(this, Observer { reminderListElement ->
-                itemArray += reminderListElement
-            })
-        }
-        if(clickedListId==5){
-            itemViewModel.readAllElementsFromList5.observe(this, Observer { reminderListElement ->
-                itemArray += reminderListElement
-            })
-        }
-        if(clickedListId==6){
-            itemViewModel.readAllElementsFromList6.observe(this, Observer { reminderListElement ->
-                itemArray += reminderListElement
-            })
-        }
-        if(clickedListId==7){
-            itemViewModel.readAllElementsFromList7.observe(this, Observer { reminderListElement ->
-                itemArray += reminderListElement
-            })
-        }
-        if(clickedListId==8){
-            itemViewModel.readAllElementsFromList8.observe(this, Observer { reminderListElement ->
-                itemArray += reminderListElement
-            })
-        }
-        if(clickedListId==9){
-            itemViewModel.readAllElementsFromList9.observe(this, Observer { reminderListElement ->
-                itemArray += reminderListElement
-            })
-        }
-        if(clickedListId==10){
-            itemViewModel.readAllElementsFromList10.observe(this, Observer { reminderListElement ->
-                itemArray += reminderListElement
-            })
-        }
-        val clickedListElementId = itemArray[position].id
-        val clickedListElementName = itemArray[position].listElementName
-        val reminderListElement = ReminderListElement(
-            clickedListElementId,
-            clickedListElementName,
-            R.drawable.ic_baseline_list_alt_24
-        )
-        itemViewModel.deleteReminderListElement(reminderListElement)
         Toast.makeText(applicationContext, "Successfully removed!", Toast.LENGTH_LONG).show()
     }
 

@@ -194,140 +194,28 @@ class MainActivity : AppCompatActivity() {
         }
         //selects the right list and shows its element or the noListsYet View if no Elements in List
         detailListUserViewModel = ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
-        if(position==0){
-            detailListUserViewModel.readAllElementsFromList1.observe(this, { reminderListElement ->
-                if (reminderListElement.isEmpty()){
-                    noListsYetMessage.isVisible = true
-                    recyclerview.isVisible = false
+        var listOfRightElements = listOf<ReminderListElement>()
+        detailListUserViewModel.readAllElement.observe(this, { reminderListElement ->
+            var counter = 0
+            while (counter < reminderListElement.size) {
+                if (reminderListElement[counter].id == position){
+                    listOfRightElements += reminderListElement[counter]
                 }
-                else {
-                    noListsYetMessage.isVisible = false
-                    recyclerview.isVisible = true
-                    adapter.setData(reminderListElement)
-                    reminderListElement.forEach { element ->
-                        itemsToRemember += element.listElementName
-                    }
+            }
+        })
+            if (listOfRightElements.isEmpty()){
+                noListsYetMessage.isVisible = true
+                recyclerview.isVisible = false
+            }
+            else {
+                noListsYetMessage.isVisible = false
+                recyclerview.isVisible = true
+                adapter.setData(listOfRightElements)
+                listOfRightElements.forEach { element ->
+                    itemsToRemember += element.listElementName
                 }
-            })
+            }
         }
-        if(position==1){
-            detailListUserViewModel.readAllElementsFromList2.observe(this, { reminderListElement ->
-                if (reminderListElement.isEmpty()){
-                    noListsYetMessage.isVisible = true
-                    recyclerview.isVisible = false
-                }
-                else {
-                    noListsYetMessage.isVisible = false
-                    recyclerview.isVisible = true
-                    adapter.setData(reminderListElement)
-                }
-            })
-        }
-        if(position==2){
-            detailListUserViewModel.readAllElementsFromList3.observe(this, { reminderListElement ->
-                if (reminderListElement.isEmpty()){
-                    noListsYetMessage.isVisible = true
-                    recyclerview.isVisible = false
-                }
-                else {
-                    noListsYetMessage.isVisible = false
-                    recyclerview.isVisible = true
-                    adapter.setData(reminderListElement)
-                }
-            })
-        }
-        if(position==3){
-            detailListUserViewModel.readAllElementsFromList4.observe(this, { reminderListElement ->
-                if (reminderListElement.isEmpty()){
-                    noListsYetMessage.isVisible = true
-                    recyclerview.isVisible = false
-                }
-                else {
-                    noListsYetMessage.isVisible = false
-                    recyclerview.isVisible = true
-                    adapter.setData(reminderListElement)
-                }
-            })
-        }
-        if(position==4){
-            detailListUserViewModel.readAllElementsFromList5.observe(this, { reminderListElement ->
-                if (reminderListElement.isEmpty()){
-                    noListsYetMessage.isVisible = true
-                    recyclerview.isVisible = false
-                }
-                else {
-                    noListsYetMessage.isVisible = false
-                    recyclerview.isVisible = true
-                    adapter.setData(reminderListElement)
-                }
-            })
-        }
-        if(position==5){
-            detailListUserViewModel.readAllElementsFromList6.observe(this, { reminderListElement ->
-                if (reminderListElement.isEmpty()){
-                    noListsYetMessage.isVisible = true
-                    recyclerview.isVisible = false
-                }
-                else {
-                    noListsYetMessage.isVisible = false
-                    recyclerview.isVisible = true
-                    adapter.setData(reminderListElement)
-                }
-            })
-        }
-        if(position==6){
-            detailListUserViewModel.readAllElementsFromList7.observe(this, { reminderListElement ->
-                if (reminderListElement.isEmpty()){
-                    noListsYetMessage.isVisible = true
-                    recyclerview.isVisible = false
-                }
-                else {
-                    noListsYetMessage.isVisible = false
-                    recyclerview.isVisible = true
-                    adapter.setData(reminderListElement)
-                }
-            })
-        }
-        if(position==7){
-            detailListUserViewModel.readAllElementsFromList8.observe(this, { reminderListElement ->
-                if (reminderListElement.isEmpty()){
-                    noListsYetMessage.isVisible = true
-                    recyclerview.isVisible = false
-                }
-                else {
-                    noListsYetMessage.isVisible = false
-                    recyclerview.isVisible = true
-                    adapter.setData(reminderListElement)
-                }
-            })
-        }
-        if(position==8){
-            detailListUserViewModel.readAllElementsFromList9.observe(this, { reminderListElement ->
-                if (reminderListElement.isEmpty()){
-                    noListsYetMessage.isVisible = true
-                    recyclerview.isVisible = false
-                }
-                else {
-                    noListsYetMessage.isVisible = false
-                    recyclerview.isVisible = true
-                    adapter.setData(reminderListElement)
-                }
-            })
-        }
-        if(position==9){
-            detailListUserViewModel.readAllElementsFromList10.observe(this, { reminderListElement ->
-                if (reminderListElement.isEmpty()){
-                    noListsYetMessage.isVisible = true
-                    recyclerview.isVisible = false
-                }
-                else {
-                    noListsYetMessage.isVisible = false
-                    recyclerview.isVisible = true
-                    adapter.setData(reminderListElement)
-                }
-            })
-        }
-    }
 
     private fun askPermissions(PERMISSIONS: Array<String>) {
         PERMISSIONS.forEach { permission ->
