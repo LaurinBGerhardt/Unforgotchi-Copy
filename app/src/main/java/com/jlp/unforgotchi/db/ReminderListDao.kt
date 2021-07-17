@@ -13,7 +13,7 @@ interface ReminderListDao {
     @Update
     suspend fun updateReminderList(reminderList: ReminderList)
 
-    @Query("SELECT * FROM reminder_list_table ORDER BY id ASC")
+    @Query("SELECT * FROM reminder_list_table")
     fun readAllData(): LiveData<List<ReminderList>>
 
     /*@Query("SELECT COUNT(*) FROM reminder_list_table")

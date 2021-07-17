@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 
 class ReminderListElementViewModel(application: Application): AndroidViewModel(application) {
 
-    val readAllElement: LiveData<List<ReminderListElement>>
+    var readAllElements: LiveData<List<ReminderListElement>>
 
     private val repository: ReminderListElementRepository
 
@@ -17,7 +17,7 @@ class ReminderListElementViewModel(application: Application): AndroidViewModel(a
         val reminderListElementDao = ReminderListElementDatabase.getDatabase(application).reminderListElementDao()
         repository = ReminderListElementRepository(reminderListElementDao)
 
-        readAllElement = repository.readAllElements
+        readAllElements = repository.readAllElements
 
     }
 

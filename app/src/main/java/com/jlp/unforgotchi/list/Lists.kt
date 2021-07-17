@@ -196,25 +196,29 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
         listViewModel.readAllData.observe(this, Observer { reminderList ->
             adapter.setData(reminderList)
         })
+        // to delete all items attached to a list: no error, but does not work
+        /*
         var listOfRightElements = listOf<ReminderListElement>()
-        itemViewModel.readAllElement.observe(this, Observer { reminderListElement ->
-            var listOfElements = reminderListElement
+        itemViewModel.readAllElements.observe(this, Observer { reminderListElement ->
+            var listOfRightElements = listOf<ReminderListElement>()
             var counter = 0
             while (counter < reminderListElement.size) {
-                if (listOfElements[counter].id == position) {
-                    listOfRightElements += listOfElements[counter]
+                if (reminderListElement[counter].list == position){
+                    listOfRightElements += reminderListElement[counter]
                 }
+                counter++
             }
         })
         var counter = 0
         while (counter < listOfRightElements.size){
-            val reminderListElement = ReminderListElement(
+            var reminderListElement = ReminderListElement(
                 listOfRightElements[counter].id,
                 listOfRightElements[counter].listElementName,
                 listOfRightElements[counter].list
             )
             itemViewModel.deleteReminderListElement(reminderListElement)
-        }
+            counter++
+        }*/
         Toast.makeText(applicationContext, "Successfully removed!", Toast.LENGTH_LONG).show()
     }
 
@@ -284,12 +288,11 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
             }
             else -> {
                 val i = Intent(this@Lists, DetailList::class.java)
-                var array = emptyArray<ReminderList>()
+                var list = listOf<ReminderList>()
                 listViewModel.readAllData.observe(this, Observer { reminderList ->
-                    array += reminderList
+                    list = reminderList
                 })
-                val clickedListId = array[position].id
-                i.putExtra("position", clickedListId)
+                i.putExtra("position", list[position].id)
                 startActivity(i)
             }
         }

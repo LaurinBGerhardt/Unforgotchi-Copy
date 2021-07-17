@@ -178,8 +178,8 @@ class MainActivity : AppCompatActivity() {
             startActivity(firstStepsPage)
         }
         // the Elements of which lists should be shown on the mainPage, initialized as the elements of the first list
-        var position = 0
-        var latestLocation = getLatestLocation()
+        var position = 1
+        /*var latestLocation = getLatestLocation()
         if (getLatestLocation() != null) {
             position = latestLocation!!.listId
             setLatestLocation(latestLocation)
@@ -191,31 +191,32 @@ class MainActivity : AppCompatActivity() {
                     position = specialValue.last().listID
                 }
             })
-        }
+        }*/
         //selects the right list and shows its element or the noListsYet View if no Elements in List
         detailListUserViewModel = ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
         var listOfRightElements = listOf<ReminderListElement>()
-        detailListUserViewModel.readAllElement.observe(this, { reminderListElement ->
+        detailListUserViewModel.readAllElements.observe(this, { reminderListElement ->
             var counter = 0
             while (counter < reminderListElement.size) {
-                if (reminderListElement[counter].id == position){
+                if (reminderListElement[counter].list == position){
                     listOfRightElements += reminderListElement[counter]
                 }
+                counter++
             }
         })
-            if (listOfRightElements.isEmpty()){
-                noListsYetMessage.isVisible = true
-                recyclerview.isVisible = false
-            }
-            else {
-                noListsYetMessage.isVisible = false
-                recyclerview.isVisible = true
-                adapter.setData(listOfRightElements)
-                listOfRightElements.forEach { element ->
-                    itemsToRemember += element.listElementName
-                }
+        if (listOfRightElements.isEmpty()){
+            noListsYetMessage.isVisible = true
+            recyclerview.isVisible = false
+        }
+        else {
+            noListsYetMessage.isVisible = false
+            recyclerview.isVisible = true
+            adapter.setData(listOfRightElements)
+            listOfRightElements.forEach { element ->
+                itemsToRemember += element.listElementName
             }
         }
+    }
 
     private fun askPermissions(PERMISSIONS: Array<String>) {
         PERMISSIONS.forEach { permission ->

@@ -30,7 +30,7 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
 
     lateinit var toggle : ActionBarDrawerToggle
 
-    private lateinit var mUserViewModel: ReminderListElementViewModel
+    private lateinit var itemViewModel: ReminderListElementViewModel
     private val adapter = DetailListsAdapter(this)
     private var position = 0
 
@@ -75,17 +75,10 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         recyclerview.setHasFixedSize(true)
 
         // show the element of the current list
-        mUserViewModel = ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
-        mUserViewModel.readAllElement.observe(this, Observer { reminderListElement ->
-            var listOfRightElements = listOf<ReminderListElement>()
-            var counter = 0
-            while (counter < reminderListElement.size) {
-                if (reminderListElement[counter].id == position){
-                    listOfRightElements += reminderListElement[counter]
-                }
-            }
-            adapter.setData(listOfRightElements)
-            counter = 0
+        itemViewModel = ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
+        itemViewModel.readAllElements.observe(this, Observer { reminderListElement ->
+            var rightList = getRightList(reminderListElement)
+            adapter.setData(rightList)
         })
 
 
@@ -140,7 +133,7 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         }
         else {
             val reminderListElement = ReminderListElement(0, listElementName, position)
-            mUserViewModel.addReminderListElement(reminderListElement)
+            itemViewModel.addReminderListElement(reminderListElement)
             Toast.makeText(applicationContext, "Successfully added!", Toast.LENGTH_LONG).show()
         }
     }
@@ -153,14 +146,8 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
 
     private fun deleteListElement(positionItem: Int){
         var listOfRightElements = listOf<ReminderListElement>()
-        mUserViewModel.readAllElement.observe(this, Observer { reminderListElement ->
-            var listOfElements = reminderListElement
-            var counter = 0
-            while (counter < reminderListElement.size) {
-                if (listOfElements[counter].id == position){
-                    listOfRightElements += listOfElements[counter]
-                }
-            }
+        itemViewModel.readAllElements.observe(this, Observer { reminderListElement ->
+            listOfRightElements = getRightList(reminderListElement)
         })
         val reminderListElement = ReminderListElement(
             listOfRightElements[positionItem].id,
@@ -168,7 +155,7 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
             listOfRightElements[positionItem].list
         )
         // Remove from Database
-        mUserViewModel.deleteReminderListElement(reminderListElement)
+        itemViewModel.deleteReminderListElement(reminderListElement)
         Toast.makeText(applicationContext, "Successfully removed!", Toast.LENGTH_LONG).show()
     }
 
@@ -182,24 +169,16 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
             ).show()
         } else {
             var listOfRightElements = listOf<ReminderListElement>()
-            mUserViewModel.readAllElement.observe(this, Observer { reminderListElement ->
-                var listOfElements = reminderListElement
-                var counter = 0
-                while (counter < reminderListElement.size) {
-                    if (listOfElements[counter].id == position){
-                        listOfRightElements += listOfElements[counter]
-                    }
-                }
+            itemViewModel.readAllElements.observe(this, Observer { reminderListElement ->
+                listOfRightElements = getRightList(reminderListElement)
             })
-            val clickedListElementId = listOfRightElements[positionInList].id
-            val clickedListElementList = listOfRightElements[positionInList].list
             val updatedReminderListElement = ReminderListElement(
-                clickedListElementId,
+                listOfRightElements[positionInList].id,
                 listElementName,
-                clickedListElementList
+                listOfRightElements[positionInList].list
             )
             // Update Current Object
-            mUserViewModel.updateReminderListElement(updatedReminderListElement)
+            itemViewModel.updateReminderListElement(updatedReminderListElement)
             Toast.makeText(
                 applicationContext,
                 "Successfully updated!",
@@ -229,5 +208,17 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
             setView(dialogLayout)
             show()
         }
+    }
+
+    private fun getRightList(list: List<ReminderListElement>): List<ReminderListElement>{
+        var listOfRightElements = listOf<ReminderListElement>()
+        var counter = 0
+        while (counter < list.size) {
+            if (list[counter].list == position){
+                listOfRightElements += list[counter]
+            }
+            counter++
+        }
+        return listOfRightElements
     }
 }
