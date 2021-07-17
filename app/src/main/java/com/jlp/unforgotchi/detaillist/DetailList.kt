@@ -20,6 +20,7 @@ import com.google.android.material.navigation.NavigationView
 import com.jlp.unforgotchi.FirstSteps
 import com.jlp.unforgotchi.MainActivity
 import com.jlp.unforgotchi.R
+import com.jlp.unforgotchi.db.ReminderList
 import com.jlp.unforgotchi.db.ReminderListElement
 import com.jlp.unforgotchi.db.ReminderListElementViewModel
 import com.jlp.unforgotchi.list.Lists
@@ -75,52 +76,53 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
 
         // show the element of the current list
         mUserViewModel = ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
-        if(position==0){
+        //kann nicht so gehandhabt werden, da ListId über 10 hinaus steigt. Wenn Elemente gelöscht, zählt ListId ja weiter
+        if(position==1){
             mUserViewModel.readAllElementsFromList1.observe(this, Observer { reminderListElement ->
                 adapter.setData(reminderListElement)
             })
         }
-        if(position==1){
+        if(position==2){
             mUserViewModel.readAllElementsFromList2.observe(this, Observer { reminderListElement ->
                 adapter.setData(reminderListElement)
             })
         }
-        if(position==2){
+        if(position==3){
             mUserViewModel.readAllElementsFromList3.observe(this, Observer { reminderListElement ->
                 adapter.setData(reminderListElement)
             })
         }
-        if(position==3){
+        if(position==4){
             mUserViewModel.readAllElementsFromList4.observe(this, Observer { reminderListElement ->
                 adapter.setData(reminderListElement)
             })
         }
-        if(position==4){
+        if(position==5){
             mUserViewModel.readAllElementsFromList5.observe(this, Observer { reminderListElement ->
                 adapter.setData(reminderListElement)
             })
         }
-        if(position==5){
+        if(position==6){
             mUserViewModel.readAllElementsFromList6.observe(this, Observer { reminderListElement ->
                 adapter.setData(reminderListElement)
             })
         }
-        if(position==6){
+        if(position==7){
             mUserViewModel.readAllElementsFromList7.observe(this, Observer { reminderListElement ->
                 adapter.setData(reminderListElement)
             })
         }
-        if(position==7){
+        if(position==8){
             mUserViewModel.readAllElementsFromList8.observe(this, Observer { reminderListElement ->
                 adapter.setData(reminderListElement)
             })
         }
-        if(position==8){
+        if(position==9){
             mUserViewModel.readAllElementsFromList9.observe(this, Observer { reminderListElement ->
                 adapter.setData(reminderListElement)
             })
         }
-        if(position==9){
+        if(position==10){
             mUserViewModel.readAllElementsFromList10.observe(this, Observer { reminderListElement ->
                 adapter.setData(reminderListElement)
             })
@@ -188,13 +190,66 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         return !(TextUtils.isEmpty(listName))
     }
 
-    // delete element:
+
     private fun deleteListElement(positionItem: Int){
-        // Create User Object
+        var array = emptyArray<ReminderListElement>()
+        if(position==0){
+            mUserViewModel.readAllElementsFromList1.observe(this, Observer { reminderListElement ->
+                array += reminderListElement
+            })
+        }
+        if(position==1){
+            mUserViewModel.readAllElementsFromList2.observe(this, Observer { reminderListElement ->
+                array += reminderListElement
+            })
+        }
+        if(position==2){
+            mUserViewModel.readAllElementsFromList3.observe(this, Observer { reminderListElement ->
+                array += reminderListElement
+            })
+        }
+        if(position==3){
+            mUserViewModel.readAllElementsFromList4.observe(this, Observer { reminderListElement ->
+                array += reminderListElement
+            })
+        }
+        if(position==4){
+            mUserViewModel.readAllElementsFromList5.observe(this, Observer { reminderListElement ->
+                array += reminderListElement
+            })
+        }
+        if(position==5){
+            mUserViewModel.readAllElementsFromList6.observe(this, Observer { reminderListElement ->
+                array += reminderListElement
+            })
+        }
+        if(position==6){
+            mUserViewModel.readAllElementsFromList7.observe(this, Observer { reminderListElement ->
+                array += reminderListElement
+            })
+        }
+        if(position==7){
+            mUserViewModel.readAllElementsFromList8.observe(this, Observer { reminderListElement ->
+                array += reminderListElement
+            })
+        }
+        if(position==8){
+            mUserViewModel.readAllElementsFromList9.observe(this, Observer { reminderListElement ->
+                array += reminderListElement
+            })
+        }
+        if(position==9){
+            mUserViewModel.readAllElementsFromList10.observe(this, Observer { reminderListElement ->
+                array += reminderListElement
+            })
+        }
+        val clickedListElementId = array[positionItem].id
+        val clickedListElementName = array[positionItem].listElementName
+        val clickedListElementList = array[positionItem].list
         val reminderListElement = ReminderListElement(
-            positionItem + 1,
-            "",
-            0
+            clickedListElementId,
+            clickedListElementName,
+            clickedListElementList
         )
         // Remove from Database
         mUserViewModel.deleteReminderListElement(reminderListElement)

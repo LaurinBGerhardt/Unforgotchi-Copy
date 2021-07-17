@@ -18,13 +18,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.jlp.unforgotchi.*
 import com.jlp.unforgotchi.db.ReminderList
+import com.jlp.unforgotchi.db.ReminderListElement
+import com.jlp.unforgotchi.db.ReminderListElementViewModel
 import com.jlp.unforgotchi.db.ReminderListViewModel
 import com.jlp.unforgotchi.detaillist.DetailList
 import com.jlp.unforgotchi.locations.Locations
 
 class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
 
-    private lateinit var mUserViewModel: ReminderListViewModel
+    private lateinit var itemViewModel: ReminderListElementViewModel
+    private lateinit var listViewModel: ReminderListViewModel
     lateinit var toggle: ActionBarDrawerToggle
     private val adapter = ListsAdapter(this)
 
@@ -66,8 +69,9 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
         recyclerview.setHasFixedSize(true)
 
         // set Data out of database
-        mUserViewModel = ViewModelProvider(this).get(ReminderListViewModel::class.java)
-        mUserViewModel.readAllData.observe(this, Observer { reminderList ->
+        itemViewModel = ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
+        listViewModel = ViewModelProvider(this).get(ReminderListViewModel::class.java)
+        listViewModel.readAllData.observe(this, Observer { reminderList ->
             adapter.setData(reminderList)
         })
 
@@ -156,8 +160,8 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
             ).show()
         } else {
             val reminderList = ReminderList(0, listName, R.drawable.ic_baseline_list_alt_24)
-            mUserViewModel.addReminderList(reminderList)
-            mUserViewModel.readAllData.observe(this, Observer { reminderList ->
+            listViewModel.addReminderList(reminderList)
+            listViewModel.readAllData.observe(this, Observer { reminderList ->
                 adapter.setData(reminderList)
             })
             Toast.makeText(applicationContext, "Successfully added!", Toast.LENGTH_LONG).show()
@@ -171,20 +175,91 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
 
     // function to remove a list
     private fun deleteList(position: Int) {
+        var array = emptyArray<ReminderList>()
+        listViewModel.readAllData.observe(this, Observer { reminderList ->
+            array += reminderList
+        })
+        val clickedListId = array[position].id
+        val clickedListName = array[position].listName
         val reminderList = ReminderList(
-            position + 1,
-            "",
+            clickedListId,
+            clickedListName,
             R.drawable.ic_baseline_list_alt_24
         )
-        mUserViewModel.deleteReminderList(reminderList)
-        mUserViewModel.readAllData.observe(this, Observer { reminderList ->
+        listViewModel.deleteReminderList(reminderList)
+        listViewModel.readAllData.observe(this, Observer { reminderList ->
             adapter.setData(reminderList)
         })
+        var itemArray = emptyArray<ReminderListElement>()
+        //kann nicht so gehandhabt werden, da ListId über 10 hinaus steigt. Wenn Elemente gelöscht, zählt ListId ja weiter
+        if(clickedListId==1){
+            itemViewModel.readAllElementsFromList1.observe(this, Observer { reminderListElement ->
+                itemArray += reminderListElement
+            })
+        }
+        if(clickedListId==2){
+            itemViewModel.readAllElementsFromList2.observe(this, Observer { reminderListElement ->
+                itemArray += reminderListElement
+            })
+        }
+        if(clickedListId==3){
+            itemViewModel.readAllElementsFromList3.observe(this, Observer { reminderListElement ->
+                itemArray += reminderListElement
+            })
+        }
+        if(clickedListId==4){
+            itemViewModel.readAllElementsFromList4.observe(this, Observer { reminderListElement ->
+                itemArray += reminderListElement
+            })
+        }
+        if(clickedListId==5){
+            itemViewModel.readAllElementsFromList5.observe(this, Observer { reminderListElement ->
+                itemArray += reminderListElement
+            })
+        }
+        if(clickedListId==6){
+            itemViewModel.readAllElementsFromList6.observe(this, Observer { reminderListElement ->
+                itemArray += reminderListElement
+            })
+        }
+        if(clickedListId==7){
+            itemViewModel.readAllElementsFromList7.observe(this, Observer { reminderListElement ->
+                itemArray += reminderListElement
+            })
+        }
+        if(clickedListId==8){
+            itemViewModel.readAllElementsFromList8.observe(this, Observer { reminderListElement ->
+                itemArray += reminderListElement
+            })
+        }
+        if(clickedListId==9){
+            itemViewModel.readAllElementsFromList9.observe(this, Observer { reminderListElement ->
+                itemArray += reminderListElement
+            })
+        }
+        if(clickedListId==10){
+            itemViewModel.readAllElementsFromList10.observe(this, Observer { reminderListElement ->
+                itemArray += reminderListElement
+            })
+        }
+        val clickedListElementId = itemArray[position].id
+        val clickedListElementName = itemArray[position].listElementName
+        val reminderListElement = ReminderListElement(
+            clickedListElementId,
+            clickedListElementName,
+            R.drawable.ic_baseline_list_alt_24
+        )
+        itemViewModel.deleteReminderListElement(reminderListElement)
         Toast.makeText(applicationContext, "Successfully removed!", Toast.LENGTH_LONG).show()
     }
 
     // function to change the name of a list
     private fun editList(listName: String, position: Int) {
+        var array = emptyArray<ReminderList>()
+        listViewModel.readAllData.observe(this, Observer { reminderList ->
+            array += reminderList
+        })
+        val clickedListId = array[position].id
         if (!inputCheck(listName)) {
             Toast.makeText(
                 applicationContext,
@@ -193,12 +268,12 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
             ).show()
         } else {
             val updatedReminderList = ReminderList(
-                position +1,
+                clickedListId,
                 listName,
                 R.drawable.ic_baseline_list_alt_24
             )
-            mUserViewModel.updateReminderList(updatedReminderList)
-            mUserViewModel.readAllData.observe(this, Observer { reminderList ->
+            listViewModel.updateReminderList(updatedReminderList)
+            listViewModel.readAllData.observe(this, Observer { reminderList ->
                 adapter.setData(reminderList)
             })
             Toast.makeText(
@@ -244,7 +319,12 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
             }
             else -> {
                 val i = Intent(this@Lists, DetailList::class.java)
-                i.putExtra("position", position)
+                var array = emptyArray<ReminderList>()
+                listViewModel.readAllData.observe(this, Observer { reminderList ->
+                    array += reminderList
+                })
+                val clickedListId = array[position].id
+                i.putExtra("position", clickedListId)
                 startActivity(i)
             }
         }
