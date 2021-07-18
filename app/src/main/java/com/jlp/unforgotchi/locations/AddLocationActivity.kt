@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isGone
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
@@ -27,7 +28,7 @@ class AddLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
     private val previewImage by lazy { findViewById<ImageButton>(R.id.selected_location_image_button) }
     private var previewImageChanged : Boolean = false   //this is horrible coding dont copy this
     private var imageData : Uri? = null
-    private val addWifiButton : Button by lazy { findViewById(R.id.add_wifi_to_location_button) }
+    private val addWifiButton : CheckBox by lazy { findViewById(R.id.add_wifi_to_location_button) }
     private var wifiName : String? = null
 
     var spinner:Spinner? = null
@@ -57,6 +58,7 @@ class AddLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //setContentView(R.layout.add_location_layout)
         setContentView(R.layout.add_location_layout)
         addLocNameView = findViewById(R.id.add_name_of_location)
         previewImage.setImageResource(R.drawable.ic_baseline_image_search_24)
@@ -65,6 +67,7 @@ class AddLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
         }
 
         addWifiButton.setOnClickListener{
+            addWifiButton.isChecked = true
             wifiName = MainActivity.getSsid(this)
             Toast.makeText(this,"Wifi added",Toast.LENGTH_SHORT).show()
         }
@@ -81,6 +84,7 @@ class AddLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
             setupSpinner()
         }
         /*
+        //All this is for a better, custom dropdown menu, please don't delete:
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onNothingSelected(p0: AdapterView<*>?) {
                 Toast.makeText(this@AddLocationActivity,"You Should Select a WiFi",Toast.LENGTH_LONG).show()
@@ -96,9 +100,13 @@ class AddLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
         }*/
 
         findViewById<FloatingActionButton>(R.id.finish_adding_location).setOnClickListener {//): ","${spinner.selectedItemPosition}")
-            listId = dropDownIds[spinner!!.selectedItemPosition]
-            Log.d("!!!!!! ListIds direkt vor processInput(): ","$listId")
-            processInput()
+            if (spinner!!.selectedItemPosition < 0) {
+                Toast.makeText(this@AddLocationActivity,"Please Select A List",Toast.LENGTH_SHORT).show()
+            } else {
+                listId = dropDownIds[spinner!!.selectedItemPosition]
+                Log.d("!!!!!! ListIds direkt vor processInput(): ", "$listId")
+                processInput()
+            }
         }
 
     }
@@ -108,7 +116,7 @@ class AddLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
         spinner!!.onItemSelectedListener = this
         val aa = ArrayAdapter(this, android.R.layout.simple_spinner_item, dropDownItems)
         aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner!!.setAdapter(aa)
+        spinner!!.adapter = aa
     }
 
     private fun processInput() {
@@ -123,19 +131,16 @@ class AddLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
 
     private fun createLocation(intent: Intent, name: String) {
         Log.d("!!!!!! ListIds am Anfang von createLocation: ","$listId")
+        intent.putExtra("wifiName", wifiName)
+        if (listId >= 0){
+            intent.putExtra("listId",listId)
+        }
         if ( !(previewImageChanged) || previewImage.drawable == null) {
             previewImage.setImageResource(R.drawable.ic_baseline_location_city_24)
             intent.putExtra("name", name)
-            intent.putExtra("wifiName", wifiName)
-            //intent.putExtra("listId",listNameAndId[1])
-            intent.putExtra("listId",listId)
-
         } else {
             intent.putExtra("name", name)
             intent.putExtra("image",imageData)
-            intent.putExtra("wifiName", wifiName)
-           // intent.putExtra("listId",listNameAndId[1])
-            intent.putExtra("listId",listId)
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
             intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
@@ -183,7 +188,11 @@ class AddLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
 //        TODO @laurin hier irgendwas mit item an position machen
+        val selectListText : TextView = findViewById(R.id.select_a_list_spinner_text)
+        selectListText.isGone = true
         Log.d("#1#2#3#4################","${parent!!.getItemAtPosition(position)}")
+        listId = parent!!.getItemIdAtPosition(position).toInt()
+        Log.d("#1#2#3#4################ ListId: ","${listId}")
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
