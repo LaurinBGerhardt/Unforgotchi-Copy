@@ -26,7 +26,7 @@ class AddLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
     private lateinit var addLocNameView: TextInputEditText
 
     private val previewImage by lazy { findViewById<ImageButton>(R.id.selected_location_image_button) }
-    private var previewImageChanged : Boolean = false   //this is horrible coding dont copy this
+    private var previewImageChanged : Boolean = false
     private var imageData : Uri? = null
     private val addWifiButton : CheckBox by lazy { findViewById(R.id.add_wifi_to_location_button) }
     private var wifiName : String? = null
@@ -54,7 +54,7 @@ class AddLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
     //private val dropDownItemsAndIds : MutableList<Pair<String,Int>> = ArrayList()
     //private var listNameAndId = Pair("",0)
     private val dropDownIds : MutableList<Int> = ArrayList()
-    private var listId = -2
+    private var listId = -2   // -2 ist a random unique nonsensical number so we know exactly where things went wrong
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,7 +109,7 @@ class AddLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
             }
         }
 
-    }
+    } //END onCreate
 
     private fun setupSpinner() {
         spinner = findViewById<Spinner>(R.id.select_lists_spinner)

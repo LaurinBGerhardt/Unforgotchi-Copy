@@ -5,7 +5,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import java.lang.Exception
 
 class LocationsViewModel(application: Application): AndroidViewModel(application) {
 
@@ -28,6 +31,15 @@ class LocationsViewModel(application: Application): AndroidViewModel(application
         viewModelScope.launch(Dispatchers.IO) {
             repository.addLocation(location)
         }
+    }
+
+    //THIS IS THE FIRST WORKING ASYNC FUNCTION YAAAAAAY
+    fun getLocationById(id : Int) : Location {
+        var location : Location? = null
+        runBlocking {
+            location = async { repository.getLocationById(id) }.await()
+        }
+        return location ?: throw Exception("location is still null")
     }
 
     fun updateLocation(location: Location,wifiName : String? = null){

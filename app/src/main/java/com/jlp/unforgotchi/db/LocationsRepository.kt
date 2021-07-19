@@ -14,6 +14,10 @@ class LocationsRepository(private val locationsDao: LocationsDao) {
         locationsDao.addLocation(location)
     }
 
+    suspend fun getLocationById(id : Int) : Location{
+        return locationsDao.getLocationById(id)
+    }
+
     suspend fun updateLocation(location: Location){
         locationsDao.updateLocation(location)
     }

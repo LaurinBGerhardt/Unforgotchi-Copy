@@ -123,6 +123,10 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
 
     override fun onItemClick(position: Int) {
         Toast.makeText(this, "Item $position clicked", Toast.LENGTH_SHORT).show()
+        val editLocation = Intent(this@Locations, EditLocationActivity::class.java)
+        val locationId = locationsAdapter.listOfLocations[position].location_id
+        editLocation.putExtra("locationId",locationId)
+        startActivity(editLocation)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

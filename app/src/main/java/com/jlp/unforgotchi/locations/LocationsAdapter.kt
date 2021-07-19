@@ -6,15 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.jlp.unforgotchi.R
 import com.jlp.unforgotchi.db.Location
-import java.io.File
 
 class LocationsAdapter(
-    var mList: List<Location>,
+    var listOfLocations: List<Location>,
     val itemClickListener: OnItemClickListener
     ) : RecyclerView.Adapter<LocationsAdapter.ViewHolder>() {
 
@@ -31,7 +29,7 @@ class LocationsAdapter(
     // binds the list items to a view
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        val itemsViewModel = mList[position]
+        val itemsViewModel = listOfLocations[position]
 
         // sets the image to the imageview from our itemHolder class
         if(itemsViewModel.image != null) {
@@ -47,7 +45,7 @@ class LocationsAdapter(
 
     // return the number of the items in the list
     override fun getItemCount(): Int {
-        return mList.size
+        return listOfLocations.size
     }
 
     // Holds the views for adding it to image and text
@@ -69,7 +67,7 @@ class LocationsAdapter(
         fun onItemClick(position: Int)
     }
     fun setData(locationsList: List<Location>){
-        mList = locationsList
+        listOfLocations = locationsList
         notifyDataSetChanged()
     }
 }

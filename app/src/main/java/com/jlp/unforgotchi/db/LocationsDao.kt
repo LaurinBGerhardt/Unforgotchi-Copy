@@ -14,6 +14,9 @@ interface LocationsDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateLocation(location: Location)
 
+    @Query("SELECT * FROM locations_table WHERE location_id = :id")
+    suspend fun getLocationById(id : Int) : Location
+
     @Delete
     suspend fun deleteLocation(location: Location)
 
