@@ -11,6 +11,9 @@ interface ReminderListElementDao {
     @Query("SELECT * FROM reminder_list_elements_table")
     fun readAllElements(): LiveData<List<ReminderListElement>>
 
+    @Query("SELECT * FROM reminder_list_elements_table")
+    suspend fun getElements(): List<ReminderListElement>
+
     @Update
     suspend fun updateReminderListElement(reminderListElement: ReminderListElement)
 
