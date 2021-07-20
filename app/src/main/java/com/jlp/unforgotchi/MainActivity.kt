@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity() {
         specialValuesViewModel.setSpecialValue(
             SpecialValue(
                 ValueNames.LATEST_LOCATION.name,
-                location.text,
+                location.location_id,
                 location.listId
             )
         )
@@ -179,9 +179,10 @@ class MainActivity : AppCompatActivity() {
                 }
             })
         }*/
+        //TODO get listid from latest location, consider async ->
         //selects the right list and shows its element or the noListsYet View if no Elements in List
-        detailListUserViewModel = ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
         var listOfRightElements = listOf<ReminderListElement>()
+        detailListUserViewModel = ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
         detailListUserViewModel.readAllElements.observe(this, { reminderListElement ->
             var counter = 0
             while (counter < reminderListElement.size) {
