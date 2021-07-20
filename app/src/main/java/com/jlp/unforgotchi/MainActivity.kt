@@ -171,8 +171,7 @@ class MainActivity : AppCompatActivity() {
         if (reminderListItems.isEmpty()){
             noListsYetMessage.isVisible = true
             recyclerview.isVisible = false
-        }
-        else {
+        } else {
             noListsYetMessage.isVisible = false
             recyclerview.isVisible = true
             adapter.setData(reminderListItems)
@@ -185,7 +184,7 @@ class MainActivity : AppCompatActivity() {
     private fun askPermissions(PERMISSIONS: Array<String>) {
         PERMISSIONS.forEach { permission ->
             if (ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
-                Log.d("###", "Permission" + permission + "Granted")
+                Log.d("Function askPermissions: ", "Permission" + permission + "already granted")
             } else {
                 requestPermissions(arrayOf(permission), kotlin.math.abs(permission.hashCode()))
             }
@@ -206,7 +205,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
         if (toggle.onOptionsItemSelected(item)){
             return true
         }
@@ -215,8 +213,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "Unforgotchi Notification Channel"
-            val channel = NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_DEFAULT).apply {
+            val channel = NotificationChannel(CHANNEL_ID, "Unforgotchi Notification Channel", NotificationManager.IMPORTANCE_DEFAULT).apply {
                 description = "This is the Channel for all Unforgotchi Notifications"
             }
             val notificationManager: NotificationManager =
