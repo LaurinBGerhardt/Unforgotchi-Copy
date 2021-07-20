@@ -150,7 +150,7 @@
                         android:buttonTint="@color/colorPrimary"
                         android:clickable="true"
                         android:gravity="center"
-                        android:text="Add Current Wifi"
+                        android:text="Set WiFi To Current"
                         android:textColor="@color/colorPrimary"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"

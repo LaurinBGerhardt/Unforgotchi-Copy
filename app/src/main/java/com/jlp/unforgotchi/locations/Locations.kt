@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -23,10 +24,12 @@ import com.jlp.unforgotchi.list.Lists
 
 class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
 
+    private val editLocationsButton : Button by lazy { findViewById(R.id.edit_locations_button) }
+
     private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var locationsDBViewModel : LocationsViewModel
     //Add locations list:
-    private val locationsAdapter = LocationsAdapter(
+    val locationsAdapter = LocationsAdapter(
         mutableListOf<Location>(), this
     )
     private lateinit var specialValuesViewModel: SpecialValuesViewModel
@@ -42,6 +45,12 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
         recyclerview.layoutManager = GridLayoutManager(this, 2)
         // Setting the Adapter with the recyclerview
         recyclerview.adapter = locationsAdapter
+
+        //This is for editing locations (enabled by clicking the edit button):
+        editLocationsButton.setOnClickListener {
+            //TODO: Also start EditLocationActivity when Edit button is pressed
+            //TODO: Same for Delete button later
+        }
 
         //This stuff is for the Drawer Layout:
         toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
@@ -123,6 +132,10 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
 
     override fun onItemClick(position: Int) {
         Toast.makeText(this, "Item $position clicked", Toast.LENGTH_SHORT).show()
+        editLocation(position)
+    }
+
+    fun editLocation(position: Int){
         val editLocation = Intent(this@Locations, EditLocationActivity::class.java)
         val locationId = locationsAdapter.listOfLocations[position].location_id
         editLocation.putExtra("locationId",locationId)

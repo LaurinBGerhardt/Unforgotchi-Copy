@@ -10,17 +10,20 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.core.view.isGone
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.jlp.unforgotchi.MainActivity
 import com.jlp.unforgotchi.R
+import com.jlp.unforgotchi.db.Location
 import com.jlp.unforgotchi.db.LocationsViewModel
 import com.jlp.unforgotchi.db.ReminderListViewModel
 import com.jlp.unforgotchi.db.SpecialValuesViewModel
 
 class EditLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+    //The Location this is all about:
+    private lateinit var currentLocation : Location
+
     //All the components of the layout:
     private val previewImage by lazy { findViewById<ImageButton>(R.id.edit_location_image_button) }
     private val editWifiButton : CheckBox by lazy { findViewById(R.id.edit_wifi_to_location_button) }
@@ -28,17 +31,18 @@ class EditLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
     var spinner: Spinner? = null
 
     //All the database viewmodels:
-    private lateinit var locationsVieModel : LocationsViewModel
+    private lateinit var locationsViewModel : LocationsViewModel
     private lateinit var specialValuesViewModel : SpecialValuesViewModel
     private lateinit var reminderListsVM: ReminderListViewModel
 
     //Handy global variables:
     private var previewImageChanged : Boolean = false
     private var imageData : Uri? = null
-    private var wifiName : String? = null
+    private var connectedWifi : String? = null
     var dropDownItems : MutableList<String> = ArrayList()
     private val dropDownIds : MutableList<Int> = ArrayList()
     private var listId = -2
+    private var wifiChanged = false
 
     //Making selecting image form gallery possible:
     private val selectImageFromGalleryResult  = registerForActivityResult(RetreiveImageContract()) { uri: Uri? ->
@@ -61,30 +65,36 @@ class EditLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
         //editLocNameView = findViewById(R.id.edit_name_of_location)
 
         //Initializing databank viewmodels:
-        locationsVieModel = ViewModelProvider(this).get(LocationsViewModel::class.java)
+        locationsViewModel = ViewModelProvider(this).get(LocationsViewModel::class.java)
         specialValuesViewModel = ViewModelProvider(this).get(SpecialValuesViewModel::class.java)
         reminderListsVM = ViewModelProvider(this).get(ReminderListViewModel::class.java)
-
-        editWifiButton.setOnClickListener{
-            editWifiButton.isChecked = true //TODO: This is nonsensical here
-            wifiName = MainActivity.getSsid(this)
-            Toast.makeText(this,"Wifi added",Toast.LENGTH_SHORT).show()
-        }
 
         val currentLocationId = intent.getIntExtra("locationId",-8)
         Log.d("######################## current Location Id given to Edit Location Activity: ","$currentLocationId")
         if(currentLocationId <0) throw Exception("Invalid Location Id was given to the EditLocationActivity")
-        val currentLocation = locationsVieModel.getLocationById(currentLocationId)
+        currentLocation = locationsViewModel.getLocationById(currentLocationId)
+        connectedWifi = MainActivity.getSsid(this)
+
         val locationImage : Uri? = currentLocation.image?.toUri()
+        val locationWifi : String? = currentLocation.wifiName
+
+        editWifiButton.isChecked = locationWifi.equals(connectedWifi)
+        editWifiButton.setOnClickListener{
+            wifiChanged = !locationWifi.equals(connectedWifi) && editWifiButton.isChecked
+        }
+
+        editLocNameView.setText(currentLocation.text)
+
         if (locationImage != null) {
             contentResolver.takePersistableUriPermission(
                 locationImage,
                 intent.flags and Intent.FLAG_GRANT_READ_URI_PERMISSION
             )
+            previewImage.setImageURI(locationImage)
+        } else {
+            previewImage.setImageResource(R.drawable.ic_baseline_image_search_24)
         }
 
-        //previewImage.setImageResource(R.drawable.ic_baseline_image_search_24)
-        previewImage.setImageURI(locationImage)
         previewImage.setOnClickListener {
             selectImageFromGallery()
         }
@@ -105,7 +115,7 @@ class EditLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
             } else {
                 listId = dropDownIds[spinner!!.selectedItemPosition]
                 Log.d("!!!!!! ListIds direkt vor processInput(): ", "$listId")
-                processInput()
+                saveChanges()
             }
         }
 
@@ -119,12 +129,20 @@ class EditLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
         spinner!!.adapter = aa
     }
 
-    private fun processInput() {
-        val intent = Intent()
+    private fun saveChanges() {
         val name = editLocNameView.text.toString()
 
         if (name.isEmpty()) setResult(Activity.RESULT_CANCELED, intent)
-        //else createLocation(intent, name)
+
+        val replacementLocation = Location(
+            currentLocation.location_id,
+            editLocNameView.text.toString(),
+            if(previewImageChanged) imageData?.toString() else currentLocation.image,
+            if(editWifiButton.isChecked) connectedWifi else null,
+            listId
+        )
+
+        locationsViewModel.updateLocation(replacementLocation)
 
         finish()
     }

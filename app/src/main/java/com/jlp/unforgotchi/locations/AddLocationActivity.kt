@@ -132,14 +132,13 @@ class AddLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
     private fun createLocation(intent: Intent, name: String) {
         Log.d("!!!!!! ListIds am Anfang von createLocation: ","$listId")
         intent.putExtra("wifiName", wifiName)
+        intent.putExtra("name", name)
         if (listId >= 0){
             intent.putExtra("listId",listId)
         }
         if ( !(previewImageChanged) || previewImage.drawable == null) {
             previewImage.setImageResource(R.drawable.ic_baseline_location_city_24)
-            intent.putExtra("name", name)
         } else {
-            intent.putExtra("name", name)
             intent.putExtra("image",imageData)
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)

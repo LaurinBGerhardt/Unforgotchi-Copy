@@ -87,7 +87,7 @@
     android:gravity="center">
 
         <TextView
-            android:id="@+id/delete_lists_button"
+            android:id="@+id/delete_locations_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -101,7 +101,7 @@
             android:background="@drawable/rounded_square"/>
 
         <TextView
-            android:id="@+id/edit_lists_button"
+            android:id="@+id/edit_locations_button"
             android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
