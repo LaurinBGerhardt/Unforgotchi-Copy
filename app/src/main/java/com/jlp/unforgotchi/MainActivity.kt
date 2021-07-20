@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        recyclerViewSetup(firstStepsPage, reminderListViewModel.getElements())
+        recyclerViewSetup(firstStepsPage, reminderListViewModel.getElements(), getLatestLocation())
 
         askPermissions(arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -149,7 +149,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun recyclerViewSetup(firstStepsPage: Intent, elements: List<ReminderListElement>) {
+    private fun recyclerViewSetup(firstStepsPage: Intent, elements: List<ReminderListElement>, latestLocation: Location) {
         // for the recyclerview:
         val recyclerview = findViewById<RecyclerView>(R.id.lists_recycler_view)
         recyclerview.layoutManager = LinearLayoutManager(this)
