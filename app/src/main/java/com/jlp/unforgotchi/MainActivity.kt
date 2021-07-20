@@ -31,7 +31,6 @@ import com.google.android.material.navigation.NavigationView
 import com.jlp.unforgotchi.db.*
 import com.jlp.unforgotchi.list.Lists
 import com.jlp.unforgotchi.locations.Locations
-import kotlin.properties.Delegates
 
 class MainActivity : AppCompatActivity() {
 
@@ -63,7 +62,6 @@ class MainActivity : AppCompatActivity() {
         val locationsPage = Intent(this@MainActivity, Locations::class.java)
         val firstStepsPage = Intent(this@MainActivity, FirstSteps::class.java)
 
-        context = this
         specialValuesViewModel = ViewModelProvider(this).get(SpecialValuesViewModel::class.java)
         locationsViewModel = ViewModelProvider(this).get(LocationsViewModel::class.java)
         itemsToRemember = emptyArray<String>()
@@ -95,7 +93,7 @@ class MainActivity : AppCompatActivity() {
         val network = CheckWifi(this)
         network.registerNetworkCallback()
         createNotificationChannel()
-        if (!isConnected) Toast.makeText(this,"Please enable Wifi",Toast.LENGTH_LONG).show()
+        if (!network.isConnected) Toast.makeText(this,"Please enable Wifi",Toast.LENGTH_LONG).show()
     }
 
     private fun setLatestLocation(location: Location) {
@@ -123,20 +121,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        //Ignore warning; Context is held in inner class anyways; see for yourself
-        //https://stackoverflow.com/questions/54075649/access-application-context-in-companion-object-in-kotlin
-        private lateinit var context: Context
         private lateinit var itemsToRemember: Array<String>
-        var isConnected: Boolean by Delegates.observable(false) { property, oldValue, newValue ->
-            Log.d("Observable property: ", property.toString())
-            Log.d("Observable old: ", oldValue.toString())
-            Log.d("Observable new: ", newValue.toString())
 
-            if (!newValue && newValue != oldValue) sendNotification()
-        }
-
-        fun getSsid(con: Context): String? {
-            context = con
+        fun getSsid(context: Context): String? {
             val wifiInfo = (context.getSystemService(WIFI_SERVICE) as WifiManager).connectionInfo
             return if (wifiInfo.supplicantState == SupplicantState.COMPLETED) {
                 wifiInfo.ssid
@@ -145,7 +132,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        private fun sendNotification() {
+        fun sendNotification(context: Context) {
             val intent = Intent(context, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }
