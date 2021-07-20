@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var toggle : ActionBarDrawerToggle
 
     //for the recyclerview to show current list:
-    private lateinit var detailListUserViewModel: ReminderListElementViewModel
+    private lateinit var reminderListViewModel: ReminderListElementViewModel
     private val adapter = MainAdapter()
 
     //The table for special values (like the latest location):
@@ -64,6 +64,7 @@ class MainActivity : AppCompatActivity() {
 
         specialValuesViewModel = ViewModelProvider(this).get(SpecialValuesViewModel::class.java)
         locationsViewModel = ViewModelProvider(this).get(LocationsViewModel::class.java)
+        reminderListViewModel = ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
         itemsToRemember = emptyArray<String>()
 
         toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
@@ -81,7 +82,7 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        recyclerViewSetup(firstStepsPage)
+        recyclerViewSetup(firstStepsPage, reminderListViewModel.getElements())
 
         askPermissions(arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -148,7 +149,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun recyclerViewSetup(firstStepsPage: Intent) {
+    private fun recyclerViewSetup(firstStepsPage: Intent, elements: List<ReminderListElement>) {
         // for the recyclerview:
         val recyclerview = findViewById<RecyclerView>(R.id.lists_recycler_view)
         recyclerview.layoutManager = LinearLayoutManager(this)
@@ -178,10 +179,8 @@ class MainActivity : AppCompatActivity() {
         //TODO get listid from latest location, consider async ->
         //selects the right list and shows its element or the noListsYet View if no Elements in List
         var listOfRightElements = listOf<ReminderListElement>()
-        detailListUserViewModel = ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
-        detailListUserViewModel.readAllElements.observe(this, { reminderListElement ->
-            reminderListElement.filter { element -> element.list == position }.forEach { element -> listOfRightElements += element}
-        })
+        elements.filter { element -> element.list == position }.forEach { element -> listOfRightElements += element}
+
         if (listOfRightElements.isEmpty()){
             noListsYetMessage.isVisible = true
             recyclerview.isVisible = false
