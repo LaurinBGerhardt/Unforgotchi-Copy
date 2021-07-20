@@ -41,12 +41,12 @@ class MainActivity : AppCompatActivity() {
     lateinit var toggle : ActionBarDrawerToggle
 
     //for the recyclerview to show current list:
-    private lateinit var reminderListViewModel: ReminderListElementViewModel
     private val adapter = MainAdapter()
 
     //The table for special values (like the latest location):
     private lateinit var specialValuesViewModel: SpecialValuesViewModel
     private lateinit var locationsViewModel: LocationsViewModel
+    private lateinit var reminderListViewModel: ReminderListElementViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,9 +62,10 @@ class MainActivity : AppCompatActivity() {
         val locationsPage = Intent(this@MainActivity, Locations::class.java)
         val firstStepsPage = Intent(this@MainActivity, FirstSteps::class.java)
 
+        reminderListViewModel = ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
         specialValuesViewModel = ViewModelProvider(this).get(SpecialValuesViewModel::class.java)
         locationsViewModel = ViewModelProvider(this).get(LocationsViewModel::class.java)
-        reminderListViewModel = ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
+
         itemsToRemember = emptyArray<String>()
 
         toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
