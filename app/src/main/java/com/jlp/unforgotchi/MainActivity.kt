@@ -86,7 +86,6 @@ class MainActivity : AppCompatActivity() {
 
         askPermissions(arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
-//            Manifest.permission.ACCESS_BACKGROUND_LOCATION,
             Manifest.permission.ACCESS_NETWORK_STATE,
             Manifest.permission.CHANGE_WIFI_STATE
         ))
@@ -162,34 +161,21 @@ class MainActivity : AppCompatActivity() {
             startActivity(firstStepsPage)
         }
         // the Elements of which lists should be shown on the mainPage, initialized as the elements of the first list
-        var position = 1
-        /*var latestLocation = getLatestLocation()
-        if (getLatestLocation() != null) {
-            position = latestLocation!!.listId
-            setLatestLocation(latestLocation)
-            Toast.makeText(this,"Got list via wifi ssid",Toast.LENGTH_SHORT).show()
-        }
-        else {
-            specialValuesViewModel.readAllSpecialValues.observe(this, { specialValue ->
-                if (specialValue.isNotEmpty()) {
-                    position = specialValue.last().listID
-                }
-            })
-        }*/
-        //TODO get listid from latest location, consider async ->
+        var listId = 1
+        if (latestLocation != null) listId = latestLocation.listId
         //selects the right list and shows its element or the noListsYet View if no Elements in List
-        var listOfRightElements = listOf<ReminderListElement>()
-        elements.filter { element -> element.list == position }.forEach { element -> listOfRightElements += element}
+        var reminderListItems = listOf<ReminderListElement>()
+        elements.filter { element -> element.list == listId }.forEach { element -> reminderListItems += element}
 
-        if (listOfRightElements.isEmpty()){
+        if (reminderListItems.isEmpty()){
             noListsYetMessage.isVisible = true
             recyclerview.isVisible = false
         }
         else {
             noListsYetMessage.isVisible = false
             recyclerview.isVisible = true
-            adapter.setData(listOfRightElements)
-            listOfRightElements.forEach { element ->
+            adapter.setData(reminderListItems)
+            reminderListItems.forEach { element ->
                 itemsToRemember += element.listElementName
             }
         }
