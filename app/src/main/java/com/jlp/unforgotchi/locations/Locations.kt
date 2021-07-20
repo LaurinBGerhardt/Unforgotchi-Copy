@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
-import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -95,7 +94,7 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
                     specialValuesViewModel.setSpecialValue(
                         SpecialValue(
                             ValueNames.LATEST_LOCATION.name,
-                            newLocName,
+                            newLocation.location_id,
                             newLocation.listId
                         )
                     )
