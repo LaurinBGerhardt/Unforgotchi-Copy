@@ -107,8 +107,8 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private fun getLatestLocation(): Location? {
-        return locationsViewModel.getLocations().filter { location -> containsWifi(location, getSsid(this)) }[0]
+    private fun getLatestLocation(): Location {
+        return locationsViewModel.getLocations().filter { location -> location.location_id ==  specialValuesViewModel.getLatestLocationId()}[0]
     }
 
     private fun containsWifi(location: Location, ssid: String?): Boolean {
