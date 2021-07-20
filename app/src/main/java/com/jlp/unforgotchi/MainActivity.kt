@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity() {
 
         askPermissions(arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+//            Manifest.permission.ACCESS_BACKGROUND_LOCATION,
             Manifest.permission.ACCESS_NETWORK_STATE,
             Manifest.permission.CHANGE_WIFI_STATE
         ))
@@ -180,13 +180,7 @@ class MainActivity : AppCompatActivity() {
         var listOfRightElements = listOf<ReminderListElement>()
         detailListUserViewModel = ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
         detailListUserViewModel.readAllElements.observe(this, { reminderListElement ->
-            var counter = 0
-            while (counter < reminderListElement.size) {
-                if (reminderListElement[counter].list == position){
-                    listOfRightElements += reminderListElement[counter]
-                }
-                counter++
-            }
+            reminderListElement.filter { element -> element.list == position }.forEach { element -> listOfRightElements += element}
         })
         if (listOfRightElements.isEmpty()){
             noListsYetMessage.isVisible = true
