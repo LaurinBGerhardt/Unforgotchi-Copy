@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -24,7 +25,7 @@ import com.jlp.unforgotchi.list.Lists
 
 class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
 
-    private val editLocationsButton : Button by lazy { findViewById(R.id.edit_locations_button) }
+    private val editLocationsButton : TextView by lazy { findViewById(R.id.edit_locations_button) }
 
     private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var locationsDBViewModel : LocationsViewModel
