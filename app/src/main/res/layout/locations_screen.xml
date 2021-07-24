@@ -87,31 +87,17 @@
     android:gravity="center">
 
         <TextView
-            android:id="@+id/delete_locations_button"
+            android:id="@+id/edit_or_delete_locations_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Delete"
+            android:text="Text"
             android:textColor="@color/colorPrimary"
             android:textSize="30sp"
             android:textStyle="bold"
             android:layout_gravity="center"
             android:gravity="center"
             android:layout_marginRight="5dp"
-            android:background="@drawable/rounded_square"/>
-
-        <TextView
-            android:id="@+id/edit_locations_button"
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Edit"
-            android:textColor="@color/colorPrimary"
-            android:textSize="30sp"
-            android:textStyle="bold"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:layout_marginLeft="5dp"
             android:background="@drawable/rounded_square"/>
 
     </LinearLayout>

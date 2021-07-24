@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -25,10 +26,11 @@ import com.jlp.unforgotchi.list.Lists
 
 class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
 
-    private val editLocationsButton: TextView by lazy { findViewById(R.id.edit_locations_button) }
-    private val deleteLocationsButton: TextView by lazy { findViewById(R.id.delete_locations_button) }
-    private var deleteLocationsMode: Boolean = false
+    private val editOrDeleteLocationsButton: TextView by lazy { findViewById(R.id.edit_or_delete_locations_button) }
+    private var editLocationsMode: Boolean = true
     // editLocationsMode always is the complement of deleteLocationsMode so to speak
+    private val EDIT = "Edit"
+    private val DELETE = "Delete"
 
     private lateinit var toggle: ActionBarDrawerToggle
     private lateinit var locationsDBViewModel: LocationsViewModel
@@ -51,18 +53,8 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
         // Setting the Adapter with the recyclerview
         recyclerview.adapter = locationsAdapter
 
-        //Per default, it's editLocationsMode:
-        deleteLocationsButton.paintFlags =
-            deleteLocationsButton.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-        editLocationsButton.paintFlags =
-            editLocationsButton.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-        //This is for editing and deleting locations:
-        deleteLocationsButton.setOnClickListener {
-            switchEditAndDeleteModes()
-        }
-        editLocationsButton.setOnClickListener {
-            switchEditAndDeleteModes()
-        }
+        //Set up edit or delete mode:
+        setUpEditOrDeleteMode()
 
         //This stuff is for the Drawer Layout:
         toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
@@ -82,39 +74,9 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
         // When the add-button is clicked, this Launcher will launch the Add-Activity.
         // The Add-Activity will then give back the result (i.e. the data of the new element)
         // which is then processed in the lambda here:
-        var addLocationActivityLauncher = registerForActivityResult(
+        val addLocationActivityLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
-        ) { result ->
-            if (result.resultCode == RESULT_OK) {
-                // This happens when the AddLocationActivity ends:
-                val data: Intent? = result.data
-                val newLocName: String = data!!.getStringExtra("name") ?: "New Location"
-                val newWifiName : String? = data!!.getStringExtra("wifiName")
-                val newImgData : Uri? = data!!.getParcelableExtra<Uri?>("image")
-                val listId : Int = data!!.getIntExtra("listId",-5)
-                Log.d("!!!!!! ListIds direkt vorm Hinzufuegen in die DB: ","$listId")
-
-                if (newImgData != null) {
-                    contentResolver.takePersistableUriPermission(
-                        newImgData,
-                        data.flags and Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    )
-                }
-                val newLocation =
-                    Location(0, newLocName, newImgData?.toString(), newWifiName, listId)
-                locationsDBViewModel.addLocation(newLocation)
-                if (newWifiName != null) {
-                    specialValuesViewModel.setSpecialValue(
-                        SpecialValue(
-                            ValueNames.LATEST_LOCATION.name,
-                            newLocName,
-                            newLocation.listId
-                        )
-                    )
-                }
-                locationsAdapter.notifyDataSetChanged()
-            }
-        }
+        ) { result -> processAddLocationResult(result) }
 
         //when clicking the add-button:
         val addLocationButton: View = findViewById(R.id.add_location_button)
@@ -145,14 +107,14 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
 
     override fun onItemClick(position: Int) {
         //Toast.makeText(this, "Item $position clicked", Toast.LENGTH_SHORT).show()
-        if (deleteLocationsMode) {
-            deleteLocation(position)
-        } else {
+        if (editLocationsMode){
             editLocation(position)
+        } else {
+            deleteLocation(position)
         }
     }
 
-    fun editLocation(position: Int) {
+    private fun editLocation(position: Int) {
         val editLocation = Intent(this@Locations, EditLocationActivity::class.java)
         val selectedLocation = locationsAdapter.listOfLocations[position]
         val locationId = selectedLocation.location_id
@@ -160,7 +122,7 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
         startActivity(editLocation)
     }
 
-    fun deleteLocation(position: Int) {
+    private fun deleteLocation(position: Int) {
         val selectedLocation = locationsAdapter.listOfLocations[position]
         locationsDBViewModel.deleteLocation(selectedLocation)
         //locationsAdapter.notifyDataSetChanged()
@@ -174,19 +136,49 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun switchEditAndDeleteModes() {
-        if (deleteLocationsMode) {  //aka it's NOT editLocationsMode
-            deleteLocationsMode = false
-            deleteLocationsButton.paintFlags =
-                deleteLocationsButton.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-            editLocationsButton.paintFlags =
-                editLocationsButton.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-        } else {                    //aka it's editLocationsMode
-            deleteLocationsMode = true
-            deleteLocationsButton.paintFlags =
-                deleteLocationsButton.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-            editLocationsButton.paintFlags =
-                editLocationsButton.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+    // This happens when the AddLocationActivity ends:
+    private fun processAddLocationResult(result: ActivityResult){
+        if (result.resultCode == RESULT_OK) {
+            val data: Intent? = result.data
+            val newLocName: String = data!!.getStringExtra("name") ?: "New Location"
+            val newWifiName : String? = data!!.getStringExtra("wifiName")
+            val newImgData : Uri? = data!!.getParcelableExtra<Uri?>("image")
+            val listId : Int = data!!.getIntExtra("listId",-5)
+            Log.d("!!!!!! ListIds direkt vorm Hinzufuegen in die DB: ","$listId")
+
+            if (newImgData != null) {
+                contentResolver.takePersistableUriPermission(
+                    newImgData,
+                    data.flags and Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+            }
+            val newLocation =
+                Location(0, newLocName, newImgData?.toString(), newWifiName, listId)
+            locationsDBViewModel.addLocation(newLocation)
+            if (newWifiName != null) {
+                specialValuesViewModel.setSpecialValue(
+                    SpecialValue(
+                        ValueNames.LATEST_LOCATION.name,
+                        newLocName,
+                        newLocation.listId
+                    )
+                )
+            }
+            locationsAdapter.notifyDataSetChanged()
+        }
+    }
+
+    private fun setUpEditOrDeleteMode(){
+        if(editLocationsMode)   editOrDeleteLocationsButton.text = EDIT
+        else                    editOrDeleteLocationsButton.text = DELETE
+        editOrDeleteLocationsButton.setOnClickListener {
+            if(editLocationsMode){
+                editLocationsMode = false
+                editOrDeleteLocationsButton.text = DELETE
+            } else {
+                editLocationsMode = true
+                editOrDeleteLocationsButton.text = EDIT
+            }
         }
     }
 }
