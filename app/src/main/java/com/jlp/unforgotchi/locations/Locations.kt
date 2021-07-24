@@ -1,12 +1,12 @@
 package com.jlp.unforgotchi.locations
 
 import android.content.Intent
+import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
-import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,10 +25,14 @@ import com.jlp.unforgotchi.list.Lists
 
 class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
 
-    private val editLocationsButton : TextView by lazy { findViewById(R.id.edit_locations_button) }
+    private val editLocationsButton: TextView by lazy { findViewById(R.id.edit_locations_button) }
+    private val deleteLocationsButton: TextView by lazy { findViewById(R.id.delete_locations_button) }
+    private var deleteLocationsMode: Boolean = false
+    // editLocationsMode always is the complement of deleteLocationsMode so to speak
 
     private lateinit var toggle: ActionBarDrawerToggle
-    private lateinit var locationsDBViewModel : LocationsViewModel
+    private lateinit var locationsDBViewModel: LocationsViewModel
+
     //Add locations list:
     val locationsAdapter = LocationsAdapter(
         mutableListOf<Location>(), this
@@ -47,10 +51,17 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
         // Setting the Adapter with the recyclerview
         recyclerview.adapter = locationsAdapter
 
-        //This is for editing locations (enabled by clicking the edit button):
+        //Per default, it's editLocationsMode:
+        deleteLocationsButton.paintFlags =
+            deleteLocationsButton.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+        editLocationsButton.paintFlags =
+            editLocationsButton.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+        //This is for editing and deleting locations:
+        deleteLocationsButton.setOnClickListener {
+            switchEditAndDeleteModes()
+        }
         editLocationsButton.setOnClickListener {
-            //TODO: Also start EditLocationActivity when Edit button is pressed
-            //TODO: Same for Delete button later
+            switchEditAndDeleteModes()
         }
 
         //This stuff is for the Drawer Layout:
@@ -61,8 +72,8 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
 
         //The Elements of the Locations Recycler View are from the Room Database:
         locationsDBViewModel = ViewModelProvider(this).get(LocationsViewModel::class.java)
-        locationsDBViewModel.readAllLocations.observe(this, {
-            locationsList -> locationsAdapter.setData(locationsList)
+        locationsDBViewModel.readAllLocations.observe(this, { locationsList ->
+            locationsAdapter.setData(locationsList)
         })
 
         //For SpecialValues:
@@ -89,9 +100,10 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
                         data.flags and Intent.FLAG_GRANT_READ_URI_PERMISSION
                     )
                 }
-                val newLocation = Location(0, newLocName, newImgData?.toString(), newWifiName, listId)
+                val newLocation =
+                    Location(0, newLocName, newImgData?.toString(), newWifiName, listId)
                 locationsDBViewModel.addLocation(newLocation)
-                if(newWifiName != null) {
+                if (newWifiName != null) {
                     specialValuesViewModel.setSpecialValue(
                         SpecialValue(
                             ValueNames.LATEST_LOCATION.name,
@@ -132,15 +144,27 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
     }//END onCreate
 
     override fun onItemClick(position: Int) {
-        Toast.makeText(this, "Item $position clicked", Toast.LENGTH_SHORT).show()
-        editLocation(position)
+        //Toast.makeText(this, "Item $position clicked", Toast.LENGTH_SHORT).show()
+        if (deleteLocationsMode) {
+            deleteLocation(position)
+        } else {
+            editLocation(position)
+        }
     }
 
-    fun editLocation(position: Int){
+    fun editLocation(position: Int) {
         val editLocation = Intent(this@Locations, EditLocationActivity::class.java)
-        val locationId = locationsAdapter.listOfLocations[position].location_id
-        editLocation.putExtra("locationId",locationId)
+        val selectedLocation = locationsAdapter.listOfLocations[position]
+        val locationId = selectedLocation.location_id
+        editLocation.putExtra("locationId", locationId)
         startActivity(editLocation)
+    }
+
+    fun deleteLocation(position: Int) {
+        val selectedLocation = locationsAdapter.listOfLocations[position]
+        locationsDBViewModel.deleteLocation(selectedLocation)
+        //locationsAdapter.notifyDataSetChanged()
+        locationsAdapter.notifyItemRemoved(position)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -148,5 +172,21 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
             return true
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun switchEditAndDeleteModes() {
+        if (deleteLocationsMode) {  //aka it's NOT editLocationsMode
+            deleteLocationsMode = false
+            deleteLocationsButton.paintFlags =
+                deleteLocationsButton.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+            editLocationsButton.paintFlags =
+                editLocationsButton.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+        } else {                    //aka it's editLocationsMode
+            deleteLocationsMode = true
+            deleteLocationsButton.paintFlags =
+                deleteLocationsButton.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+            editLocationsButton.paintFlags =
+                editLocationsButton.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+        }
     }
 }

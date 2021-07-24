@@ -2,8 +2,11 @@ package com.jlp.unforgotchi.locations
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
 import android.widget.*
@@ -19,6 +22,8 @@ import com.jlp.unforgotchi.db.Location
 import com.jlp.unforgotchi.db.LocationsViewModel
 import com.jlp.unforgotchi.db.ReminderListViewModel
 import com.jlp.unforgotchi.db.SpecialValuesViewModel
+import java.io.FileDescriptor
+import java.io.IOException
 
 class EditLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     //The Location this is all about:
@@ -86,11 +91,15 @@ class EditLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
         editLocNameView.setText(currentLocation.text)
 
         if (locationImage != null) {
-            contentResolver.takePersistableUriPermission(
-                locationImage,
-                intent.flags and Intent.FLAG_GRANT_READ_URI_PERMISSION
-            )
-            previewImage.setImageURI(locationImage)
+        //    // For some very weird reason the permissions are buggy:
+        //    contentResolver.takePersistableUriPermission(
+        //        locationImage,
+        //        intent.flags and Intent.FLAG_GRANT_READ_URI_PERMISSION
+        //    )
+        //    previewImage.setImageURI(locationImage)
+            //This is the work-around:
+            val imageBitMap = uriToBitmap(locationImage)
+            previewImage.setImageBitmap(imageBitMap)
         } else {
             previewImage.setImageResource(R.drawable.ic_baseline_image_search_24)
         }
@@ -157,6 +166,42 @@ class EditLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
-        TODO("Not yet implemented")
+        //Nothing to do here
+    }
+
+    //This function converts an image Uri to a Bitmap
+    //This is necessary because the permissions are buggy which would cause the app to crash
+    //from time to time when editing a Location
+    private fun uriToBitmap(uri: Uri?): Bitmap? {
+        if (uri == null) return null
+        val scaledScreenWidth :Double = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            val outMetrics = resources.displayMetrics
+            outMetrics.widthPixels / 2.0
+        } else {
+            @Suppress("DEPRECATION")
+            val displayMetrics = DisplayMetrics()
+            @Suppress("DEPRECATION")
+            windowManager.defaultDisplay.getMetrics(displayMetrics)
+            displayMetrics.widthPixels / 2.0
+        }
+
+        try {
+            val parcelFileDescriptor = contentResolver.openFileDescriptor(uri, "r")
+            val fileDescriptor: FileDescriptor = parcelFileDescriptor!!.fileDescriptor
+            val image = Bitmap.createBitmap(BitmapFactory.decodeFileDescriptor(fileDescriptor))
+            val imageHeight = image.height.toFloat()
+            val imageWidth = image.width.toFloat()
+            val compressedImage = Bitmap.createScaledBitmap(
+                BitmapFactory.decodeFileDescriptor(fileDescriptor),
+                scaledScreenWidth.toInt(),
+                (scaledScreenWidth * (imageHeight / imageWidth)).toInt(),
+                true
+            )
+            parcelFileDescriptor.close()
+            return compressedImage
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return null
     }
 }

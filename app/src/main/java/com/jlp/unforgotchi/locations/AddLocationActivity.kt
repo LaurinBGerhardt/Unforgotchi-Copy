@@ -150,51 +150,16 @@ class AddLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
         setResult(Activity.RESULT_OK, intent)
     }
 
-    //This function is not used anymore. But because it was a pain to implement, it will remain here
-    //just in case it's going to be needed in a future update.
-    //This function converts an image Uri to a Bitmap
-    private fun uriToBitmap(uri: Uri): Bitmap? {
-        val scaledScreenWidth :Double = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-            val outMetrics = resources.displayMetrics
-            outMetrics.widthPixels / 2.0
-        } else {
-            @Suppress("DEPRECATION")
-            val displayMetrics = DisplayMetrics()
-            @Suppress("DEPRECATION")
-            windowManager.defaultDisplay.getMetrics(displayMetrics)
-            displayMetrics.widthPixels / 2.0
-        }
-
-        try {
-            val parcelFileDescriptor = contentResolver.openFileDescriptor(uri, "r")
-            val fileDescriptor: FileDescriptor = parcelFileDescriptor!!.fileDescriptor
-            val image = Bitmap.createBitmap(BitmapFactory.decodeFileDescriptor(fileDescriptor))
-            val imageheight = image.height.toFloat()
-            val imagewidth = image.width.toFloat()
-            val image2 = Bitmap.createScaledBitmap(
-                BitmapFactory.decodeFileDescriptor(fileDescriptor),
-                scaledScreenWidth.toInt(),
-                (scaledScreenWidth * (imageheight / imagewidth)).toInt(),
-                true
-            )
-            parcelFileDescriptor.close()
-            return image2
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        return null
-    }
-
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
 //        TODO @laurin hier irgendwas mit item an position machen
         val selectListText : TextView = findViewById(R.id.select_a_list_spinner_text)
         selectListText.isGone = true
         Log.d("#1#2#3#4################","${parent!!.getItemAtPosition(position)}")
-        listId = parent!!.getItemIdAtPosition(position).toInt()
+        listId = parent.getItemIdAtPosition(position).toInt()
         Log.d("#1#2#3#4################ ListId: ","${listId}")
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
-        TODO("Not yet implemented")
+        //Nothing do to here
     }
 }
