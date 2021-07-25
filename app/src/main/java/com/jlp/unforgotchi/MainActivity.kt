@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
     private val CHANNEL_ID = "channel_id_test_01"
 
     //for the navigation:
-    lateinit var toggle : ActionBarDrawerToggle
+    lateinit var toggle: ActionBarDrawerToggle
 
     //for the recyclerview to show current list:
     private val adapter = MainAdapter()
@@ -53,15 +53,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         // for the navigation:
-        val drawerLayout : DrawerLayout = findViewById(R.id.drawerLayout)
-        val navView : NavigationView = findViewById(R.id.nav_view)
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawerLayout)
+        val navView: NavigationView = findViewById(R.id.nav_view)
         //set intents for the navigation
         val homePage = Intent(this@MainActivity, MainActivity::class.java)
         val listsPage = Intent(this@MainActivity, Lists::class.java)
         val locationsPage = Intent(this@MainActivity, Locations::class.java)
         val firstStepsPage = Intent(this@MainActivity, FirstSteps::class.java)
 
-        reminderListViewModel = ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
+        reminderListViewModel =
+            ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
         specialValuesViewModel = ViewModelProvider(this).get(SpecialValuesViewModel::class.java)
         locationsViewModel = ViewModelProvider(this).get(LocationsViewModel::class.java)
 
@@ -73,7 +74,7 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         navView.setNavigationItemSelectedListener {
-            when(it.itemId){
+            when (it.itemId) {
                 R.id.nav_home -> startActivity(homePage)
                 R.id.nav_lists -> startActivity(listsPage)
                 R.id.nav_locations -> startActivity(locationsPage)
@@ -84,32 +85,36 @@ class MainActivity : AppCompatActivity() {
 
         recyclerViewSetup(firstStepsPage, reminderListViewModel.getElements(), getLatestLocation())
 
-        askPermissions(arrayOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_NETWORK_STATE,
-            Manifest.permission.CHANGE_WIFI_STATE
-        ))
+        askPermissions(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_NETWORK_STATE,
+                Manifest.permission.CHANGE_WIFI_STATE
+            )
+        )
 
         network.registerNetworkCallback()
         createNotificationChannel()
-        if (!network.isConnected) Toast.makeText(this,"Please enable Wifi",Toast.LENGTH_LONG).show()
+        if (!network.isConnected) Toast.makeText(this, "Please enable Wifi", Toast.LENGTH_LONG)
+            .show()
 
         val timer = Timer("checkWifi", false);
 
         // schedule at a fixed rate
         if (locationsViewModel.getLocations().isNotEmpty()) {
             timer.scheduleAtFixedRate(1000, 1000) {
-                if (network.isConnected){
-                    setLatestLocation(locationsViewModel.getLocations().filter { location -> location.wifiName == getSsid(applicationContext) })
-                    Log.d("#####################", locationsViewModel.getLocations().filter { location -> location.wifiName == getSsid(applicationContext)}.toString())
-                }
+                if (network.isConnected) setLatestLocation(
+                    locationsViewModel.getLocations()
+                        .filter { location -> location.wifiName == getSsid(applicationContext) })
             }
         } else
             timer.cancel()
     }
 
     private fun getLatestLocation(): Location? {
-            return locationsViewModel.getLocations().filter { location -> location.location_id ==  specialValuesViewModel.getLatestLocationId()}.getOrNull(0)
+        return locationsViewModel.getLocations()
+            .filter { location -> location.location_id == specialValuesViewModel.getLatestLocationId() }
+            .getOrNull(0)
     }
 
     private fun containsWifi(location: Location, ssid: String?): Boolean {
@@ -165,7 +170,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-     private fun recyclerViewSetup(firstStepsPage: Intent, elements: List<ReminderListElement>, latestLocation: Location?) {
+    private fun recyclerViewSetup(
+        firstStepsPage: Intent,
+        elements: List<ReminderListElement>,
+        latestLocation: Location?
+    ) {
         // for the recyclerview:
         val recyclerview = findViewById<RecyclerView>(R.id.lists_recycler_view)
         recyclerview.layoutManager = LinearLayoutManager(this)
@@ -174,15 +183,16 @@ class MainActivity : AppCompatActivity() {
         //text which is shown instead of the recyclerview when recyclerview would be empty, leads to list page on click
         val noListsYetMessage = findViewById<LinearLayout>(R.id.noListsYetMessage)
         val firstStepsLink = findViewById<TextView>(R.id.firstSteps)
-        firstStepsLink.setOnClickListener {startActivity(firstStepsPage)}
+        firstStepsLink.setOnClickListener { startActivity(firstStepsPage) }
         // the Elements of which lists should be shown on the mainPage, initialized as the elements of the first list
         var listId = 1
         if (latestLocation != null) listId = latestLocation.listId
         //selects the right list and shows its element or the noListsYet View if no Elements in List
         var reminderListItems = listOf<ReminderListElement>()
-        elements.filter { element -> element.list == listId }.forEach { element -> reminderListItems += element}
+        elements.filter { element -> element.list == listId }
+            .forEach { element -> reminderListItems += element }
 
-        if (reminderListItems.isEmpty()){
+        if (reminderListItems.isEmpty()) {
             noListsYetMessage.isVisible = true
             recyclerview.isVisible = false
         } else {
@@ -197,7 +207,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun askPermissions(PERMISSIONS: Array<String>) {
         PERMISSIONS.forEach { permission ->
-            if (ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    permission
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
                 Log.d("Function askPermissions: ", "Permission" + permission + "already granted")
             } else {
                 requestPermissions(arrayOf(permission), kotlin.math.abs(permission.hashCode()))
@@ -207,19 +221,23 @@ class MainActivity : AppCompatActivity() {
 
     @Override
 //    TODO currently nonsensical; check for the proper hash code
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 1) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this,"Permission Granted",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(this,"Permission Denied",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (toggle.onOptionsItemSelected(item)){
+        if (toggle.onOptionsItemSelected(item)) {
             return true
         }
         return super.onOptionsItemSelected(item)
@@ -227,7 +245,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(CHANNEL_ID, "Unforgotchi Notification Channel", NotificationManager.IMPORTANCE_DEFAULT).apply {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                "Unforgotchi Notification Channel",
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
                 description = "This is the Channel for all Unforgotchi Notifications"
             }
             val notificationManager: NotificationManager =
