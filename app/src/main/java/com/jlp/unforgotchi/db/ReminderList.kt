@@ -1,6 +1,5 @@
 package com.jlp.unforgotchi.db
 
-import android.net.Uri
 import androidx.room.*
 
 @Entity(tableName = "reminder_list_table")
@@ -68,8 +67,8 @@ data class LocationToLists(
 data class SpecialValue(
     @PrimaryKey()
     var valueName : String,
-    var value : String,
+    var locationId : Int,
     var listID : Int
 ){
-    constructor() : this("","", 0)
+    constructor() : this("",-1, -1)
 }

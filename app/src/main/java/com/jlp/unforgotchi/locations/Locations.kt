@@ -1,14 +1,12 @@
 package com.jlp.unforgotchi.locations
 
 import android.content.Intent
-import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -182,7 +180,7 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
                 specialValuesViewModel.setSpecialValue(
                     SpecialValue(
                         ValueNames.LATEST_LOCATION.name,
-                        newLocName,
+                        newLocation.location_id,
                         newLocation.listId
                     )
                 )

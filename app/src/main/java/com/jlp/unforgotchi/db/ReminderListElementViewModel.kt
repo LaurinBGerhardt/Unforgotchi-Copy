@@ -5,7 +5,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class ReminderListElementViewModel(application: Application): AndroidViewModel(application) {
 
@@ -19,6 +21,14 @@ class ReminderListElementViewModel(application: Application): AndroidViewModel(a
 
         readAllElements = repository.readAllElements
 
+    }
+
+    fun getElements(): List<ReminderListElement> {
+        var elements : List<ReminderListElement>? = null
+        runBlocking {
+            elements = async { repository.getElements() }.await()
+        }
+        return elements ?: throw Exception("elements are still null")
     }
 
     fun addReminderListElement(reminderListElement: ReminderListElement){

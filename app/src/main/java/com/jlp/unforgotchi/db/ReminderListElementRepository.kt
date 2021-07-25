@@ -7,6 +7,10 @@ class ReminderListElementRepository(private val reminderListElementDao: Reminder
 
     val readAllElements: LiveData<List<ReminderListElement>> = reminderListElementDao.readAllElements()
 
+    suspend fun getElements(): List<ReminderListElement> {
+        return reminderListElementDao.getElements()
+    }
+
     suspend fun addReminderListElement(reminderListElement: ReminderListElement){
         reminderListElementDao.addReminderListElement(reminderListElement)
     }
