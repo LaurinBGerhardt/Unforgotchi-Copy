@@ -92,14 +92,18 @@ class EditLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
         editLocNameView.setText(currentLocation.text)
 
         if (locationImage != null) {
-            // For some very weird reason the permissions are buggy,
-            // but this is how it would be done:
-            contentResolver.takePersistableUriPermission(
-                locationImage,
-                intent.flags and Intent.FLAG_GRANT_READ_URI_PERMISSION
-            )
-            previewImage.setImageURI(locationImage)
-            //This is the work-around, which itself is a bit buggy:
+            // For some very weird reason the permissions are buggy
+            try {
+                contentResolver.takePersistableUriPermission(
+                    locationImage,
+                    intent.flags and Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+                previewImage.setImageURI(locationImage)
+            } catch (e: SecurityException){
+                previewImage.setImageResource(R.drawable.ic_baseline_location_city_24)
+            }
+            //This would be the work-around, which itself is a bit buggy,
+            //which is why the try-catch is used:
             //val imageBitMap = uriToBitmap(locationImage)
             //previewImage.setImageBitmap(imageBitMap)
         } else {
