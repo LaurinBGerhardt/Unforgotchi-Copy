@@ -12,14 +12,16 @@ import kotlin.properties.Delegates
 
 class CheckWifi constructor(applicationContext: Context) {
     val applicationContext: Context = applicationContext
-    var isConnected: Boolean by Delegates.observable(false) { property, oldValue, newValue ->
+    var isConnected: Boolean by Delegates.observable(false) { _, oldValue, newValue ->
+        if (!newValue && newValue != oldValue) MainActivity.sendNotification(applicationContext)
+//        if (newValue && newValue != oldValue) MainActivity.updateLatestLoc() //TODO
+    }
 
-            if (!newValue && newValue != oldValue) MainActivity.sendNotification(applicationContext)
-        }
     fun registerNetworkCallback() {
         try {
             val connectivityManager = applicationContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
             val builder = NetworkRequest.Builder()
+
             builder.build()
             connectivityManager.registerDefaultNetworkCallback(object : NetworkCallback() {
                 override fun onAvailable(network: Network) {
@@ -31,6 +33,7 @@ class CheckWifi constructor(applicationContext: Context) {
                     isConnected = false
                 }
             })
+
             isConnected = false
         } catch (e: Exception) {
             isConnected = false
