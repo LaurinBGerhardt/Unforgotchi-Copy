@@ -108,18 +108,8 @@ class MainActivity : AppCompatActivity() {
             timer.cancel()
     }
 
-    private fun setLatestLocation(location: Location) {
-        specialValuesViewModel.setSpecialValue(
-            SpecialValue(
-                ValueNames.LATEST_LOCATION.name,
-                location.location_id,
-                location.listId
-            )
-        )
-    }
-
-    private fun getLatestLocation(): Location {
-        return locationsViewModel.getLocations().filter { location -> location.location_id ==  specialValuesViewModel.getLatestLocationId()}[0]
+    private fun getLatestLocation(): Location? {
+            return locationsViewModel.getLocations().filter { location -> location.location_id ==  specialValuesViewModel.getLatestLocationId()}.getOrNull(0)
     }
 
     private fun containsWifi(location: Location, ssid: String?): Boolean {
@@ -130,6 +120,21 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private lateinit var itemsToRemember: Array<String>
+        lateinit var locationsViewModel: LocationsViewModel
+        lateinit var specialValuesViewModel: SpecialValuesViewModel
+
+        fun setLatestLocation(locations: List<Location>) {
+            if (locations.isEmpty()) return
+            locations.forEach { location ->
+                specialValuesViewModel.setSpecialValue(
+                    SpecialValue(
+                        ValueNames.LATEST_LOCATION.name,
+                        location.location_id,
+                        location.listId
+                    )
+                )
+            }
+        }
 
         fun getSsid(context: Context): String? {
             val wifiInfo = (context.getSystemService(WIFI_SERVICE) as WifiManager).connectionInfo
