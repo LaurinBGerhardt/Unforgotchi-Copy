@@ -7,6 +7,7 @@ import android.text.TextUtils
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -33,6 +34,12 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
     private lateinit var itemViewModel: ReminderListElementViewModel
     private val adapter = DetailListsAdapter(this)
     private var position = 0
+
+    private enum class Mode(val string:String){
+        EDIT("Edit Name"),
+        DELETE("Delete"),
+    }
+    private var currentMode = Mode.EDIT
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -111,6 +118,24 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         }
         val itemTouchHelper=ItemTouchHelper(item)
         itemTouchHelper.attachToRecyclerView(recyclerview)
+
+        //when clicking the mode-button:
+        val modeButton : TextView = findViewById(R.id.switch_mode_of_list_items_screen_button)
+        modeButton.text = currentMode.string
+        modeButton.setOnClickListener {
+            when(currentMode){
+                Mode.EDIT       -> {
+                    currentMode = Mode.DELETE
+                    modeButton.text = currentMode.string
+                }
+                Mode.DELETE     -> {
+                    currentMode = Mode.EDIT
+                    modeButton.text = currentMode.string
+                }
+            }
+        }
+
+
     }
 
     // for navigation
@@ -189,25 +214,61 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
 
     // opens window on item clicked to change name of clicked item
     override fun onItemClick(position: Int) {
-        Toast.makeText(this, "Item $position clicked", Toast.LENGTH_SHORT).show()
-
-        //open textDialog to adapt name
-        val builder = AlertDialog.Builder(this)
-        val inflater = layoutInflater
-        val dialogLayout = inflater.inflate(R.layout.add_listitem_layout, null)
-        val editText = dialogLayout.findViewById<EditText>(R.id.newListItem)
-
-        with(builder) {
-            setTitle("Change Items Name")
-            setPositiveButton("OK") { _, _ ->
-                editList(editText.text.toString(), position)
+        //Toast.makeText(this, "Item $position clicked", Toast.LENGTH_SHORT).show()
+        when(currentMode) {
+            Mode.DELETE -> {
+                Toast.makeText(this, "Item $position deleted", Toast.LENGTH_SHORT).show()
+                deleteItem(position)
             }
-            setNegativeButton("Cancel"){ _, _ ->
-                Toast.makeText(applicationContext, "Cancel button clicked", Toast.LENGTH_SHORT).show()
+            Mode.EDIT -> {        //open textDialog to adapt name
+                val builder = AlertDialog.Builder(this)
+                val inflater = layoutInflater
+                val dialogLayout = inflater.inflate(R.layout.add_listitem_layout, null)
+                val editText = dialogLayout.findViewById<EditText>(R.id.newListItem)
+
+                with(builder) {
+                    setTitle("Change Items Name")
+                    setPositiveButton("OK") { _, _ ->
+                        editList(editText.text.toString(), position)
+                    }
+                    setNegativeButton("Cancel") { _, _ ->
+                        Toast.makeText(
+                            applicationContext,
+                            "Cancel button clicked",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    }
+                    setView(dialogLayout)
+                    show()
+                }
             }
-            setView(dialogLayout)
-            show()
         }
+    }
+
+    private fun deleteItem(position: Int) {
+        var array = emptyArray<ReminderListElement>()
+        itemViewModel.readAllElements.observe(this, Observer { reminderListElements ->
+            array += reminderListElements
+        })
+        val clickedItemId = array[position].id
+        val clickedItemName = array[position].listElementName
+        val clickedItemList = array[position].list
+        val reminderList = ReminderList(
+            clickedItemId,
+            clickedItemName,
+            R.drawable.ic_baseline_list_alt_24
+        )
+        val item = ReminderListElement(
+            clickedItemId,
+            clickedItemName,
+            clickedItemList,
+            null
+        )
+        itemViewModel.deleteReminderListElement(item)
+        itemViewModel.readAllElements.observe(this, Observer { items ->
+            adapter.setData(items)
+        })
     }
 
     private fun getRightList(list: List<ReminderListElement>): List<ReminderListElement>{

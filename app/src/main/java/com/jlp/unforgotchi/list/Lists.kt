@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.jlp.unforgotchi.*
 import com.jlp.unforgotchi.db.ReminderList
-import com.jlp.unforgotchi.db.ReminderListElement
 import com.jlp.unforgotchi.db.ReminderListElementViewModel
 import com.jlp.unforgotchi.db.ReminderListViewModel
 import com.jlp.unforgotchi.detaillist.DetailList
@@ -33,8 +32,12 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
     lateinit var toggle: ActionBarDrawerToggle
     private val adapter = ListsAdapter(this)
 
-    private var edit = false
-    private var delete = false
+    private enum class Mode(val string:String){
+        EDIT("Edit Name"),
+        DELETE("Delete"),
+        ADDITEM("Add Items")
+    }
+    private var currentMode = Mode.ADDITEM
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,6 +102,26 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
             }
         }
 
+        //when clicking the mode-button:
+        val modeButton : TextView = findViewById(R.id.switch_mode_of_lists_screen_button)
+        modeButton.text = currentMode.string
+        modeButton.setOnClickListener {
+            when(currentMode){
+                Mode.EDIT       -> {
+                    currentMode = Mode.DELETE
+                    modeButton.text = currentMode.string
+                }
+                Mode.DELETE     -> {
+                    currentMode = Mode.ADDITEM
+                    modeButton.text = currentMode.string
+                }
+                Mode.ADDITEM    -> {
+                    currentMode = Mode.EDIT
+                    modeButton.text = currentMode.string
+                }
+            }
+        }
+        /*
         //when clicking the delete-button:
         val deleteListsButton: TextView = findViewById(R.id.delete_lists_button)
         deleteListsButton.setOnClickListener {
@@ -137,7 +160,7 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
                     editListsButton.paintFlags = editListsButton.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                 }
             }
-        }
+        }*/
 
     }
 
@@ -255,8 +278,8 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
 
     // handle on item clicks depending on which buttons are clicked
     override fun onItemClick(position: Int) {
-        when {
-            edit -> {
+        when (currentMode) {
+            Mode.EDIT -> {
                 Toast.makeText(this, "Item $position clicked and edit set", Toast.LENGTH_SHORT)
                     .show()
 
@@ -282,7 +305,7 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
                     show()
                 }
             }
-            delete -> {
+            Mode.DELETE -> {
                 Toast.makeText(this, "Item $position deleted", Toast.LENGTH_SHORT).show()
                 deleteList(position)
             }
