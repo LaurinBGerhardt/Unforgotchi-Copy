@@ -30,7 +30,7 @@ interface SpecialValuesDao {
     fun readAllSpecialValues(): LiveData<List<SpecialValue>>
 
     @Query("Select locationId FROM special_values")
-    suspend fun getLatestLocationId(): Int // TODO @paul maybe make this a list
+    suspend fun getLatestLocationId(): Int
 }
 
 class SpecialValueRepository(private val specialValuesDao : SpecialValuesDao){
@@ -108,11 +108,11 @@ class SpecialValuesViewModel(application: Application): AndroidViewModel(applica
         }
     }
 
-    fun getLatestLocationId(): Int {
+    fun getLatestLocationId(): Int? {
         var id : Int? = null
         runBlocking {
             id = async { repository.getLatestLocationId() }.await()
         }
-        return id ?: throw Exception("special val loc id is still null")
+        return id
     }
 }
