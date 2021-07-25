@@ -8,7 +8,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import java.lang.Exception
 
 class LocationsViewModel(application: Application): AndroidViewModel(application) {
 
@@ -40,6 +39,14 @@ class LocationsViewModel(application: Application): AndroidViewModel(application
             location = async { repository.getLocationById(id) }.await()
         }
         return location ?: throw Exception("location is still null")
+    }
+
+    fun getLocations(): List<Location> {
+        var locations : List<Location>? = null
+        runBlocking {
+            locations = async { repository.getLocations() }.await()
+        }
+        return locations ?: throw Exception("locations are still null")
     }
 
     fun updateLocation(location: Location,wifiName : String? = null){

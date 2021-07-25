@@ -1,6 +1,5 @@
 package com.jlp.unforgotchi.db
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 
 
@@ -29,6 +28,10 @@ class LocationsRepository(private val locationsDao: LocationsDao) {
 
     suspend fun deleteLocation(location: Location){
         locationsDao.deleteLocation(location)
+    }
+
+    suspend fun getLocations(): List<Location> {
+        return locationsDao.getLocations()
     }
 
     //This SHOULD work, but somehow room changes the value always to 0 for no reason at all

@@ -7,28 +7,36 @@ import android.net.ConnectivityManager.NetworkCallback
 import android.net.Network
 import android.net.NetworkInfo
 import android.net.NetworkRequest
+import kotlin.properties.Delegates
 
 
 class CheckWifi constructor(applicationContext: Context) {
     val applicationContext: Context = applicationContext
+    var isConnected: Boolean by Delegates.observable(false) { _, oldValue, newValue ->
+        if (!newValue && newValue != oldValue) MainActivity.sendNotification(applicationContext)
+//        if (newValue && newValue != oldValue) MainActivity.updateLatestLoc() //TODO
+    }
+
     fun registerNetworkCallback() {
         try {
             val connectivityManager = applicationContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
             val builder = NetworkRequest.Builder()
+
             builder.build()
             connectivityManager.registerDefaultNetworkCallback(object : NetworkCallback() {
                 override fun onAvailable(network: Network) {
                     val networkInfo: NetworkInfo? = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
-                    if(networkInfo?.isConnected == true) MainActivity.isConnected = true
+                    if(networkInfo?.isConnected == true) isConnected = true
                 }
 
                 override fun onLost(network: Network) {
-                    MainActivity.isConnected = false
+                    isConnected = false
                 }
             })
-            MainActivity.isConnected = false
+
+            isConnected = false
         } catch (e: Exception) {
-            MainActivity.isConnected = false
+            isConnected = false
         }
     }
 }

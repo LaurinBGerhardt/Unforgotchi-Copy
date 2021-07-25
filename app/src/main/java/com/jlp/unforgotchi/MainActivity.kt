@@ -31,7 +31,8 @@ import com.google.android.material.navigation.NavigationView
 import com.jlp.unforgotchi.db.*
 import com.jlp.unforgotchi.list.Lists
 import com.jlp.unforgotchi.locations.Locations
-import kotlin.properties.Delegates
+import java.util.*
+import kotlin.concurrent.scheduleAtFixedRate
 
 class MainActivity : AppCompatActivity() {
 
@@ -42,18 +43,15 @@ class MainActivity : AppCompatActivity() {
     lateinit var toggle : ActionBarDrawerToggle
 
     //for the recyclerview to show current list:
-    private lateinit var detailListUserViewModel: ReminderListElementViewModel
     private val adapter = MainAdapter()
 
     //The table for special values (like the latest location):
-    private lateinit var specialValuesViewModel: SpecialValuesViewModel
-    private lateinit var locationsViewModel: LocationsViewModel
-
+    private lateinit var reminderListViewModel: ReminderListElementViewModel
+    val network = CheckWifi(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         // for the navigation:
         val drawerLayout : DrawerLayout = findViewById(R.id.drawerLayout)
         val navView : NavigationView = findViewById(R.id.nav_view)
@@ -63,9 +61,10 @@ class MainActivity : AppCompatActivity() {
         val locationsPage = Intent(this@MainActivity, Locations::class.java)
         val firstStepsPage = Intent(this@MainActivity, FirstSteps::class.java)
 
-        context = this
+        reminderListViewModel = ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
         specialValuesViewModel = ViewModelProvider(this).get(SpecialValuesViewModel::class.java)
         locationsViewModel = ViewModelProvider(this).get(LocationsViewModel::class.java)
+
         itemsToRemember = emptyArray<String>()
 
         toggle = ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close)
@@ -83,37 +82,34 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        recyclerViewSetup(firstStepsPage)
+        recyclerViewSetup(firstStepsPage, reminderListViewModel.getElements(), getLatestLocation())
 
         askPermissions(arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_BACKGROUND_LOCATION,
             Manifest.permission.ACCESS_NETWORK_STATE,
             Manifest.permission.CHANGE_WIFI_STATE
         ))
 
-        val network = CheckWifi(this)
         network.registerNetworkCallback()
         createNotificationChannel()
-        if (!isConnected) Toast.makeText(this,"Please enable Wifi",Toast.LENGTH_LONG).show()
-    }
+        if (!network.isConnected) Toast.makeText(this,"Please enable Wifi",Toast.LENGTH_LONG).show()
 
-    private fun setLatestLocation(location: Location) {
-        specialValuesViewModel.setSpecialValue(
-            SpecialValue(
-                ValueNames.LATEST_LOCATION.name,
-                location.text,
-                location.listId
-            )
-        )
+        val timer = Timer("checkWifi", false);
+
+        // schedule at a fixed rate
+        if (locationsViewModel.getLocations().isNotEmpty()) {
+            timer.scheduleAtFixedRate(1000, 1000) {
+                if (network.isConnected){
+                    setLatestLocation(locationsViewModel.getLocations().filter { location -> location.wifiName == getSsid(applicationContext) })
+                    Log.d("#####################", locationsViewModel.getLocations().filter { location -> location.wifiName == getSsid(applicationContext)}.toString())
+                }
+            }
+        } else
+            timer.cancel()
     }
 
     private fun getLatestLocation(): Location? {
-        var latestLocation: List<Location>? = null
-        locationsViewModel.readAllLocations.observe(this, {
-                locations -> latestLocation = locations.filter { containsWifi(it, getSsid(this)) }
-        })
-        return latestLocation?.get(0)
+            return locationsViewModel.getLocations().filter { location -> location.location_id ==  specialValuesViewModel.getLatestLocationId()}.getOrNull(0)
     }
 
     private fun containsWifi(location: Location, ssid: String?): Boolean {
@@ -123,20 +119,24 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        //Ignore warning; Context is held in inner class anyways; see for yourself
-        //https://stackoverflow.com/questions/54075649/access-application-context-in-companion-object-in-kotlin
-        private lateinit var context: Context
         private lateinit var itemsToRemember: Array<String>
-        var isConnected: Boolean by Delegates.observable(false) { property, oldValue, newValue ->
-            Log.d("Observable property: ", property.toString())
-            Log.d("Observable old: ", oldValue.toString())
-            Log.d("Observable new: ", newValue.toString())
+        lateinit var locationsViewModel: LocationsViewModel
+        lateinit var specialValuesViewModel: SpecialValuesViewModel
 
-            if (!newValue && newValue != oldValue) sendNotification()
+        fun setLatestLocation(locations: List<Location>) {
+            if (locations.isEmpty()) return
+            locations.forEach { location ->
+                specialValuesViewModel.setSpecialValue(
+                    SpecialValue(
+                        ValueNames.LATEST_LOCATION.name,
+                        location.location_id,
+                        location.listId
+                    )
+                )
+            }
         }
 
-        fun getSsid(con: Context): String? {
-            context = con
+        fun getSsid(context: Context): String? {
             val wifiInfo = (context.getSystemService(WIFI_SERVICE) as WifiManager).connectionInfo
             return if (wifiInfo.supplicantState == SupplicantState.COMPLETED) {
                 wifiInfo.ssid
@@ -145,7 +145,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        private fun sendNotification() {
+        fun sendNotification(context: Context) {
             val intent = Intent(context, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }
@@ -165,7 +165,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun recyclerViewSetup(firstStepsPage: Intent) {
+     private fun recyclerViewSetup(firstStepsPage: Intent, elements: List<ReminderListElement>, latestLocation: Location?) {
         // for the recyclerview:
         val recyclerview = findViewById<RecyclerView>(R.id.lists_recycler_view)
         recyclerview.layoutManager = LinearLayoutManager(this)
@@ -174,45 +174,22 @@ class MainActivity : AppCompatActivity() {
         //text which is shown instead of the recyclerview when recyclerview would be empty, leads to list page on click
         val noListsYetMessage = findViewById<LinearLayout>(R.id.noListsYetMessage)
         val firstStepsLink = findViewById<TextView>(R.id.firstSteps)
-        firstStepsLink.setOnClickListener {
-            startActivity(firstStepsPage)
-        }
+        firstStepsLink.setOnClickListener {startActivity(firstStepsPage)}
         // the Elements of which lists should be shown on the mainPage, initialized as the elements of the first list
-        var position = 1
-        /*var latestLocation = getLatestLocation()
-        if (getLatestLocation() != null) {
-            position = latestLocation!!.listId
-            setLatestLocation(latestLocation)
-            Toast.makeText(this,"Got list via wifi ssid",Toast.LENGTH_SHORT).show()
-        }
-        else {
-            specialValuesViewModel.readAllSpecialValues.observe(this, { specialValue ->
-                if (specialValue.isNotEmpty()) {
-                    position = specialValue.last().listID
-                }
-            })
-        }*/
+        var listId = 1
+        if (latestLocation != null) listId = latestLocation.listId
         //selects the right list and shows its element or the noListsYet View if no Elements in List
-        detailListUserViewModel = ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
-        var listOfRightElements = listOf<ReminderListElement>()
-        detailListUserViewModel.readAllElements.observe(this, { reminderListElement ->
-            var counter = 0
-            while (counter < reminderListElement.size) {
-                if (reminderListElement[counter].list == position){
-                    listOfRightElements += reminderListElement[counter]
-                }
-                counter++
-            }
-        })
-        if (listOfRightElements.isEmpty()){
+        var reminderListItems = listOf<ReminderListElement>()
+        elements.filter { element -> element.list == listId }.forEach { element -> reminderListItems += element}
+
+        if (reminderListItems.isEmpty()){
             noListsYetMessage.isVisible = true
             recyclerview.isVisible = false
-        }
-        else {
+        } else {
             noListsYetMessage.isVisible = false
             recyclerview.isVisible = true
-            adapter.setData(listOfRightElements)
-            listOfRightElements.forEach { element ->
+            adapter.setData(reminderListItems)
+            reminderListItems.forEach { element ->
                 itemsToRemember += element.listElementName
             }
         }
@@ -221,7 +198,7 @@ class MainActivity : AppCompatActivity() {
     private fun askPermissions(PERMISSIONS: Array<String>) {
         PERMISSIONS.forEach { permission ->
             if (ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
-                Log.d("###", "Permission" + permission + "Granted")
+                Log.d("Function askPermissions: ", "Permission" + permission + "already granted")
             } else {
                 requestPermissions(arrayOf(permission), kotlin.math.abs(permission.hashCode()))
             }
@@ -242,7 +219,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
         if (toggle.onOptionsItemSelected(item)){
             return true
         }
@@ -251,8 +227,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "Unforgotchi Notification Channel"
-            val channel = NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_DEFAULT).apply {
+            val channel = NotificationChannel(CHANNEL_ID, "Unforgotchi Notification Channel", NotificationManager.IMPORTANCE_DEFAULT).apply {
                 description = "This is the Channel for all Unforgotchi Notifications"
             }
             val notificationManager: NotificationManager =

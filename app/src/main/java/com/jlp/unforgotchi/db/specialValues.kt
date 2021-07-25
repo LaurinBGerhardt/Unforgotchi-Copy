@@ -7,7 +7,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import androidx.room.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 enum class ValueNames{
     LATEST_LOCATION
@@ -26,6 +28,9 @@ interface SpecialValuesDao {
 
     @Query("SELECT * FROM special_values")
     fun readAllSpecialValues(): LiveData<List<SpecialValue>>
+
+    @Query("Select locationId FROM special_values")
+    suspend fun getLatestLocationId(): Int
 }
 
 class SpecialValueRepository(private val specialValuesDao : SpecialValuesDao){
@@ -41,6 +46,10 @@ class SpecialValueRepository(private val specialValuesDao : SpecialValuesDao){
 
     suspend fun deleteSpecialValue(specialValue: SpecialValue){
         specialValuesDao.deleteSpecialValue(specialValue)
+    }
+
+    suspend fun getLatestLocationId(): Int {
+        return specialValuesDao.getLatestLocationId()
     }
 }
 
@@ -97,5 +106,13 @@ class SpecialValuesViewModel(application: Application): AndroidViewModel(applica
         viewModelScope.launch(Dispatchers.IO){
             repository.deleteSpecialValue(specialValue)
         }
+    }
+
+    fun getLatestLocationId(): Int? {
+        var id : Int? = null
+        runBlocking {
+            id = async { repository.getLatestLocationId() }.await()
+        }
+        return id
     }
 }
