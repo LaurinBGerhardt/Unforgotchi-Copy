@@ -11,18 +11,17 @@ import com.bumptech.glide.Glide
 import com.jlp.unforgotchi.R
 import com.jlp.unforgotchi.db.Location
 
+//This is the Adaper for the Recycler View in the Locations activity
 class LocationsAdapter(
     var listOfLocations: List<Location>,
     val itemClickListener: OnItemClickListener
     ) : RecyclerView.Adapter<LocationsAdapter.ViewHolder>() {
 
-    // create new views
+    //For creating new Views for the Locations:
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        // inflates the card_view_design view
-        // that is used to hold list item
+        //Inflates the location_item view, where Locations are being displayed
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.location_item, parent, false)
-
         return ViewHolder(view)
     }
 
@@ -31,7 +30,7 @@ class LocationsAdapter(
 
         val itemsViewModel = listOfLocations[position]
 
-        // sets the image to the imageview from our itemHolder class
+        //Set the image of the ImageView of the ViewHolder class at the bottom:
         if(itemsViewModel.image != null) {
             Glide.with(holder.itemView.context)
                 .load(Uri.parse(itemsViewModel.image!!))
@@ -39,16 +38,16 @@ class LocationsAdapter(
         } else {
             holder.imageView.setImageResource(R.drawable.ic_baseline_location_city_24)
         }
-        // sets the text to the textview from our itemHolder class
+        //Set the text of the TextView of the Viewholder class at the bottom:
         holder.textView.text = itemsViewModel.text
     }
 
-    // return the number of the items in the list
+    //The number of Locations:
     override fun getItemCount(): Int {
         return listOfLocations.size
     }
 
-    // Holds the views for adding it to image and text
+    //Holds the Views for the image and text of the Locations:
     inner class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) ,
         View.OnClickListener {
             val imageView: ImageView = itemView.findViewById(R.id.location_image)
@@ -56,6 +55,7 @@ class LocationsAdapter(
             init {
                 itemView.setOnClickListener(this)
         }
+        //Makes clicking items possible:
         override fun onClick(v: View?) {
             val position = adapterPosition
             if (position != RecyclerView.NO_POSITION) {
@@ -66,6 +66,8 @@ class LocationsAdapter(
     interface OnItemClickListener{
         fun onItemClick(position: Int)
     }
+
+    //Used to fill the Adapter (and thus the RecyclerView) with all the Locations from the database:
     fun setData(locationsList: List<Location>){
         listOfLocations = locationsList
         notifyDataSetChanged()

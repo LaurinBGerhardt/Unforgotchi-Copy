@@ -7,7 +7,9 @@ import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.annotation.CallSuper
 
-
+//The premade contract for starting an activity to select an image from the gallery does not
+//automatically give the app permissions to display the same image upon restart.
+//This custom contract is functionally the same, but also adds all necessary permissions
 class RetreiveImageContract : ActivityResultContract<String, Uri?>() {
     @CallSuper
     override fun createIntent(context: Context, input: String): Intent {

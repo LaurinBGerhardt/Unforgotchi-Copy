@@ -29,28 +29,29 @@ class EditLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
     //The Location this is all about:
     private lateinit var currentLocation : Location
 
-    //All the components of the layout:
+    //--LAYOUT-COMPONENTS--
     private val previewImage by lazy { findViewById<ImageButton>(R.id.edit_location_image_button) }
     private val editWifiButton : CheckBox by lazy { findViewById(R.id.edit_wifi_to_location_button) }
     private val editLocNameView: TextInputEditText by lazy { findViewById(R.id.edit_name_of_location) }
     var spinner: Spinner? = null
 
-    //All the database viewmodels:
+    //--DATABASE-VIEWMODELS--
     private lateinit var locationsViewModel : LocationsViewModel
     private lateinit var specialValuesViewModel : SpecialValuesViewModel
     private lateinit var reminderListsVM: ReminderListViewModel
 
-    //Handy global variables:
+    //--GLOBAL-VARIABLES--
     private var previewImageChanged : Boolean = false
     private var imageData : Uri? = null
     private var connectedWifi : String? = null
     var dropDownItems : MutableList<String> = ArrayList()
     private val dropDownIds : MutableList<Int> = ArrayList()
-    private var listId = -2
-    private var wifiChanged = false
+    // -7 is a unique nonsensical number so we know exactly where things went wrong:
+    private var listId = -7
 
     //Making selecting image form gallery possible:
-    private val selectImageFromGalleryResult  = registerForActivityResult(RetreiveImageContract()) { uri: Uri? ->
+    private val selectImageFromGalleryResult  = registerForActivityResult(RetreiveImageContract())
+    { uri: Uri? ->
         this.applicationContext.grantUriPermission("com.jlp.unforgotchi",uri,
             Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
         uri?.let {
@@ -63,52 +64,50 @@ class EditLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
         selectImageFromGalleryResult.launch("image/*")
     }
 
-    //////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.edit_location_layout)
-        //editLocNameView = findViewById(R.id.edit_name_of_location)
+
+        setupListeners()
 
         //Initializing databank viewmodels:
         locationsViewModel = ViewModelProvider(this).get(LocationsViewModel::class.java)
         specialValuesViewModel = ViewModelProvider(this).get(SpecialValuesViewModel::class.java)
         reminderListsVM = ViewModelProvider(this).get(ReminderListViewModel::class.java)
 
-        val currentLocationId = intent.getIntExtra("locationId",-8)
-        Log.d("######################## current Location Id given to Edit Location Activity: ","$currentLocationId")
-        if(currentLocationId <0) throw Exception("Invalid Location Id was given to the EditLocationActivity")
-        currentLocation = locationsViewModel.getLocationById(currentLocationId)
+        //Getting the currently connected wifi:
         connectedWifi = MainActivity.getSsid(this)
 
+        //Getting the location and its data which is to be edited:
+        val currentLocationId = intent.getIntExtra("locationId",-8)
+        if(currentLocationId <0) throw Exception("Invalid Location Id was given to the EditLocationActivity")
+        currentLocation = locationsViewModel.getLocationById(currentLocationId)
         val locationImage : Uri? = currentLocation.image?.toUri()
         val locationWifi : String? = currentLocation.wifiName
 
+        //If the current wifi is already attached to the location, it will be displayed:
         editWifiButton.isChecked = locationWifi.equals(connectedWifi)
-        editWifiButton.setOnClickListener{
-            wifiChanged = !locationWifi.equals(connectedWifi) && editWifiButton.isChecked
-        }
 
         editLocNameView.setText(currentLocation.text)
 
         if (locationImage != null) {
-        //    // For some very weird reason the permissions are buggy:
-        //    contentResolver.takePersistableUriPermission(
-        //        locationImage,
-        //        intent.flags and Intent.FLAG_GRANT_READ_URI_PERMISSION
-        //    )
-        //    previewImage.setImageURI(locationImage)
-            //This is the work-around:
-            val imageBitMap = uriToBitmap(locationImage)
-            previewImage.setImageBitmap(imageBitMap)
+            // For some very weird reason the permissions are buggy,
+            // but this is how it would be done:
+            contentResolver.takePersistableUriPermission(
+                locationImage,
+                intent.flags and Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+            previewImage.setImageURI(locationImage)
+            //This is the work-around, which itself is a bit buggy:
+            //val imageBitMap = uriToBitmap(locationImage)
+            //previewImage.setImageBitmap(imageBitMap)
         } else {
+            //If this location doesn't have an image:
             previewImage.setImageResource(R.drawable.ic_baseline_image_search_24)
         }
 
-        previewImage.setOnClickListener {
-            selectImageFromGallery()
-        }
-
-        //This is for the Dropdown Menu:
+        //Displaying the items in the dropdown menu correctly:
         Log.d("!!!!!! Laenge der Liste der ReminderListen Value: ","${reminderListsVM.readAllData.value?.size}")
         reminderListsVM.readAllData.observe(this) { reminderLists ->
             reminderLists.forEach{ element ->
@@ -118,24 +117,31 @@ class EditLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
             setupSpinner()
         }
 
+    } //END onCreate
+
+    private fun setupListeners() {
+        //Select a new Image when clicking the old one:
+        previewImage.setOnClickListener {
+            selectImageFromGallery()
+        }
+
+        //Save and exit activity when clicking the tick floating action button:
         findViewById<FloatingActionButton>(R.id.finish_editing_location).setOnClickListener {
             if (spinner!!.selectedItemPosition < 0) {
                 Toast.makeText(this@EditLocationActivity,"Please Select A List",Toast.LENGTH_SHORT).show()
             } else {
                 listId = dropDownIds[spinner!!.selectedItemPosition]
-                Log.d("!!!!!! ListIds direkt vor processInput(): ", "$listId")
                 saveChanges()
             }
         }
-
-    } //END onCreate
+    }
 
     private fun setupSpinner() {
         spinner = findViewById<Spinner>(R.id.edit_lists_spinner)
         spinner!!.onItemSelectedListener = this
-        val aa = ArrayAdapter(this, android.R.layout.simple_spinner_item, dropDownItems)
-        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner!!.adapter = aa
+        val arrayAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, dropDownItems)
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner!!.adapter = arrayAdapter
     }
 
     private fun saveChanges() {
@@ -157,14 +163,12 @@ class EditLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
     }
 
 
+    //These two methods are from the AdapterView.OnItemSelectedListener,
+    //which is there for the spinner
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         val selectListText : TextView = findViewById(R.id.edit_a_list_spinner_text)
         selectListText.isGone = true
-        Log.d("#1#2#3#4################","${parent!!.getItemAtPosition(position)}")
-        //listId = parent!!.getItemIdAtPosition(position).toInt()
-        //Log.d("#1#2#3#4################ ListId: ","${listId}")
     }
-
     override fun onNothingSelected(parent: AdapterView<*>?) {
         //Nothing to do here
     }
@@ -173,16 +177,20 @@ class EditLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
     //This is necessary because the permissions are buggy which would cause the app to crash
     //from time to time when editing a Location
     private fun uriToBitmap(uri: Uri?): Bitmap? {
+        //The higher the compression factor is, the faster the EditLocationActivity will start,
+        //but the poorer the quality of the image will be.
+        //We decided to go for a slightly longer waiting period.
+        val COMPRESSION_FACTOR = 1.1
         if (uri == null) return null
         val scaledScreenWidth :Double = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
             val outMetrics = resources.displayMetrics
-            outMetrics.widthPixels / 2.0
+            outMetrics.widthPixels / COMPRESSION_FACTOR
         } else {
             @Suppress("DEPRECATION")
             val displayMetrics = DisplayMetrics()
             @Suppress("DEPRECATION")
             windowManager.defaultDisplay.getMetrics(displayMetrics)
-            displayMetrics.widthPixels / 2.0
+            displayMetrics.widthPixels / COMPRESSION_FACTOR
         }
 
         try {

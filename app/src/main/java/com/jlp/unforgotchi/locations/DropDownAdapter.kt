@@ -10,9 +10,11 @@ import android.widget.CheckBox
 import android.widget.CompoundButton
 import android.widget.TextView
 
-//This solution is heavily inspired by Tyler V's answer at
-//https://stackoverflow.com/questions/38417984/android-spinner-dropdown-checkbox (last access Jul 9th 2021)
-//because his solution is very elegant
+//This custom dropdown adapter is heavily inspired by Tyler V's answer at
+//https://stackoverflow.com/questions/38417984/android-spinner-dropdown-checkbox (last access Jul 9th 2021).
+//Currently, this adaper is not in use. However, it is planned to be integrated into the app in a
+//later update.
+//This dropdown adapter enables selecting multiple lists per location.
 class DropDownAdapter<T> internal constructor(
     private val context: Context,
     private val headerText: String,
