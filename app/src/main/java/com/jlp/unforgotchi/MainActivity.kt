@@ -31,6 +31,8 @@ import com.google.android.material.navigation.NavigationView
 import com.jlp.unforgotchi.db.*
 import com.jlp.unforgotchi.list.Lists
 import com.jlp.unforgotchi.locations.Locations
+import java.util.*
+import kotlin.concurrent.scheduleAtFixedRate
 
 class MainActivity : AppCompatActivity() {
 
@@ -44,15 +46,12 @@ class MainActivity : AppCompatActivity() {
     private val adapter = MainAdapter()
 
     //The table for special values (like the latest location):
-    private lateinit var specialValuesViewModel: SpecialValuesViewModel
-    private lateinit var locationsViewModel: LocationsViewModel
     private lateinit var reminderListViewModel: ReminderListElementViewModel
-
+    val network = CheckWifi(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         // for the navigation:
         val drawerLayout : DrawerLayout = findViewById(R.id.drawerLayout)
         val navView : NavigationView = findViewById(R.id.nav_view)
@@ -91,10 +90,22 @@ class MainActivity : AppCompatActivity() {
             Manifest.permission.CHANGE_WIFI_STATE
         ))
 
-        val network = CheckWifi(this)
         network.registerNetworkCallback()
         createNotificationChannel()
         if (!network.isConnected) Toast.makeText(this,"Please enable Wifi",Toast.LENGTH_LONG).show()
+
+        val timer = Timer("checkWifi", false);
+
+        // schedule at a fixed rate
+        if (locationsViewModel.getLocations().isNotEmpty()) {
+            timer.scheduleAtFixedRate(1000, 1000) {
+                if (network.isConnected){
+                    setLatestLocation(locationsViewModel.getLocations().filter { location -> location.wifiName == getSsid(applicationContext) })
+                    Log.d("#####################", locationsViewModel.getLocations().filter { location -> location.wifiName == getSsid(applicationContext)}.toString())
+                }
+            }
+        } else
+            timer.cancel()
     }
 
     private fun setLatestLocation(location: Location) {
@@ -149,7 +160,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun recyclerViewSetup(firstStepsPage: Intent, elements: List<ReminderListElement>, latestLocation: Location) {
+     private fun recyclerViewSetup(firstStepsPage: Intent, elements: List<ReminderListElement>, latestLocation: Location?) {
         // for the recyclerview:
         val recyclerview = findViewById<RecyclerView>(R.id.lists_recycler_view)
         recyclerview.layoutManager = LinearLayoutManager(this)
@@ -158,9 +169,7 @@ class MainActivity : AppCompatActivity() {
         //text which is shown instead of the recyclerview when recyclerview would be empty, leads to list page on click
         val noListsYetMessage = findViewById<LinearLayout>(R.id.noListsYetMessage)
         val firstStepsLink = findViewById<TextView>(R.id.firstSteps)
-        firstStepsLink.setOnClickListener {
-            startActivity(firstStepsPage)
-        }
+        firstStepsLink.setOnClickListener {startActivity(firstStepsPage)}
         // the Elements of which lists should be shown on the mainPage, initialized as the elements of the first list
         var listId = 1
         if (latestLocation != null) listId = latestLocation.listId
