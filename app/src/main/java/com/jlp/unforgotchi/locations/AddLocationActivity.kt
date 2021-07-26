@@ -51,12 +51,16 @@ class AddLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
     //Making selecting image form gallery possible:
     private val selectImageFromGalleryResult  = registerForActivityResult(RetreiveImageContract())
     { uri: Uri? ->
-    this.applicationContext.grantUriPermission("com.jlp.unforgotchi",uri,
-            Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        uri?.let {
-            previewImage.setImageURI(uri)
-            imageData = uri//.path
-            previewImageChanged = true
+        if(uri == null) {
+            finish()
+        } else {
+            this.applicationContext.grantUriPermission("com.jlp.unforgotchi",uri,
+                Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            uri.let {
+                previewImage.setImageURI(uri)
+                imageData = uri//.path
+                previewImageChanged = true
+            }
         }
     }
     private fun selectImageFromGallery()  {

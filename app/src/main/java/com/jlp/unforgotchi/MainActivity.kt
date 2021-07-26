@@ -92,8 +92,7 @@ class MainActivity : AppCompatActivity() {
 
         network.registerNetworkCallback()
         createNotificationChannel()
-        if (!network.isConnected) Toast.makeText(this, "Please enable Wifi", Toast.LENGTH_LONG)
-            .show()
+        //if (!network.isConnected) Toast.makeText(this, "Please enable Wifi", Toast.LENGTH_LONG).show()
 
         /*
         //The timer has severe issues with the delay of the database, causing an infinite loop
