@@ -136,13 +136,24 @@ class AddLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
     //so to create and add a new location:
     private fun processInput() {
         val intent = Intent()
-        val name = addLocNameView.text.toString()
+        val name = getValidInput(addLocNameView.text.toString())
 
-        if (name.isEmpty()) setResult(Activity.RESULT_CANCELED, intent)
-        else giveBackLocationData(intent, name)
-
-        finish()
+        if (!name.isEmpty()) {// setResult(Activity.RESULT_CANCELED, intent)
+            giveBackLocationData(intent, name)
+            finish()
+        }
+        else {
+            Toast.makeText(this@AddLocationActivity,"Please Input A Name",Toast.LENGTH_SHORT).show()
+        }
     }
+
+    // helper function to strip the user input to a valid name
+    private fun getValidInput(input: String): String {
+        return Regex("""\s+""")
+            .replace(input.trim()," ")
+            .filter { it.isLetterOrDigit() || it == ' ' }
+    }
+
 
     //This method passes the data for the new location directly to the Locations activity.
     //This way of adding a new location is legacy code so to speak, because it's from before

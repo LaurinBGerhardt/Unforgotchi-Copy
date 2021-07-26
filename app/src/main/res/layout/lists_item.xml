@@ -33,6 +33,9 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
                         android:layout_marginTop="12dp"
+                        android:breakStrategy="high_quality"
+                        android:gravity="center"
+                        android:maxLength="20"
                         android:text="List Name"
                         android:textAppearance="?attr/textAppearanceHeadline5" />
 

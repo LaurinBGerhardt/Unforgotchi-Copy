@@ -33,7 +33,7 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
     private enum class Mode(val string:String){
         EDIT("Edit Name"),
         DELETE("Delete"),
-        ADDITEM("Show list")
+        ADDITEM("Show List")
     }
     private var currentMode = Mode.ADDITEM
 
@@ -130,7 +130,8 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
     }
 
     // function to add a new list
-    private fun insertList(listName: String) {
+    private fun insertList(input: String) {
+        val listName = getValidInput(input)
         if (!inputCheck(listName)) {
             Toast.makeText(
                 applicationContext,
@@ -158,6 +159,13 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
         return !(TextUtils.isEmpty(listName))
     }
 
+    // helper function to strip the user input to a valid name
+    private fun getValidInput(input: String): String {
+        return Regex("""\s+""")
+            .replace(input.trim()," ")
+            .filter { it.isLetterOrDigit() || it == ' ' }
+    }
+
     // function to remove a list
     private fun deleteList(position: Int) {
         var array = emptyArray<ReminderList>()
@@ -179,7 +187,8 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
     }
 
     // function to change the name of a list
-    private fun editList(listName: String, position: Int) {
+    private fun editList(input: String, position: Int) {
+        val listName = getValidInput(input)
         var array = emptyArray<ReminderList>()
         listViewModel.readAllData.observe(this, { reminderList ->
             array += reminderList

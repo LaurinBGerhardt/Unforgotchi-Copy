@@ -149,21 +149,31 @@ class EditLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
     }
 
     private fun saveChanges() {
-        val name = editLocNameView.text.toString()
+        val name = getValidInput(editLocNameView.text.toString())
 
-        if (name.isEmpty()) setResult(Activity.RESULT_CANCELED, intent)
+        if (!name.isEmpty()) { //setResult(Activity.RESULT_CANCELED, intent)
 
-        val replacementLocation = Location(
-            currentLocation.location_id,
-            editLocNameView.text.toString(),
-            if(previewImageChanged) imageData?.toString() else currentLocation.image,
-            if(editWifiButton.isChecked) connectedWifi else null,
-            listId
-        )
+            val replacementLocation = Location(
+                currentLocation.location_id,
+                name,
+                if (previewImageChanged) imageData?.toString() else currentLocation.image,
+                if (editWifiButton.isChecked) connectedWifi else null,
+                listId
+            )
 
-        locationsViewModel.updateLocation(replacementLocation)
+            locationsViewModel.updateLocation(replacementLocation)
 
-        finish()
+            finish()
+        } else {
+            Toast.makeText(this@EditLocationActivity,"Please Input A Name",Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // helper function to strip the user input to a valid name
+    private fun getValidInput(input: String): String {
+        return Regex("""\s+""")
+                    .replace(input.trim()," ")
+                    .filter { it.isLetterOrDigit() || it == ' ' }
     }
 
 

@@ -134,7 +134,7 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         }
 
 
-    }
+    } //END onCreate
 
     // for navigation
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -146,7 +146,8 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
     }
 
     // add Item to List
-    private fun insertListItem(listElementName: String){
+    private fun insertListItem(input: String){
+        val listElementName = getValidInput(input)
         if (!inputCheck(listElementName)){
             Toast.makeText(
                 applicationContext,
@@ -166,6 +167,13 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         return !(TextUtils.isEmpty(listName))
     }
 
+    // helper function to strip the user input to a valid name
+    private fun getValidInput(input: String): String {
+        return Regex("""\s+""")
+            .replace(input.trim()," ")
+            .filter { it.isLetterOrDigit() || it == ' ' }
+    }
+
 
     private fun deleteListElement(positionItem: Int){
         var listOfRightElements = listOf<ReminderListElement>()
@@ -183,7 +191,8 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
     }
 
     // change name of List Element
-    private fun editList(listElementName: String, positionInList: Int) {
+    private fun editList(input: String, positionInList: Int) {
+        val listElementName = getValidInput(input)
         if (!inputCheck(listElementName)) {
             Toast.makeText(
                 applicationContext,
