@@ -2,6 +2,7 @@ package com.jlp.unforgotchi
 
 //import com.google.android.gms.location.*
 import android.Manifest.*
+import android.Manifest.permission.*
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -86,11 +87,7 @@ class MainActivity : AppCompatActivity() {
         recyclerViewSetup(firstStepsPage, reminderListViewModel.getElements(), getLatestLocation())
 
         askPermissions(
-            arrayOf(
-                permission.ACCESS_FINE_LOCATION,
-                permission.ACCESS_NETWORK_STATE,
-                permission.CHANGE_WIFI_STATE
-            )
+            arrayOf(ACCESS_FINE_LOCATION, ACCESS_NETWORK_STATE, CHANGE_WIFI_STATE)
         )
 
         network.registerNetworkCallback()
@@ -104,8 +101,7 @@ class MainActivity : AppCompatActivity() {
         if (locationsViewModel.getLocations().isNotEmpty()) {
             timer.scheduleAtFixedRate(1000, 1000) {
                 if (network.isConnected) setLatestLocation(
-                    locationsViewModel.getLocations()
-                        .filter { location -> location.wifiName == getSsid(applicationContext) })
+                    locationsViewModel.getLocations().filter {loc -> loc.wifiName == getSsid(applicationContext)})
             }
         } else
             timer.cancel()
@@ -182,9 +178,8 @@ class MainActivity : AppCompatActivity() {
         var listId = 1
         if (latestLocation != null) listId = latestLocation.listId
         //selects the right list and shows its element or the noListsYet View if no Elements in List
-        var reminderListItems = listOf<ReminderListElement>()
-        elements.filter { element -> element.list == listId }
-            .forEach { element -> reminderListItems += element }
+        val reminderListItems = mutableListOf<ReminderListElement>()
+        elements.filter {elem -> elem.list == listId}.forEach {elem -> reminderListItems += elem}
 
         if (reminderListItems.isEmpty()) {
             noListsYetMessage.isVisible = true
@@ -193,9 +188,7 @@ class MainActivity : AppCompatActivity() {
             noListsYetMessage.isVisible = false
             recyclerview.isVisible = true
             adapter.setData(reminderListItems)
-            reminderListItems.forEach { element ->
-                itemsToRemember += element.listElementName
-            }
+            reminderListItems.forEach {element -> itemsToRemember += element.listElementName}
         }
     }
 

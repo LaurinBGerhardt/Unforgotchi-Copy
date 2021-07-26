@@ -266,12 +266,6 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
     }
 
     private fun getRightList(list: List<ReminderListElement>): List<ReminderListElement>{
-        var listOfRightElements = listOf<ReminderListElement>()
-        var counter = 0
-        while (counter < list.size) {
-            if (list[counter].list == position) listOfRightElements += list[counter]
-            counter++
-        }
-        return listOfRightElements
+        return list.filter {element -> element.list == position}
     }
 }
