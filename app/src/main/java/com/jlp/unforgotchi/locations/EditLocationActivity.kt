@@ -18,10 +18,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.jlp.unforgotchi.MainActivity
 import com.jlp.unforgotchi.R
-import com.jlp.unforgotchi.db.Location
-import com.jlp.unforgotchi.db.LocationsViewModel
-import com.jlp.unforgotchi.db.ReminderListViewModel
-import com.jlp.unforgotchi.db.SpecialValuesViewModel
+import com.jlp.unforgotchi.db.*
 import java.io.FileDescriptor
 import java.io.IOException
 
@@ -168,6 +165,16 @@ class EditLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
             )
 
             locationsViewModel.updateLocation(replacementLocation)
+
+            if(editWifiButton.isChecked) {
+                specialValuesViewModel.updateSpecialValue(
+                    SpecialValue(
+                        ValueNames.LATEST_LOCATION.name,
+                        replacementLocation.location_id,
+                        replacementLocation.listId
+                    )
+                )
+            }
 
             finish()
         } else {
