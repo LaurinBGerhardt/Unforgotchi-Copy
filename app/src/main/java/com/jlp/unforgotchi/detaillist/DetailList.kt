@@ -147,7 +147,7 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
 
     // add Item to List
     private fun insertListItem(input: String){
-        val listElementName = getValidInput(input)
+        val listElementName = MainActivity.getValidInput(input)
         if (!inputCheck(listElementName)){
             Toast.makeText(
                 applicationContext,
@@ -165,13 +165,6 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
     // help function to verify whether input is given
     private fun inputCheck(listName: String): Boolean{
         return !(TextUtils.isEmpty(listName))
-    }
-
-    // helper function to strip the user input to a valid name
-    private fun getValidInput(input: String): String {
-        return Regex("""\s+""")
-            .replace(input.trim()," ")
-            .filter { it.isLetterOrDigit() || it == ' ' }
     }
 
 
@@ -192,7 +185,7 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
 
     // change name of List Element
     private fun editList(input: String, positionInList: Int) {
-        val listElementName = getValidInput(input)
+        val listElementName = MainActivity.getValidInput(input)
         if (!inputCheck(listElementName)) {
             Toast.makeText(
                 applicationContext,

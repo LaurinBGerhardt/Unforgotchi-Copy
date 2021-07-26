@@ -146,7 +146,7 @@ class EditLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
     }
 
     private fun saveChanges() {
-        val name = getValidInput(editLocNameView.text.toString())
+        val name = MainActivity.getValidInput(editLocNameView.text.toString())
 
         if (!name.isEmpty()) {
 
@@ -180,13 +180,6 @@ class EditLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
         } else {
             Toast.makeText(this@EditLocationActivity,"Please Input A Name",Toast.LENGTH_SHORT).show()
         }
-    }
-
-    // helper function to strip the user input to a valid name
-    private fun getValidInput(input: String): String {
-        return Regex("""\s+""")
-                    .replace(input.trim()," ")
-                    .filter { it.isLetterOrDigit() || it == ' ' }
     }
 
 

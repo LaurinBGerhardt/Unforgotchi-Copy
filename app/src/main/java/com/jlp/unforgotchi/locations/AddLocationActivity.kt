@@ -136,7 +136,7 @@ class AddLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
     //so to create and add a new location:
     private fun processInput() {
         val intent = Intent()
-        val name = getValidInput(addLocNameView.text.toString())
+        val name = MainActivity.getValidInput(addLocNameView.text.toString())
 
         if (!name.isEmpty()) {
             giveBackLocationData(intent, name)
@@ -145,13 +145,6 @@ class AddLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
         else {
             Toast.makeText(this@AddLocationActivity,"Please Input A Name",Toast.LENGTH_SHORT).show()
         }
-    }
-
-    // helper function to strip the user input to a valid name
-    private fun getValidInput(input: String): String {
-        return Regex("""\s+""")
-            .replace(input.trim()," ")
-            .filter { it.isLetterOrDigit() || it == ' ' || it in "._-–\"\'#^°*,/\\;!?"}
     }
 
 

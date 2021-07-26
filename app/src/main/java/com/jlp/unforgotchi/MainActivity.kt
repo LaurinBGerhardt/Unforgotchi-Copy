@@ -165,6 +165,13 @@ class MainActivity : AppCompatActivity() {
                 notify(101, builder.build())
             }
         }
+
+        // helper function to strip the user input to a valid name throughout the app
+        fun getValidInput(input : String) : String {
+            return Regex("""\s+""")
+                .replace(input.trim()," ")
+                .filter { it.isLetterOrDigit() || it == ' ' || it in "._-–\"\'#^°*,/\\;!?+{[()]}"}
+        }
     }
 
     override fun onResume() {
