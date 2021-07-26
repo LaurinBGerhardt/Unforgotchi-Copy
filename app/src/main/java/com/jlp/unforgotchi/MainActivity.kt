@@ -118,6 +118,10 @@ class MainActivity : AppCompatActivity() {
         lateinit var locationsViewModel: LocationsViewModel
         lateinit var specialValuesViewModel: SpecialValuesViewModel
 
+        fun updateLatestLocation(applicationContext: Context) {
+            setLatestLocation(locationsViewModel.getLocations().filter {loc -> loc.wifiName == getSsid(applicationContext)})
+        }
+
         fun setLatestLocation(locations: List<Location>) {
             if (locations.isEmpty()) return
             locations.forEach { location ->
