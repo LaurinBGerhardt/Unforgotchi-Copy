@@ -1,7 +1,7 @@
 package com.jlp.unforgotchi
 
 //import com.google.android.gms.location.*
-import android.Manifest
+import android.Manifest.*
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
 
     //The table for special values (like the latest location):
     private lateinit var reminderListViewModel: ReminderListElementViewModel
-    val network = CheckWifi(this)
+    private val network = CheckWifi(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,9 +87,9 @@ class MainActivity : AppCompatActivity() {
 
         askPermissions(
             arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_NETWORK_STATE,
-                Manifest.permission.CHANGE_WIFI_STATE
+                permission.ACCESS_FINE_LOCATION,
+                permission.ACCESS_NETWORK_STATE,
+                permission.CHANGE_WIFI_STATE
             )
         )
 
@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity() {
         if (!network.isConnected) Toast.makeText(this, "Please enable Wifi", Toast.LENGTH_LONG)
             .show()
 
-        val timer = Timer("checkWifi", false);
+        val timer = Timer("checkWifi", false)
 
         // schedule at a fixed rate
         if (locationsViewModel.getLocations().isNotEmpty()) {
@@ -115,12 +115,6 @@ class MainActivity : AppCompatActivity() {
         return locationsViewModel.getLocations()
             .filter { location -> location.location_id == specialValuesViewModel.getLatestLocationId() }
             .getOrNull(0)
-    }
-
-    private fun containsWifi(location: Location, ssid: String?): Boolean {
-        return if (ssid != null) {
-            location.wifiName == ssid
-        } else false
     }
 
     companion object {
@@ -207,15 +201,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun askPermissions(PERMISSIONS: Array<String>) {
         PERMISSIONS.forEach { permission ->
-            if (ActivityCompat.checkSelfPermission(
-                    this,
-                    permission
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
+            if (ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED)
                 Log.d("Function askPermissions: ", "Permission" + permission + "already granted")
-            } else {
+            else
                 requestPermissions(arrayOf(permission), kotlin.math.abs(permission.hashCode()))
-            }
         }
     }
 
@@ -228,11 +217,10 @@ class MainActivity : AppCompatActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 1) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
                 Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show()
-            } else {
+            else
                 Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
-            }
         }
     }
 
@@ -257,15 +245,4 @@ class MainActivity : AppCompatActivity() {
             notificationManager.createNotificationChannel(channel)
         }
     }
-
-//    TODO check for permissions in Bugfxing phase
-//    fun CheckPermission():Boolean{
-//        //returns true: if we have permission, false if not
-//        if(ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-//            ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-//            ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_GRANTED){
-//            return true
-//        }
-//        return false
-//    }
 }

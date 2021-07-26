@@ -2,7 +2,6 @@ package com.jlp.unforgotchi.list
 
 import android.app.AlertDialog
 import android.content.Intent
-import android.graphics.Paint
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.MenuItem
@@ -13,7 +12,6 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -35,7 +33,7 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
     private enum class Mode(val string:String){
         EDIT("Edit Name"),
         DELETE("Delete"),
-        ADDITEM("Add Items")
+        ADDITEM("Show list")
     }
     private var currentMode = Mode.ADDITEM
 
@@ -76,7 +74,7 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
         // set Data out of database
         itemViewModel = ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
         listViewModel = ViewModelProvider(this).get(ReminderListViewModel::class.java)
-        listViewModel.readAllData.observe(this, Observer { reminderList ->
+        listViewModel.readAllData.observe(this, { reminderList ->
             adapter.setData(reminderList)
         })
 
@@ -94,7 +92,7 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
                     insertList(editText.text.toString())
                 }
                 setNegativeButton("Cancel") { _, _ ->
-                    Toast.makeText(applicationContext, "Cancel button clicked", Toast.LENGTH_SHORT)
+                    Toast.makeText(applicationContext, "No changes made", Toast.LENGTH_SHORT)
                         .show()
                 }
                 setView(dialogLayout)
@@ -121,55 +119,13 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
                 }
             }
         }
-        /*
-        //when clicking the delete-button:
-        val deleteListsButton: TextView = findViewById(R.id.delete_lists_button)
-        deleteListsButton.setOnClickListener {
-            if (edit) {
-                Toast.makeText(
-                    applicationContext,
-                    "Deactivate edit button first",
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                if (delete) {
-                    delete = false
-                    deleteListsButton.paintFlags = deleteListsButton.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-                } else {
-                    delete = true
-                    deleteListsButton.paintFlags = deleteListsButton.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-                }
-            }
-        }
-
-        //when clicking the edit button:
-        val editListsButton: TextView = findViewById(R.id.edit_lists_button)
-        editListsButton.setOnClickListener {
-            if (delete) {
-                Toast.makeText(
-                    applicationContext,
-                    "Deactivate delete button first",
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                if (edit) {
-                    edit = false
-                    editListsButton.paintFlags = editListsButton.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-                } else {
-                    edit = true
-                    editListsButton.paintFlags = editListsButton.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-                }
-            }
-        }*/
-
     }
 
     // for navigation:
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
-        if (toggle.onOptionsItemSelected(item)) {
+        if (toggle.onOptionsItemSelected(item))
             return true
-        }
+
         return super.onOptionsItemSelected(item)
     }
 
@@ -190,7 +146,7 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
         } else {
             val reminderList = ReminderList(0, listName, R.drawable.ic_baseline_list_alt_24)
             listViewModel.addReminderList(reminderList)
-            listViewModel.readAllData.observe(this, Observer { reminderList ->
+            listViewModel.readAllData.observe(this, { reminderList ->
                 adapter.setData(reminderList)
             })
             Toast.makeText(applicationContext, "Successfully added!", Toast.LENGTH_LONG).show()
@@ -205,7 +161,7 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
     // function to remove a list
     private fun deleteList(position: Int) {
         var array = emptyArray<ReminderList>()
-        listViewModel.readAllData.observe(this, Observer { reminderList ->
+        listViewModel.readAllData.observe(this, { reminderList ->
             array += reminderList
         })
         val clickedListId = array[position].id
@@ -216,39 +172,16 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
             R.drawable.ic_baseline_list_alt_24
         )
         listViewModel.deleteReminderList(reminderList)
-        listViewModel.readAllData.observe(this, Observer { reminderList ->
+        listViewModel.readAllData.observe(this, { reminderList ->
             adapter.setData(reminderList)
         })
-        // to delete all items attached to a list: no error, but does not work
-        /*
-        var listOfRightElements = listOf<ReminderListElement>()
-        itemViewModel.readAllElements.observe(this, Observer { reminderListElement ->
-            var listOfRightElements = listOf<ReminderListElement>()
-            var counter = 0
-            while (counter < reminderListElement.size) {
-                if (reminderListElement[counter].list == position){
-                    listOfRightElements += reminderListElement[counter]
-                }
-                counter++
-            }
-        })
-        var counter = 0
-        while (counter < listOfRightElements.size){
-            var reminderListElement = ReminderListElement(
-                listOfRightElements[counter].id,
-                listOfRightElements[counter].listElementName,
-                listOfRightElements[counter].list
-            )
-            itemViewModel.deleteReminderListElement(reminderListElement)
-            counter++
-        }*/
         Toast.makeText(applicationContext, "Successfully removed!", Toast.LENGTH_LONG).show()
     }
 
     // function to change the name of a list
     private fun editList(listName: String, position: Int) {
         var array = emptyArray<ReminderList>()
-        listViewModel.readAllData.observe(this, Observer { reminderList ->
+        listViewModel.readAllData.observe(this, { reminderList ->
             array += reminderList
         })
         val clickedListId = array[position].id
@@ -265,7 +198,7 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
                 R.drawable.ic_baseline_list_alt_24
             )
             listViewModel.updateReminderList(updatedReminderList)
-            listViewModel.readAllData.observe(this, Observer { reminderList ->
+            listViewModel.readAllData.observe(this, { reminderList ->
                 adapter.setData(reminderList)
             })
             Toast.makeText(
@@ -280,9 +213,6 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
     override fun onItemClick(position: Int) {
         when (currentMode) {
             Mode.EDIT -> {
-                Toast.makeText(this, "Item $position clicked and edit set", Toast.LENGTH_SHORT)
-                    .show()
-
                 //open textDialog to adapt name
                 val builder = AlertDialog.Builder(this)
                 val inflater = layoutInflater
@@ -312,7 +242,7 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
             else -> {
                 val i = Intent(this@Lists, DetailList::class.java)
                 var list = listOf<ReminderList>()
-                listViewModel.readAllData.observe(this, Observer { reminderList ->
+                listViewModel.readAllData.observe(this, { reminderList ->
                     list = reminderList
                 })
                 i.putExtra("position", list[position].id)

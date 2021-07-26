@@ -12,7 +12,6 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,7 +20,6 @@ import com.google.android.material.navigation.NavigationView
 import com.jlp.unforgotchi.FirstSteps
 import com.jlp.unforgotchi.MainActivity
 import com.jlp.unforgotchi.R
-import com.jlp.unforgotchi.db.ReminderList
 import com.jlp.unforgotchi.db.ReminderListElement
 import com.jlp.unforgotchi.db.ReminderListElementViewModel
 import com.jlp.unforgotchi.list.Lists
@@ -83,7 +81,7 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
 
         // show the element of the current list
         itemViewModel = ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
-        itemViewModel.readAllElements.observe(this, Observer { reminderListElement ->
+        itemViewModel.readAllElements.observe(this, { reminderListElement ->
             var rightList = getRightList(reminderListElement)
             adapter.setData(rightList)
         })
@@ -171,7 +169,7 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
 
     private fun deleteListElement(positionItem: Int){
         var listOfRightElements = listOf<ReminderListElement>()
-        itemViewModel.readAllElements.observe(this, Observer { reminderListElement ->
+        itemViewModel.readAllElements.observe(this, { reminderListElement ->
             listOfRightElements = getRightList(reminderListElement)
         })
         val reminderListElement = ReminderListElement(
@@ -194,7 +192,7 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
             ).show()
         } else {
             var listOfRightElements = listOf<ReminderListElement>()
-            itemViewModel.readAllElements.observe(this, Observer { reminderListElement ->
+            itemViewModel.readAllElements.observe(this, { reminderListElement ->
                 listOfRightElements = getRightList(reminderListElement)
             })
             val updatedReminderListElement = ReminderListElement(
@@ -248,17 +246,13 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
 
     private fun deleteItem(position: Int) {
         var array = emptyArray<ReminderListElement>()
-        itemViewModel.readAllElements.observe(this, Observer { reminderListElements ->
+        itemViewModel.readAllElements.observe(this, { reminderListElements ->
             array += reminderListElements
         })
         val clickedItemId = array[position].id
         val clickedItemName = array[position].listElementName
         val clickedItemList = array[position].list
-        val reminderList = ReminderList(
-            clickedItemId,
-            clickedItemName,
-            R.drawable.ic_baseline_list_alt_24
-        )
+
         val item = ReminderListElement(
             clickedItemId,
             clickedItemName,
@@ -266,7 +260,7 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
             null
         )
         itemViewModel.deleteReminderListElement(item)
-        itemViewModel.readAllElements.observe(this, Observer { items ->
+        itemViewModel.readAllElements.observe(this, { items ->
             adapter.setData(items)
         })
     }
@@ -275,9 +269,7 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         var listOfRightElements = listOf<ReminderListElement>()
         var counter = 0
         while (counter < list.size) {
-            if (list[counter].list == position){
-                listOfRightElements += list[counter]
-            }
+            if (list[counter].list == position) listOfRightElements += list[counter]
             counter++
         }
         return listOfRightElements
