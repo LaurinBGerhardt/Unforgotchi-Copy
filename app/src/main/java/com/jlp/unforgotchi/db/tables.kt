@@ -12,20 +12,21 @@ data class ReminderList(
     constructor() : this(0, "", 0)
 }
 
-@Entity(tableName = "reminder_list_elements_table",
+@Entity(tableName = "reminder_list_elements_table"/*,
     foreignKeys = [ForeignKey(
         entity = Location::class,
         parentColumns = arrayOf("location_id"),
         childColumns = arrayOf("ref_to_location"),
         onDelete = ForeignKey.CASCADE
-    )])
+    )]*/)
 data class ReminderListElement(
     @PrimaryKey(autoGenerate = true)
     var id: Int,
     var listElementName: String,
     var list: Int,
-    @ColumnInfo(index = true, name = "ref_to_location")
+    /*@ColumnInfo(index = true, name = "ref_to_location")
     var ref_to_location : Int? = null
+     */
 ){
     constructor() : this(0, "", 0)
 }
@@ -41,7 +42,8 @@ data class Location(
     @ColumnInfo(name="wifi_name")
     var wifiName : String? = null,
     var listId : Int
-    //This SHOULD work, but it doesn't. This code is here because in the future we may fix it.
+    //This SHOULD work, but it doesn't. This code is here because in the future we want to fix it.
+    //Currently, the SpecialValues table has the functionality which was intended by this column.
     /*
     @ColumnInfo(name="is_latest")
     var _isLatest : Boolean = false
@@ -50,6 +52,9 @@ data class Location(
     constructor() : this(0, "",null,null, -10)
 }
 
+/*
+// In a future Update any Locations will be able to have multiple lists associated with it.
+// This feature was already half-implemented, and there's no reason to remove the code:
 data class LocationToLists(
     //@PrimaryKey(autoGenerate = true)
     //var locToListID : Int,
@@ -62,6 +67,7 @@ data class LocationToLists(
     )
     val lists: List<ReminderListElement>
 )
+*/
 
 @Entity(tableName = "special_values")
 data class SpecialValue(

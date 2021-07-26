@@ -265,8 +265,7 @@ class DetailList : AppCompatActivity(), DetailListsAdapter.OnItemClickListener {
         val item = ReminderListElement(
             clickedItemId,
             clickedItemName,
-            clickedItemList,
-            null
+            clickedItemList
         )
         itemViewModel.deleteReminderListElement(item)
         itemViewModel.readAllElements.observe(this, { items ->
