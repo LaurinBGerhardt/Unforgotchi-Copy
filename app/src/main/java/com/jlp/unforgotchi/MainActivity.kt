@@ -96,12 +96,12 @@ class MainActivity : AppCompatActivity() {
             .show()
 
         val timer = Timer("checkWifi", false)
-
+        val locations = locationsViewModel.getLocations()
         // schedule at a fixed rate
-        if (locationsViewModel.getLocations().isNotEmpty()) {
+        if (locations.isNotEmpty()) {
             timer.scheduleAtFixedRate(1000, 1000) {
                 if (network.isConnected) setLatestLocation(
-                    locationsViewModel.getLocations().filter {loc -> loc.wifiName == getSsid(applicationContext)})
+                    locations.filter {loc -> loc.wifiName == getSsid(applicationContext)})
             }
         } else
             timer.cancel()
