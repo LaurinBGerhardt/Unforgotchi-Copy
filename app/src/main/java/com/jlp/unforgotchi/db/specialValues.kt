@@ -36,8 +36,9 @@ interface SpecialValuesDao {
 class SpecialValueRepository(private val specialValuesDao : SpecialValuesDao){
     val readAllSpecialValues : LiveData<List<SpecialValue>> = specialValuesDao.readAllSpecialValues()
 
-    suspend fun addSpecialValue(specialValue: SpecialValue){
+    suspend fun addSpecialValue(specialValue: SpecialValue) : Boolean{
         specialValuesDao.addSpecialValue(specialValue)
+        return true
     }
 
     suspend fun updateSpecialValue(specialValue: SpecialValue){
@@ -97,9 +98,11 @@ class SpecialValuesViewModel(application: Application): AndroidViewModel(applica
     }
 
     fun setSpecialValue(specialValue: SpecialValue){
-        viewModelScope.launch(Dispatchers.IO){
-            repository.addSpecialValue(specialValue)
+        var asyncSuccessful = false
+        runBlocking {
+            asyncSuccessful = async { repository.addSpecialValue(specialValue) }.await()
         }
+        if(!asyncSuccessful) throw java.lang.Exception("setSpecialValues is still not asynchronous")
     }
 
     fun deleteSpecialValue(specialValue: SpecialValue){

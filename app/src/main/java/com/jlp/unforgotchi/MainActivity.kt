@@ -95,16 +95,19 @@ class MainActivity : AppCompatActivity() {
         if (!network.isConnected) Toast.makeText(this, "Please enable Wifi", Toast.LENGTH_LONG)
             .show()
 
+        /*
+        //The timer has severe issues with the delay of the database, causing an infinite loop
         val timer = Timer("checkWifi", false)
         val locations = locationsViewModel.getLocations()
         // schedule at a fixed rate
         if (locations.isNotEmpty()) {
-            timer.scheduleAtFixedRate(1000, 1000) {
+            timer.scheduleAtFixedRate(2000, 60000) {
                 if (network.isConnected) setLatestLocation(
                     locations.filter {loc -> loc.wifiName == getSsid(applicationContext)})
             }
         } else
             timer.cancel()
+        */
     }
 
     private fun getLatestLocation(): Location? {
@@ -162,6 +165,20 @@ class MainActivity : AppCompatActivity() {
                 notify(101, builder.build())
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val locations = locationsViewModel.getLocations()
+        setLatestLocation(
+            locations.filter {loc -> loc.wifiName == getSsid(applicationContext)})
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        val locations = locationsViewModel.getLocations()
+        setLatestLocation(
+            locations.filter {loc -> loc.wifiName == getSsid(applicationContext)})
     }
 
     private fun recyclerViewSetup(

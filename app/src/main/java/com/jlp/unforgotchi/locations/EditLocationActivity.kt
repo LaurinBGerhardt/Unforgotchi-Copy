@@ -148,7 +148,7 @@ class EditLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
     private fun saveChanges() {
         val name = getValidInput(editLocNameView.text.toString())
 
-        if (!name.isEmpty()) { //setResult(Activity.RESULT_CANCELED, intent)
+        if (!name.isEmpty()) {
 
             val newWifiName = if (editWifiButton.isChecked) connectedWifi else null
 

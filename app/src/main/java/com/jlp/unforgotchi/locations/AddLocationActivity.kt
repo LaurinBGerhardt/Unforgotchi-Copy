@@ -138,7 +138,7 @@ class AddLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
         val intent = Intent()
         val name = getValidInput(addLocNameView.text.toString())
 
-        if (!name.isEmpty()) {// setResult(Activity.RESULT_CANCELED, intent)
+        if (!name.isEmpty()) {
             giveBackLocationData(intent, name)
             finish()
         }
@@ -151,7 +151,7 @@ class AddLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
     private fun getValidInput(input: String): String {
         return Regex("""\s+""")
             .replace(input.trim()," ")
-            .filter { it.isLetterOrDigit() || it == ' ' }
+            .filter { it.isLetterOrDigit() || it == ' ' || it in "._-–\"\'#^°*,/\\;!?"}
     }
 
 
