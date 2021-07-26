@@ -29,6 +29,9 @@ interface LocationsDao {
     @Query("UPDATE locations_table SET listId = CASE WHEN listId == :id THEN NULL ELSE listId END")
     suspend fun removeListId(id : Int)
 
+    @Query("UPDATE locations_table SET wifi_name = CASE WHEN wifi_name == :wifi THEN NULL ELSE wifi_name END")
+    suspend fun removeWifi(wifi : String)
+
     //This SHOULD work, but somehow room changes the value always to 0 for no reason at all
     //This function is deprecated so to speak. It's still here because in the future we
     //may fix it

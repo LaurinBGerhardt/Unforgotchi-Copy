@@ -153,11 +153,17 @@ class EditLocationActivity : AppCompatActivity(), AdapterView.OnItemSelectedList
 
         if (!name.isEmpty()) { //setResult(Activity.RESULT_CANCELED, intent)
 
+            val newWifiName = if (editWifiButton.isChecked) connectedWifi else null
+
+            //Before adding the new Location we HAVE to make sure that Locations which already
+            //have the new wifi get their wifi set to null:
+            if(newWifiName != null) locationsViewModel.removeWifi(newWifiName)
+
             val replacementLocation = Location(
                 currentLocation.location_id,
                 name,
                 if (previewImageChanged) imageData?.toString() else currentLocation.image,
-                if (editWifiButton.isChecked) connectedWifi else null,
+                newWifiName,
                 listId
             )
 

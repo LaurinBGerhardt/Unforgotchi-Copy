@@ -74,4 +74,12 @@ class LocationsViewModel(application: Application): AndroidViewModel(application
         }
         if(!asyncSuccessful) throw Exception("RemoveListId is still not asynchronous")
     }
+
+    fun removeWifi(wifi : String) {
+        var asyncSuccessful = false
+        runBlocking {
+            asyncSuccessful = async { repository.removeWifi(wifi) }.await()
+        }
+        if(!asyncSuccessful) throw java.lang.Exception("removeWifi is still not asynchronous")
+    }
 }

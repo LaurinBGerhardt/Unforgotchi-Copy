@@ -168,6 +168,9 @@ class Locations : AppCompatActivity() , LocationsAdapter.OnItemClickListener {
                     data.flags and Intent.FLAG_GRANT_READ_URI_PERMISSION
                 )
             }
+            //Before adding the new Location we HAVE to make sure that Locations which already
+            //have the new wifi get their wifi set to null:
+            if(newWifiName != null) locationsDBViewModel.removeWifi(newWifiName)
             //Now all the data for the new Location is being used to create the Location object:
             val newLocation =
                 Location(0, newLocName, newImgData?.toString(), newWifiName, listId)
