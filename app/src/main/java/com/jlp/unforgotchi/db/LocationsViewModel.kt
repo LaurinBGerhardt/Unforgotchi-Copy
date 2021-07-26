@@ -66,4 +66,12 @@ class LocationsViewModel(application: Application): AndroidViewModel(application
             repository.deleteLocation(location)
         }
     }
+
+    fun removeListId(id : Int) {
+        var asyncSuccessful = false
+        runBlocking {
+            asyncSuccessful = async { repository.removeListId(id) }.await()
+        }
+        if(!asyncSuccessful) throw Exception("RemoveListId is still not asynchronous")
+    }
 }

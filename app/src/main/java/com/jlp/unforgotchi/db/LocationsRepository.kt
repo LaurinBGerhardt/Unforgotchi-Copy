@@ -34,6 +34,11 @@ class LocationsRepository(private val locationsDao: LocationsDao) {
         return locationsDao.getLocations()
     }
 
+    suspend fun removeListId(id : Int) : Boolean {
+        locationsDao.removeListId(id)
+        return true
+    }
+
     //This SHOULD work, but somehow room changes the value always to 0 for no reason at all
     //This function is deprecated so to speak. It's still here because in the future we
     //may fix it

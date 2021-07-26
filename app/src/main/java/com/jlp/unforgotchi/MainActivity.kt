@@ -175,7 +175,7 @@ class MainActivity : AppCompatActivity() {
         val firstStepsLink = findViewById<TextView>(R.id.firstSteps)
         firstStepsLink.setOnClickListener { startActivity(firstStepsPage) }
         // the Elements of which lists should be shown on the mainPage, initialized as the elements of the first list
-        var listId = 1
+        var listId : Int? = 1
         if (latestLocation != null) listId = latestLocation.listId
         //selects the right list and shows its element or the noListsYet View if no Elements in List
         val reminderListItems = mutableListOf<ReminderListElement>()

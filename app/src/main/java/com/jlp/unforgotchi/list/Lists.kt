@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.jlp.unforgotchi.*
+import com.jlp.unforgotchi.db.LocationsViewModel
 import com.jlp.unforgotchi.db.ReminderList
 import com.jlp.unforgotchi.db.ReminderListElementViewModel
 import com.jlp.unforgotchi.db.ReminderListViewModel
@@ -27,6 +29,7 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
 
     private lateinit var itemViewModel: ReminderListElementViewModel
     private lateinit var listViewModel: ReminderListViewModel
+    private lateinit var locationsViewModel: LocationsViewModel
     lateinit var toggle: ActionBarDrawerToggle
     private val adapter = ListsAdapter(this)
 
@@ -72,6 +75,7 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
         recyclerview.setHasFixedSize(true)
 
         // set Data out of database
+        locationsViewModel = ViewModelProvider(this).get(LocationsViewModel::class.java)
         itemViewModel = ViewModelProvider(this).get(ReminderListElementViewModel::class.java)
         listViewModel = ViewModelProvider(this).get(ReminderListViewModel::class.java)
         listViewModel.readAllData.observe(this, { reminderList ->
@@ -184,6 +188,9 @@ class Lists : AppCompatActivity(), ListsAdapter.OnItemClickListener {
             adapter.setData(reminderList)
         })
         Toast.makeText(applicationContext, "Successfully removed!", Toast.LENGTH_LONG).show()
+
+        //deleting the listId from all the locations which use it:
+        locationsViewModel.removeListId(reminderList.id)
     }
 
     // function to change the name of a list

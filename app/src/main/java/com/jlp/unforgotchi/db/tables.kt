@@ -23,8 +23,8 @@ data class ReminderListElement(
     @PrimaryKey(autoGenerate = true)
     var id: Int,
     var listElementName: String,
-    var list: Int,
-    /*@ColumnInfo(index = true, name = "ref_to_location")
+    var list: Int/*,
+    @ColumnInfo(index = true, name = "ref_to_location")
     var ref_to_location : Int? = null
      */
 ){
@@ -41,7 +41,7 @@ data class Location(
     var image : String?,
     @ColumnInfo(name="wifi_name")
     var wifiName : String? = null,
-    var listId : Int
+    var listId : Int?
     //This SHOULD work, but it doesn't. This code is here because in the future we want to fix it.
     //Currently, the SpecialValues table has the functionality which was intended by this column.
     /*
@@ -74,7 +74,7 @@ data class SpecialValue(
     @PrimaryKey()
     var valueName : String,
     var locationId : Int,
-    var listID : Int
+    var listID : Int?
 ){
     constructor() : this("",-1, -1)
 }

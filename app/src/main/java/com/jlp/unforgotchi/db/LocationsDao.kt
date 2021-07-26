@@ -26,6 +26,9 @@ interface LocationsDao {
     @Query("SELECT * FROM locations_table ORDER BY location_id ASC")
     suspend fun getLocations(): List<Location>
 
+    @Query("UPDATE locations_table SET listId = CASE WHEN listId == :id THEN NULL ELSE listId END")
+    suspend fun removeListId(id : Int)
+
     //This SHOULD work, but somehow room changes the value always to 0 for no reason at all
     //This function is deprecated so to speak. It's still here because in the future we
     //may fix it
