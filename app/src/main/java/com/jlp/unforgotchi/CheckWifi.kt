@@ -13,8 +13,11 @@ import kotlin.properties.Delegates
 class CheckWifi constructor(applicationContext: Context) {
     val applicationContext: Context = applicationContext
     var isConnected: Boolean by Delegates.observable(false) { _, oldValue, newValue ->
+        // connection state changed from connected to not connected -> notify user about items to bring
         if (!newValue && newValue != oldValue) MainActivity.sendNotification(applicationContext)
-//        if (newValue && newValue != oldValue) MainActivity.updateLatestLoc() //TODO
+        // connection state changed from not connected to connected -> set the location with the
+        // current wifi to the current location if it has previously been added as a location
+        if (newValue && newValue != oldValue) MainActivity.updateLatestLocation(applicationContext)
     }
 
     fun registerNetworkCallback() {
