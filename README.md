@@ -11,3 +11,4 @@ When creating or editing a location, a list is chosen. As soon as the WiFi conne
 
 Unforgotchi was a group assignment at our university. The other collaborators are [Paul Felkner](https://github.com/pfelkner) and [Janka Deldok](https://github.com/JankaDeldok/).
 The reason I chose to fork the [original project](https://github.com/JankaDeldok/Unforgotchi) is due to me having contributed using a "private" GitHub profile, which is no longer active. 
+During the project, my main focus was the [locations](https://github.com/LaurinBGerhardt/Unforgotchi-Copy/tree/main_v2/app/src/main/java/com/jlp/unforgotchi/locations) package. 
