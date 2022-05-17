@@ -5,7 +5,7 @@ Who doesn't already know the feeling of standing right in front of the store or 
 With Unforgotchi, this problem is forever solved! 
 
 First, the user can create multiple lists of commonly forgotten items in certain circumstances. Afterwards, the user can create locations based on WiFi IDs. 
-When creating or editing a location, a list is chosen. As soon as the WiFi connections breaks, the user receives a push notification containing all the items of the specified list. 
+When creating or editing a location, a list is chosen. As soon as the WiFi connections breaks, the user receives a push notification containing all the items of the specified list - unless the subway is right next to the door, unforgotchi will save the user from loosing much valuable time!
 
 ---
 
